@@ -1,15 +1,16 @@
-import { ADD_TRACK, DRAW_DOT } from './types.js';
+import { ADD_TRACK, DRAW_DOT, SHOW_AUTH_FORM, HIDE_AUTH_FORM } from './types.js';
+import { loadState } from './local_state.js';
 
 
-export function updateState(state, action) {
-	/*if(action.type === DRAW_DOT) {
-		let x = action.payload.x_axe;
-		let y = action.payload.y_axe;
-		let new_field = state.field;
+let initialState = loadState();
 
-		new_field[x][y] = "fill_green";
+export function updateState(state = initialState, action) {
+	switch(action.type) {
+		case SHOW_AUTH_FORM: return {...state, components: {showAuth: true}};
+		case HIDE_AUTH_FORM: return {...state, components: {showAuth: false}};
 
-		return Object.assign({}, state, {field: new_field})
-	}*/
+		default: return {...state}
+	}
+
 	return {...state};
 }
