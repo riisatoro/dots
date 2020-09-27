@@ -1,27 +1,18 @@
 import { LOCAL_STORAGE } from './types.js';
 
+
 const saveState = (state) => {
-    try {
-
-        const serialisedState = JSON.stringify(state);
-
-        window.localStorage.setItem(LOCAL_STORAGE, serialisedState);
-    } catch (err) {
-
-    }
+    localStorage.setItem('LOCAL_STORAGE', JSON.stringify(user));
 };
 
 const loadState = () => {
-    try {
-        const serialisedState = window.localStorage.getItem(LOCAL_STORAGE);
-        
-        if (!serialisedState) return set_initial();
-        
-        return JSON.parse(serialisedState);
-    } catch (err) {
-        return set_initial();
-    }
-};
+	let state = JSON.parse(localStorage.getItem('LOCAL_STORAGE'));
+	if(state)
+		return state
+    
+    return set_initial();
+    
+}
 
 
 const set_initial = () => {
@@ -45,5 +36,4 @@ const set_initial = () => {
 	}
 }
 
-
-export default { saveState, loadState }
+export  { saveState, loadState }

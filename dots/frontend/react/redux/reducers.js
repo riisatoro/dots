@@ -1,7 +1,7 @@
 import { ADD_TRACK, DRAW_DOT } from './types.js';
 
 
-export function updateState(state, action = {}) {
+export function updateState(state, action) {
 	/*if(action.type === DRAW_DOT) {
 		let x = action.payload.x_axe;
 		let y = action.payload.y_axe;
