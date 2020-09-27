@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import "./game_field.css";
+import "../../static/css/game_field.css";
 
 class GameField extends Component {
 
