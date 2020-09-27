@@ -1,3 +1,5 @@
+export const LOCAL_STORAGE = "DOTS_STATE";
+
 export const CHANGE_PLAYER = "CHANGE_PLAYER";
 export const DRAW_DOT = "DRAW_DOT";
 export const CALC_SQUARE = "CALC_SQUARE";

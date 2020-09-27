@@ -1,7 +1,35 @@
-.input__block {
+.input__row {
+	display: flex;
+}
+
+.empty {
 	width: 20px;
 	height: 20px;
+	border-radius: 20px;
 
 	border: 2px solid silver;
 }
 
+.fill_green {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px solid green;
+	background: green;
+}
+
+.fill_blue {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px solid blue;
+	background: blue;
+}
+
+.fill_red {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px solid red;
+	background: red;
+}

@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-
+/*
 class Header extends Component {
 
 	render(props) {
-		console.log(this.props)
+		let navbar = [<p>A</p>];
 		return (
 			<section className="header">
-				<input type="text" />
-				<button>Add track</button>
-
+				<div className="header__wrapper">
+					<h1 className="header__logo">Dots Game</h1>
+					{navbar}
+				</div>
 			</section>
 		);
 	}
@@ -20,13 +21,7 @@ class Header extends Component {
 
 export default connect(
 	state => ({
-		testStore: state
+		store: state
 	}),
 	dispatch => ({}))(Header);
-
-
-/*
-<div>
-	{this.props.testStore.map((track, index) => <li key={index}>{track}</li>)}
-</div>
 */

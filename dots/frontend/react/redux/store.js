@@ -1,41 +1,19 @@
 import React, { Component } from 'react';
+
 import { createStore } from 'redux';
+import { updateState } from "./reducers.js";
 
-import { ADD_TRACK } from './types.js';
-
-
-const initialState = []
-let row = []
-
-for(let i=0; i<=100; i++) {
-	if(i % 10 == 0 && i!=0) {
-		initialState.push(
-			<div className="input__block" key={i}>
-				<input className="input__field" type="hidden" value="0"></input>
-			</div>);
-		row = [];
-	}
-	row.push(i);
-}
-
-function playlist(store = initialState, action) {
-	if(action.type === ADD_TRACK){
-		return [
-		...store,
-		action.payload
-		]
-	}
-	return store;
-}
+import { loadState, saveState } from './local_state.js';
 
 
-const store = createStore(playlist);
+//const oldState = loadState();
+
+const store = createStore(updateState);
+/*
+store.dispatch(oldState);
 
 store.subscribe(() => {
-
+    saveState();
 })
-
+*/
 export default store;
-
-// store.dispatch({type: ADD_TRACK, payload: "Extatum et Oratum"});
-// store.dispatch({type: ADD_TRACK, payload: "Vampires don't die"});
