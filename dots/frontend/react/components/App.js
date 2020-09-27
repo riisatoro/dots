@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
-import ReacDOM from 'react-dom';
+import Header from './Header.js'
+import GameField from './GameField.js'
+import { connect } from 'react-redux';
 
 
 class App extends Component {
-	render() {
+	render(props) {
 		return (
-			<h1>Welcome to the 'Dots' game!</h1>
+			<section className="content">
+				<Header />
+				<GameField />
+			</section>
 		);
 	}
 }
 
-ReacDOM.render(<App />, document.getElementById('react-app'));
+export default connect(
+	state => ({
+		testStore: state
+	}),
+	dispatch => ({}))(App);
