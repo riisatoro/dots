@@ -28,6 +28,17 @@ class Auth extends Component {
 		this.props.onClickLogin(payload)
 	}
 
+	onClickRegister(e) {
+		e.preventDefault()
+		let payload = { 
+			username: e.target.username.value,
+			email: e.target.email.value,
+			password: e.target.password.value,
+			password2: e.target.password2.value
+		}
+		this.props.onClickRegister(payload)
+	}
+
 	render(props) {
 		return (
 			<section className="auth">
@@ -39,6 +50,14 @@ class Auth extends Component {
 		    				<input type="text" name="username" placeholder="login"></input>
 		    				<input type="password" name="password" placeholder="password"></input>
 		    				<button>Login</button>
+		    			</form>
+		    			<br />
+		    			<form onSubmit={this.onClickRegister.bind(this)}>
+		    				<input type="text" name="username" placeholder="login"></input>
+		    				<input type="email" name="email" placeholder="email"></input>
+		    				<input type="password" name="password" placeholder="password"></input>
+		    				<input type="password" name="password2" placeholder="confirm password"></input>
+		    				<button>Register</button>
 		    			</form>
 		    		</div>
 		    	</div>	
@@ -60,7 +79,6 @@ export default connect(
 		onClickLogin: (payload) => {
 			const asyncLogin = () => {
 				let token = getToken()
-				//console.log(payload.username, payload.password)
 				axios({
   					method: 'post',
   					url: '/api/auth/login/',
@@ -81,7 +99,22 @@ export default connect(
 		},
 		
 		onClickRegister: (payload) => {
-			dispatch({type: SEND_REGISTER_REQUEST, payload: payload })
-		}
+			const asyncRegister = () => {
+				let token = getToken()
+				axios({
+  					method: 'post',
+  					url: '/api/auth/register/',
+  					headers: {"X-CSRFToken": getToken()},
+  					data: payload,
+  				}
+				).then(function (response) {
+					let answer = {status:response.status, data:response.data}
+					dispatch({type: SEND_REGISTER_REQUEST, payload: answer });
+  				});
+
+  				return {type: "", payload: {}}
+			}
+			dispatch(asyncRegister())
+		},
 	})
 )(Auth);

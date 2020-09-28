@@ -28,14 +28,13 @@ class MatchViewSet(viewsets.ModelViewSet):
 
 class Register(generics.CreateAPIView):
     model = get_user_model()
-    permission_classes = [permissions.AllowAny]
     serializer_class = serializers.UserSerializer
 
 
 class Login(APIView):
-
     def post(self, request, format=None):
-        body = json.loads(request.body.decode('utf-8'))
+        
+        body = request.data
         user = authenticate(
             username=body["username"], 
             password=body["password"]
