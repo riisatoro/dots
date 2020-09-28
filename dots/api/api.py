@@ -1,11 +1,16 @@
+import json
+
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
+from django.contrib.auth import login
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.authentication import BasicAuthentication
 
 from . import serializers
@@ -28,11 +33,15 @@ class Register(generics.CreateAPIView):
 
 
 class Login(APIView):
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        if request.user.is_authenticated:
+        body = json.loads(request.body.decode('utf-8'))
+        user = authenticate(
+            username=body["username"], 
+            password=body["password"]
+            )
+        if user:
+            login(request, user)
             return Response({"auth": True})
-        return Response({"auth": False})
+        raise AuthenticationFailed("Invalid username or password")
 

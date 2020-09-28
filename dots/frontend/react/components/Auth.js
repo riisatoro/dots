@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
+import axios from 'axios';
 
 import { connect } from 'react-redux';
 import { HIDE_AUTH_FORM, SEND_REGISTER_REQUEST, SEND_LOGIN_REQUEST } from '../redux/types.js';
-import getToken from '../scripts/token.js';
+import getToken from '../actions/token.js';
 
 import "../../static/css/auth.css";
 
@@ -35,7 +36,6 @@ class Auth extends Component {
 		    			<p className="auth__title">Log in or create your account</p>
 		    			<button onClick={this.hideAuthForm.bind(this)}>X</button>
 		    			<form onSubmit={this.onClickLogin.bind(this)}>
-		    				<input type="hidden" name="csrfmiddlewaretoken" value={getToken()}></input>
 		    				<input type="text" name="username" placeholder="login"></input>
 		    				<input type="password" name="password" placeholder="password"></input>
 		    				<button>Login</button>
@@ -56,9 +56,30 @@ export default connect(
 		onClickHideAuth: () => {
 			dispatch({type: HIDE_AUTH_FORM, payload: false})
 		},
+		
 		onClickLogin: (payload) => {
-			dispatch({type: SEND_LOGIN_REQUEST, payload: payload })
+			const asyncLogin = () => {
+				let token = getToken()
+				//console.log(payload.username, payload.password)
+				axios({
+  					method: 'post',
+  					url: '/api/auth/login/',
+  					headers: {"X-CSRFToken": getToken()},
+  					data: {
+    					username : payload.username,
+    					password : payload.password,
+  					},
+  				}
+				).then(function (response) {
+					let answer = {status:response.status, data:response.data}
+					dispatch({type: SEND_LOGIN_REQUEST, payload: answer });
+  				});
+
+  				return {type: "", payload: {}}
+			}
+			dispatch(asyncLogin())
 		},
+		
 		onClickRegister: (payload) => {
 			dispatch({type: SEND_REGISTER_REQUEST, payload: payload })
 		}

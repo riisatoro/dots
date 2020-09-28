@@ -1,6 +1,6 @@
-function getCookie(name) {
+function getToken(name) {
     let csrf = document.querySelector('[name=csrfmiddlewaretoken]').value
     return csrf;
 }
 
-export default getCookie;
+export default getToken;

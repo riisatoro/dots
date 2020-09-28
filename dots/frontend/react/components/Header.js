@@ -14,16 +14,17 @@ class Header extends Component {
 
 	render() {
 		let navigation = []
-		switch(this.props.store.user.isAuth){
-			case true: navigation = [
+		if(this.props.store.user.isAuth) {
+			navigation = [
 					<a href="#">New game</a>,
 					<a href="#">Leaderboard</a>,
-					<a href="#">Logout</a>,
-				];
-			case false: navigation = [
-					<a href="#" onClick={this.openAuthForm.bind(this)}>Login or Register</a>,
-				];
+					<a href="#">Logout</a>]
+		} else {
+			navigation = [<a href="#" onClick={this.openAuthForm.bind(this)}>Login or Register</a>]
 		}
+		
+
+		console.log(this.props.store.user.isAuth)
 
 		return (
 			<section className="header">
