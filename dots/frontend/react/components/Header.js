@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
-import { SHOW_AUTH_FORM } from '../redux/types.js';
+import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST } from '../redux/types.js';
 
 import Auth from "./Auth.js";
 
@@ -12,13 +13,17 @@ class Header extends Component {
 		this.props.onClickOpenAuth()
 	}
 
+	logoutUser(e) {
+		this.props.logoutUser();
+	}
+
 	render() {
 		let navigation = []
 		if(this.props.store.user.isAuth) {
 			navigation = [
 					<a href="#">New game</a>,
 					<a href="#">Leaderboard</a>,
-					<a href="#">Logout</a>]
+					<a href="#" onClick={this.logoutUser.bind(this)}>Logout</a>]
 		} else {
 			navigation = [<a href="#" onClick={this.openAuthForm.bind(this)}>Login or Register</a>]
 		}
@@ -44,6 +49,25 @@ export default connect(
 	dispatch => ({
 		onClickOpenAuth: () => {
 			dispatch({type: SHOW_AUTH_FORM, payload: true})
-		}
+		},
+
+		onClickHideAuth: () => {
+			dispatch({type: HIDE_AUTH_FORM, payload: false})
+		},
+		
+		logoutUser: () => {
+			const asyncLogout = () => {
+				axios({
+  					method: 'get',
+  					url: '/api/auth/logout/'
+  				}
+				).then(function (response) {
+					dispatch({type: SEND_LOGOUT_REQUEST, payload: {} });
+  				});
+
+  				return {type: "", payload: {}}
+			}
+			dispatch(asyncLogout())
+		},
 	})
 )(Header);

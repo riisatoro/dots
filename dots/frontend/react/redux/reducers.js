@@ -1,4 +1,4 @@
-import { ADD_TRACK, SEND_REGISTER_REQUEST, DRAW_DOT, SHOW_AUTH_FORM, HIDE_AUTH_FORM, SEND_LOGIN_REQUEST } from './types.js';
+import { ADD_TRACK, SEND_REGISTER_REQUEST, DRAW_DOT, SHOW_AUTH_FORM, HIDE_AUTH_FORM, SEND_LOGIN_REQUEST, SEND_LOGOUT_REQUEST } from './types.js';
 import { loadState } from './local_state.js';
 
 
@@ -17,6 +17,7 @@ export function updateState(state = initialState, action) {
 			}
 			console.log(action.status)
 			return {...state}
+		case SEND_LOGOUT_REQUEST: return {...state, user: {isAuth: false}};
 
 		default: return {...state}
 	}

@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
 from django.contrib.auth import login
+from django.contrib.auth import logout
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -44,3 +45,8 @@ class Login(APIView):
             return Response({"auth": True})
         raise AuthenticationFailed("Invalid username or password")
 
+
+class Logout(APIView):
+    def get(self, request, format=None):
+        logout(request)
+        return Response({"auth": False})
