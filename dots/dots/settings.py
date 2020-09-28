@@ -110,3 +110,5 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+
+CSRF_USE_SESSIONS = True
