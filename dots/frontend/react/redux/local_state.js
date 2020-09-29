@@ -1,18 +1,14 @@
 import { LOCAL_STORAGE } from './types.js';
 
 
-const saveState = (state) => {
-    localStorage.setItem('LOCAL_STORAGE', JSON.stringify(state));
-};
-
-
 const loadState = () => {
-	let state = JSON.parse(localStorage.getItem('LOCAL_STORAGE'));
-	/*if(state)
-		return state;*/
-    
-    return set_initial();
-    
+	let state = localStorage['reduxDots'];
+	try{
+		state = JSON.parse(state)
+	} catch(error) {
+		return set_initial();
+	}
+	return state
 }
 
 
@@ -20,7 +16,7 @@ const set_initial = () => {
 
 	let row = []
 	let field = []
-	let components = {showAuth: false}
+	let components = {showAuth: false, showSettings: false}
 	let user = {username: "", password: "", isAuth: false}
 	let players = [{name: "", color: "",}, {name: "", color: ""}]
 	
@@ -40,4 +36,4 @@ const set_initial = () => {
 	}
 }
 
-export  { saveState, loadState }
+export { loadState };

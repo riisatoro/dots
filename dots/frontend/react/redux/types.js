@@ -11,4 +11,7 @@ export const CHANGE_PLAYER = "CHANGE_PLAYER";
 export const DRAW_DOT = "DRAW_DOT";
 export const CALC_SQUARE = "CALC_SQUARE";
 
-export const ADD_TRACK = "ADD_TRACK";
+export const SHOW_SETTINGS = "SHOW_SETTINGS";
+export const HIDE_SETTINGS = "HIDE_SETTINGS";
+export const START_GAME = "START_GAME";
+export const STOP_GAME = "STOP_GAME";
