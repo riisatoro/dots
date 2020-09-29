@@ -16,7 +16,7 @@ const set_initial = () => {
 
 	let row = []
 	let field = []
-	let components = {showAuth: false, showSettings: false}
+	let components = {showAuth: false, showSettings: false, showField: false}
 	let user = {username: "", password: "", isAuth: false}
 	let players = [{name: "", color: "",}, {name: "", color: ""}]
 	

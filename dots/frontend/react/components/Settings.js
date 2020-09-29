@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 
 import { connect } from 'react-redux';
-import { HIDE_SETTINGS } from '../redux/types.js';
+import { HIDE_SETTINGS, START_GAME } from '../redux/types.js';
 
 import "../../static/css/settings.css";
 

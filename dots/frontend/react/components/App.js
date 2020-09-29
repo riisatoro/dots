@@ -11,7 +11,7 @@ class App extends Component {
 			<section className="content">
 				<Header />
 				{ this.props.store.components.showSettings && <Settings />}
-				{ false && <GameField />}
+				{ this.props.store.components.showField && <GameField />}
 			</section>
 		);
 	}

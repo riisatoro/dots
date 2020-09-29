@@ -13,6 +13,7 @@ class GameField extends Component {
 		let index = e.target.id;
 		let y_axe = index%10;
 		let x_axe = (index-y_axe)/10;
+		console.log({y_axe, x_axe})
 		this.props.onDotClicked({y_axe, x_axe})
 	}
 
@@ -40,9 +41,7 @@ export default connect(
 	}),
 	dispatch => ({
 		onDotClicked: (position) => {
-			dispatch(
-				{type: DRAW_DOT, payload: position}
-			)
+			dispatch({type: DRAW_DOT, payload: position})
 		}
 	}
 	))(GameField);

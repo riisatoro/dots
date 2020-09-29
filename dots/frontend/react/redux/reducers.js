@@ -43,6 +43,9 @@ export function updateState(state = initialState, action) {
 			return {...state, components: {showSettings: false}};
 
 		case START_GAME:
+			return {...state, components: {showField: true}};
+
+		case STOP_GAME:
 			return {...state, components: {showField: false}};
 
 		default: 
