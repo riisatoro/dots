@@ -19,12 +19,14 @@ from . import models
 
 
 class MatchViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.AllowAny]
     serializer_class = serializers.MatchSerializer
 
     def get_queryset(self):
         user = self.request.user
         return models.Match.objects.filter(user=user)
+
+    def post(self, request, format=None):
+        print(request.data)
 
 
 class Register(generics.CreateAPIView):

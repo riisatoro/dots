@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import { DRAW_DOT, PLAYER_CHANGED } from '../redux/types.js'
+import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL } from '../redux/types.js'
+import getToken from '../actions/token.js';
+import axios from 'axios';
 
 import "../../static/css/game_field.css";
 
@@ -16,6 +18,10 @@ class GameField extends Component {
 		console.log(this.props.store.turn)
 
 		this.props.onDotClicked([y_axe, x_axe], this.props.store.turn)
+		this.props.checkFieldFull()
+		if(this.props.store.game_end){
+			this.props.saveMatchResults(this.props.store.results)
+		}
 		this.props.onPlayerChanged()
 	}
 
@@ -47,6 +53,14 @@ export default connect(
 
 		onDotClicked: (position) => {
 			dispatch({type: DRAW_DOT, payload: position})
-		}
+		},
+
+		checkFieldFull: () => {
+			dispatch({type: CHECK_FIELD_FULL})
+		},
+
+		saveMatchResults: (results) => {
+			
+		},
 	}
 	))(GameField);

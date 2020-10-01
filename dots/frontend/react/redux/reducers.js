@@ -10,12 +10,18 @@ import {
 	START_GAME,
 	STOP_GAME,
 	PLAYER_CHANGED,
-	SET_COLOR
+	SET_COLOR,
+	CHECK_FIELD_FULL
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
-import isFullField from '../actions/isFullField.js';
+import { isFullField } from '../actions/isFullField.js';
+import { calcSquare } from '../actions/calcDotsSquare.js';
+import getToken from '../actions/token.js';
+import axios from 'axios';
 import main from '../actions/calcSquare.js';
+
+
 
 
 let initialState = loadState();
@@ -48,10 +54,30 @@ export function updateState(state = initialState, action) {
 
 		case START_GAME:
 			let tmp_field = getEmptyField()
-			return {...state, components: {showField: true}, field: tmp_field};
+			return {...state, components: {showField: true}, field: tmp_field, game_end: false};
 
 		case STOP_GAME:
-			return {...state, components: {showField: false}};
+			let square = calcSquare(state.field, state.players[0].color, state.players[1].color);
+			let winner = ""
+			let looser = ""
+			let win_score = 0
+			let loose_score = 0
+
+			if(square[0] > square[1]) {
+				winner = "First"
+				looser = "Second"
+				win_score = square[0]
+				loose_score = square[1]
+			} else {
+				looser = "First"
+				winner = "Second"
+				win_score = square[1]
+				loose_score = square[0]
+			}
+
+			let results = {winner: winner, looser: looser, win_score: win_score, loose_score: loose_score}
+			send_results(results)
+			return {...state, components: {showField: false}, results: results, game_end: true};
 
 		case DRAW_DOT:
 			let x = action.payload[1]
@@ -80,9 +106,28 @@ export function updateState(state = initialState, action) {
 			players[this_player].color = this_color
 			return {...state, players: players}
 
+		case CHECK_FIELD_FULL:
+			let isFull = isFullField(state.field)
+			if(isFull) {
+				let new_state = updateState(state, {type: STOP_GAME})
+				return {...new_state}
+			}
+
 		default: 
 			return {...state};
 	}
 
 	return {...state};
+}
+
+function send_results(results) {
+	let token = getToken()
+	axios({
+  		method: 'post',
+  		url: '/api/match/',
+  		headers: {"X-CSRFToken": getToken(), 'Content-Type': 'application/json'},
+  		data: results
+  	}).then(function (response) {
+		console.log(response)
+  	});
 }

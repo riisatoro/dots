@@ -18,3 +18,4 @@ export const STOP_GAME = "STOP_GAME";
 
 export const PLAYER_CHANGED = "PLAYER_CHANGED";
 export const SET_COLOR = "SET_COLOR";
+export const CHECK_FIELD_FULL = "CHECK_FIELD_FULL";
