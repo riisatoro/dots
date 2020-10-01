@@ -11,24 +11,27 @@ const loadState = () => {
 	return state
 }
 
-
-const set_initial = () => {
-
+const getEmptyField = () => {
+	let tmp_field = []
 	let row = []
-	let field = []
-	let components = {showAuth: false, showSettings: false, showField: false}
-	let user = {username: "", password: "", isAuth: false}
-	let players = [{name: "", color: "",}, {name: "", color: ""}]
-	
-	for(let i=0; i<=100; i++) {
-		if(i % 10 == 0 && i!=0) {
-			field.push(row);
+	for(let i=0; i<=25; i++) {
+		if(i % 5 == 0 && i!=0) {
+			tmp_field.push(row);
 		row = [];
 		}
 		row.push("empty");
 	}
+	return tmp_field
+}
+
+
+const set_initial = () => {
+	let components = {showAuth: false, showSettings: false, showField: false}
+	let user = {username: "", password: "", isAuth: false}
+	let players = [{name: "", color: "red",}, {name: "", color: "green"}]
+	
 	return {
-		field: field, 
+		field: getEmptyField(), 
 		user: user,
 		players: players,
 		components: components,
@@ -36,4 +39,4 @@ const set_initial = () => {
 	}
 }
 
-export { loadState };
+export { loadState, getEmptyField };

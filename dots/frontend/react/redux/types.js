@@ -15,3 +15,6 @@ export const SHOW_SETTINGS = "SHOW_SETTINGS";
 export const HIDE_SETTINGS = "HIDE_SETTINGS";
 export const START_GAME = "START_GAME";
 export const STOP_GAME = "STOP_GAME";
+
+export const PLAYER_CHANGED = "PLAYER_CHANGED";
+export const SET_COLOR = "SET_COLOR";
