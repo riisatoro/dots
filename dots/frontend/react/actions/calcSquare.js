@@ -558,28 +558,32 @@ function getFirstChild(field, player, parent, path){
 	return false
 }
 
-function isNeighbour(point1, point2) {
-	if (JSON.stringify(point1) != JSON.stringify(point2)
-		&& Math.abs(point1[0] - point2[0]) < 2
-		&& Math.abs(point1[1] - point2[1]) <2
-		&& Math.abs(point1[0] - point2[0]) - (Math.abs(point1[1] - point2[1])) <=2)
-	{
-		return true
+
+
+
+
+let all_pathes = []
+
+function pushToFullPath(road, i, j){
+	let tmp = []
+	if(j-i<2) {
+		return
 	}
-	return false
+	for (;i<=j;i++) {
+		tmp.push(road[i])
+	}
+	if (!inPath(tmp, road)) {
+		console.log("FIND LOOP")
+		all_pathes.push(tmp)
+	}
 }
 
-function isChildOfParent(child, parent) {
-	if(child[1] == parent[0]){
-		return true
-	}
-	return false
-}
-
-
+/*
 function getGraphLoop(field, player, parent, road){ 
+	
+	if(inPath(parent, road)){return}
+
 	road.push(parent)
-	//console.log(parent, ">>", road)
 
 	let child = getFirstChild(field, player, parent, road)
 
@@ -594,9 +598,14 @@ function getGraphLoop(field, player, parent, road){
 				if(!isEqual(road[i], road[j])){
 					if (isNeighbour(road[i], road[j]) && !isChildOfParent(road[i], road[j]))
 					{
-						console.log("FIND LOOP")
-						console.log(road[i], road[j])
-						return
+						if (!inPath([road[i], road[j]], all_pathes))
+						{
+							console.log("FIND LOOP")	
+							all_pathes.push([road[i], road[j]])
+						} else {
+							getGraphLoop(field, player, child, road)
+						}
+						
 					} else {
 						getGraphLoop(field, player, child, road)
 					}
@@ -611,37 +620,210 @@ function getGraphLoop(field, player, parent, road){
 	//console.log(child)
 }
 
+function getGraphLoop(field, player, parent, road){ 
+	
+	if(inPath(parent, road)){return}
+
+	road.push(parent)
+
+	let child = getFirstChild(field, player, parent, road)
+
+	if(!child) {
+		// это крайняя точка, которая не может образовать цикл
+		return
+	}
+
+	if(road.length > 2) {
+		for(let i=0; i<road.length; i++) {
+			for(let j=road.length-1; j>=0; j--) {
+				if(!isEqual(road[i], road[j])){
+					if (isNeighbour(road[i], road[j]) && !isChildOfParent(road[i], road[j]))
+					{
+						if (!inPath([road[i], road[j]], all_pathes))
+						{	
+							pushToFullPath(road, i, j)
+						} else {
+							getGraphLoop(field, player, child, road)
+						}
+						
+					} else {
+						getGraphLoop(field, player, child, road)
+					}
+				}
+			}
+		}
+	} else {
+		getGraphLoop(field, player, child, road)
+	}
+
+
+	//console.log(child)
+}
+*/
+
+/*
+function getGraphLoop(graph) 
+{
+	function dfs(index){
+		visited[index] = true
+		for(j=0; j<visited.length; j++) {
+			if( !visited[j] && isNeighbour(graph[index], graph[j]) ) {
+				console.log(graph[j])
+				dfs(j)
+			}
+		}
+	}
+
+	for(let i=0; i<graph.length; i++) {
+		if (!visited[i]) {
+			console.log("NEW", graph[i])
+			dfs(i)
+		}
+	}
+
+}
+*/
+let visited = []
+let WHITE = "white"
+let GRAY = "gray"
+let BLACK = "black"
+
+
+function setVisited(num) {
+	for(;num>0; num--) {
+		visited.push(WHITE)
+	}
+}
+
+function isNeighbour(point1, point2) {
+	if (JSON.stringify(point1) != JSON.stringify(point2)
+		&& Math.abs(point1[0] - point2[0]) < 2
+		&& Math.abs(point1[1] - point2[1]) < 2
+		&& Math.abs(point1[0] - point2[0]) - (Math.abs(point1[1] - point2[1])) <=2)
+	{
+		return true
+	}
+	return false
+}
+
+
+/*
+function getGraphLoop(graph) 
+{
+	function dfs(index){
+		visited[index] = GRAY
+		for(j=0; j<visited.length; j++) {
+			if (isNeighbour(graph[index], graph[j])) {
+				if(visited[j] == WHITE) {
+					path.push(graph[j])
+					dfs(j)
+					path.pop()
+				}
+			}
+		}
+		// тут можно искать циклы
+		console.log("---")
+		path.map(i => console.log(i))
+		console.log("---")
+		for(let p=0; p<path.length; p++) {
+			for (let q=0; q<path.length; q++){
+				if(isNeighbour) {}
+			}
+		}
+
+		visited[index] = BLACK
+	}
+
+	for(let i=0; i<graph.length; i++) {
+		if (visited[i] == WHITE) {
+			//console.log("i", graph[i])
+			path.push(graph[i])
+			dfs(i)
+			path.pop()
+		}
+	}
+
+}
+*/
+
+let field = [
+	["","","red","","","",""],
+	["","","red","","","",""],
+	["","red","red","","","",""],
+	["red","","red","","","",""],
+	["red","red","","","","",""],
+	["","","","","","",""],
+	["","","","","","",""],
+	
+	
+]
+
+
+let player = "red"
+
+
+function findLoop(path) {
+	for (let q=path.length-1; q>=2; q--){
+		for(let p=0; p<path.length; p++) {
+			if (isNeighbour(path[p], path[q])) {
+				console.log("-----")
+				console.log(path[p], path[q])
+				console.log("-----")
+				console.log("-----")
+			}
+		}
+	}
+}
 
 
 
+let path = []
+function getGraphLoop(graph) 
+{
+	function dfs(index){
+		visited[index] = GRAY
+		for(j=visited.length-1; j>=0; j--) {
+			if (isNeighbour(graph[index], graph[j])) {
+				if(visited[j] == WHITE) {
+					path.push(graph[j])
+					dfs(j)
+					path.pop()
+				}
+			}
+		}
+		// тут можно искать циклы
+		// console.log("---")
+		// path.map(i => console.log(i))
+		// console.log("---")
+		if(path.length > 2){
+			findLoop(path)
+		}
+		visited[index] = BLACK
+	}
+
+	for(let i=0; i<graph.length; i++) {
+		if (visited[i] == WHITE) {
+			//console.log("i", graph[i])
+			path.push(graph[i])
+			dfs(i)
+			path.pop()
+		}
+	}
+
+}
 
 
 function main(field, player) {
 	let all_points = getAllPoints(field, player)
-	let connect_matrix = getConnectMatrix(all_points)
-	let connect_points = getAllPoints(connect_matrix, 1)
-	let start_point = getStrartPoint(field, player)
 	
-	let result =  getGraphLoop(field, player, start_point, []) // road
+	setVisited(all_points.length)
+	let result =  getGraphLoop(all_points)
 
 	return result
 }
 
 
 
-
-let field = [
-	["","red","","","","",""],
-	["red","","","","","",""],
-	["red","red","","","","",""],
-	["","","","","","",""],
-	["","","","","","",""],
-	["","","","","","",""],
-	["","","","","","",""]
-]
-
-
-let player = "red"
-
 let result = main(field, player)
 console.log(result)
+ 
