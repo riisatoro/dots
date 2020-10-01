@@ -766,18 +766,23 @@ function findLoop(path) {
 	for (let q=path.length-1; q>=2; q--){
 		for(let p=0; p<path.length; p++) {
 			if (isNeighbour(path[p], path[q])) {
-				console.log("-----")
-				console.log(path[p], path[q])
-				console.log("-----")
-				console.log("-----")
+				let tmp = []
+				for(let i=p; i<=q; i++){
+					tmp.push(path[i])
+				}
+				if(tmp.length > 2){
+					return tmp
+				}
+				return []
 			}
 		}
 	}
 }
 
 
-
 let path = []
+let loops = []
+
 function getGraphLoop(graph) 
 {
 	function dfs(index){
@@ -796,7 +801,10 @@ function getGraphLoop(graph)
 		// path.map(i => console.log(i))
 		// console.log("---")
 		if(path.length > 2){
-			findLoop(path)
+			let tmp = findLoop(path)
+			if(JSON.stringify([]) != JSON.stringify(tmp)) {
+				loops.push(tmp)
+			}
 		}
 		visited[index] = BLACK
 	}
@@ -817,9 +825,9 @@ function main(field, player) {
 	let all_points = getAllPoints(field, player)
 	
 	setVisited(all_points.length)
-	let result =  getGraphLoop(all_points)
+	getGraphLoop(all_points)
 
-	return result
+	return loops
 }
 
 
