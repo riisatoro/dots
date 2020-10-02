@@ -16,7 +16,6 @@ class GameField extends Component {
 		let index = e.target.id;
 		let y_axe = index%10;
 		let x_axe = (index-y_axe)/10;
-		console.log(this.props.store.turn)
 
 		this.props.onDotClicked([y_axe, x_axe], this.props.store.turn)
 		this.props.checkFieldFull()

@@ -41,11 +41,12 @@ class Auth extends Component {
 	render(props) {
 		return (
 		<section >
-		   	<div className="container">
-		   		<div className="line_block">
+		<div className="line_block">
 		   			<p >Log in or create your account</p>
 		    		<button onClick={this.hideAuthForm.bind(this)} className="negative">X</button>
 		    	</div>
+		   	<div className="container">
+		   		
 		    	
 		    	<div className="row">
 		    		<div className="col-sm">

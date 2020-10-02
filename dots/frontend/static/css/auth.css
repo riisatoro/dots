@@ -30,8 +30,9 @@
 }
 
 .line_block {
-	display: flex;
-	justify-content: space-around;
+	display: block;
+	width: 60%;
+	margin: 20px auto;
 }
 
 .row {

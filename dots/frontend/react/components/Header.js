@@ -58,7 +58,6 @@ export default connect(
 
 	dispatch => ({
 		onClickOpenAuth: () => {
-			console.log("AUTH IN HEADER")
 			dispatch({type: SHOW_AUTH_FORM, payload: true})
 		},
 

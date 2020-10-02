@@ -46,7 +46,6 @@ export function updateState(state = initialState, action) {
 			return {...state, game_end: false};
 
 		case SHOW_AUTH_FORM: 
-			console.log()
 			return {...state, components: {showAuth: true}, game_end: false};
 
 		case HIDE_AUTH_FORM: 
@@ -108,7 +107,6 @@ export function updateState(state = initialState, action) {
 				field[x][y] = player_color
 
 				let field_s = main(field, player_color)
-				console.log("NEW FIEL", field_s)
 				return {...state, field:field_s}
 			}
 			return {...state}
@@ -136,7 +134,6 @@ export function updateState(state = initialState, action) {
 			let new_players = state.players
 			new_players[action.payload.index].name = action.payload.name
 			
-			console.log("UPDATE", new_players)
 			return {...state, players: new_players}
 
 		default: 
@@ -154,6 +151,5 @@ function send_results(results) {
   		headers: {"X-CSRFToken": getToken(), 'Content-Type': 'application/json'},
   		data: results
   	}).then(function (response) {
-		console.log(response)
   	});
 }

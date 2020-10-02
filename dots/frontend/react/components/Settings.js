@@ -13,12 +13,8 @@ class Settings extends Component {
 		this.props.startGame();
 	}
 
-	onChangeSize(e) {
-		console.log(e.target.value)
-	}
 
 	onChangeInput(e) {
-		console.log("Input")
 		let payload = { 
 			index: parseInt(e.target.getAttribute('id')),
 			name: e.target.value,
