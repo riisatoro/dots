@@ -11,11 +11,11 @@ const loadState = () => {
 	return state
 }
 
-const getEmptyField = (size=10) => {
+const getEmptyField = (size=6) => {
 	let tmp_field = []
 	let row = []
-	for(let i=0; i<=100; i++) {
-		if(i % 10 == 0 && i!=0) {
+	for(let i=0; i<=36; i++) {
+		if(i % 6 == 0 && i!=0) {
 			tmp_field.push(row);
 		row = [];
 		}

@@ -61,7 +61,8 @@ export function updateState(state = initialState, action) {
 			return {...state}
 
 		case SEND_LOGOUT_REQUEST: 
-			return {...state, user: {isAuth: false}};
+			let comp = {showAuth: false, showSettings: false, showField: false}
+			return {...state, user: {isAuth: false}, components: comp};
 
 		case SHOW_SETTINGS:
 			return {...state, components: {showSettings: true}};
