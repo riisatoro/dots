@@ -9,10 +9,12 @@ import "../../static/css/settings.css";
 
 class Settings extends Component {
 	setSettings(e) {
-
-
 		this.props.closeSettings();
 		this.props.startGame();
+	}
+
+	onChangeSize(e) {
+		console.log(e.target.value)
 	}
 
 	onChangeInput(e) {
@@ -37,18 +39,22 @@ class Settings extends Component {
 			<section className="field">
 		    	<p>Settings</p>
 		    	
-		    	<div className="">
-			    	    <div className="">
+		    	<div className="container_this">
+			    	    <div className="row">
 			    	    	<input type="text" name="player1" id="0" placeholder="Player name" onChange={this.onChangeInput.bind(this)}/>
+			    	    	<div>
 							{this.colors.map((i, index) => <div className={i+" choice_color"} key={"1"+index} id={"1-"+index} onClick={this.setColor.bind(this)}></div>)}	
+								</div>
 			    	    </div>
 
-			    	    <div className="">
+			    	    <div className="row">
 			    	    	<input type="text" name="player2" id="1" placeholder="Player name" onChange={this.onChangeInput.bind(this)}/>
+			    	    	<div>
 			    	    	{this.colors.map((i, index) => <div className={i+" choice_color"} key={"2"+index} id={"2-"+index} onClick={this.setColor.bind(this)}></div>)}	
+			    	    		</div>
 			    	    </div>
-			    	    <button onClick={this.setSettings.bind(this)}>Start!</button>
 		    	</div>
+			    	    <button onClick={this.setSettings.bind(this)} className="positive">Start!</button>
 		    </section>
 		  )
 		}

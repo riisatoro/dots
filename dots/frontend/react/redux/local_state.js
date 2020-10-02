@@ -11,11 +11,11 @@ const loadState = () => {
 	return state
 }
 
-const getEmptyField = () => {
+const getEmptyField = (size=10) => {
 	let tmp_field = []
 	let row = []
-	for(let i=0; i<=25; i++) {
-		if(i % 5 == 0 && i!=0) {
+	for(let i=0; i<=100; i++) {
+		if(i % 10 == 0 && i!=0) {
 			tmp_field.push(row);
 		row = [];
 		}
@@ -38,7 +38,8 @@ const set_initial = () => {
 		components: components,
 		results: results,
 		game_end: false,
-		turn: 0
+		turn: 0,
+		field_size: 10
 	}
 }
 

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { HIDE_AUTH_FORM, SEND_REGISTER_REQUEST, SEND_LOGIN_REQUEST, HIDE_LEADERS } from '../redux/types.js';
 import getToken from '../actions/token.js';
+import "../../static/css/auth.css";
 
 
 class Auth extends Component {
@@ -39,27 +40,35 @@ class Auth extends Component {
 
 	render(props) {
 		return (
-			<section >
-		    	<div >
-		    		<div >
-		    			<p >Log in or create your account</p>
-		    			<button onClick={this.hideAuthForm.bind(this)}>X</button>
+		<section >
+		   	<div className="container">
+		   		<div className="line_block">
+		   			<p >Log in or create your account</p>
+		    		<button onClick={this.hideAuthForm.bind(this)} className="negative">X</button>
+		    	</div>
+		    	
+		    	<div className="row">
+		    		<div className="col-sm">
+		    			
 		    			<form onSubmit={this.onClickLogin.bind(this)}>
-		    				<input type="text" name="username" placeholder="login"></input>
-		    				<input type="password" name="password" placeholder="password"></input>
-		    				<button>Login</button>
-		    			</form>
-		    			<br />
-		    			<form onSubmit={this.onClickRegister.bind(this)}>
-		    				<input type="text" name="username" placeholder="login"></input>
-		    				<input type="email" name="email" placeholder="email"></input>
-		    				<input type="password" name="password" placeholder="password"></input>
-		    				<input type="password" name="password2" placeholder="confirm password"></input>
-		    				<button>Register</button>
+		    				<input type="text" name="username" placeholder="login" className="input_field"></input>
+		    				<input type="password" name="password" placeholder="password" className="input_field"></input>
+		    				<button className="positive">Login</button>
 		    			</form>
 		    		</div>
-		    	</div>	
-		    </section>
+
+		    		<div className="col-sm">
+		    			<form onSubmit={this.onClickRegister.bind(this)}>
+		    				<input type="text" name="username" placeholder="login" className="input_field"></input>
+		    				<input type="email" name="email" placeholder="email" className="input_field"></input>
+		    				<input type="password" name="password" placeholder="password" className="input_field"></input>
+		    				<input type="password" name="password2" placeholder="confirm password" className="input_field"></input>
+		    				<button className="positive">Register</button>
+		    			</form>
+		    		</div>
+		    	</div>
+		    </div>	
+		</section>
 		  )
 		}
 }

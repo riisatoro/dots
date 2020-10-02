@@ -47,7 +47,7 @@ export function updateState(state = initialState, action) {
 
 		case SHOW_AUTH_FORM: 
 			console.log()
-			return {...state, components: {showAuth: true}};
+			return {...state, components: {showAuth: true}, game_end: false};
 
 		case HIDE_AUTH_FORM: 
 			return {...state, components: {showAuth: false}};

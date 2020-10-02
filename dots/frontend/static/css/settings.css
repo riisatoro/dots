@@ -21,3 +21,22 @@
 .blue_block {
 	background-color: blue;
 }
+
+.container {
+	display: flex;
+	grid-template-columns: 1fr 1fr;
+}
+
+.row {
+	width: 80%;
+	margin: 10px auto;
+	text-align: center;
+}
+
+.positive {
+	display: block;
+	width: 100px;
+	height: 50px;
+	margin: 20px auto;
+	cursor: pointer;
+}

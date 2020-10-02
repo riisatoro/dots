@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST,
 SHOW_SETTINGS, HIDE_RESULTS, SHOW_LEADERS, HIDE_LEADERS,SET_LEADERS } from '../redux/types.js';
-
+import "../../static/css/header.css";
 import Auth from "./Auth.js";
 
 
@@ -41,9 +41,11 @@ class Header extends Component {
 
 		return (
 			<section className="header">
-				<h1 >Dots game</h1>
+				<div className="">
+				<h1 className="header">Dots game</h1>
 				<div>{navigation}</div>
 				{this.props.store.components.showAuth && <Auth />}
+				</div>
 			</section>
 		);
 	}
