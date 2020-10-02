@@ -3,7 +3,7 @@ import ReacDOM from 'react-dom';
 import axios from 'axios';
 
 import { connect } from 'react-redux';
-import { HIDE_AUTH_FORM, SEND_REGISTER_REQUEST, SEND_LOGIN_REQUEST } from '../redux/types.js';
+import { HIDE_AUTH_FORM, SEND_REGISTER_REQUEST, SEND_LOGIN_REQUEST, HIDE_LEADERS } from '../redux/types.js';
 import getToken from '../actions/token.js';
 
 
@@ -114,5 +114,11 @@ export default connect(
 			}
 			dispatch(asyncRegister())
 		},
+
+		hideLeaders: () => {
+			dispatch({type: HIDE_LEADERS})
+		}
+
+		
 	})
 )(Auth);

@@ -11,7 +11,12 @@ import {
 	STOP_GAME,
 	PLAYER_CHANGED,
 	SET_COLOR,
-	CHECK_FIELD_FULL
+	CHECK_FIELD_FULL, 
+	UPDATE_PLAYERS_NAME,
+	HIDE_RESULTS,
+	SET_LEADERS,
+	SHOW_LEADERS,
+	HIDE_LEADERS
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -28,7 +33,20 @@ let initialState = loadState();
 
 export function updateState(state = initialState, action) {
 	switch(action.type) {
+		case SHOW_LEADERS:
+			return {...state, components: {showLeaders: true}}
+	
+		case HIDE_LEADERS:
+			return {...state, components: {showLeaders: false}}
+
+		case SET_LEADERS:
+			return {...state, leaders: action.payload}
+		
+		case HIDE_RESULTS:
+			return {...state, game_end: false};
+
 		case SHOW_AUTH_FORM: 
+			console.log()
 			return {...state, components: {showAuth: true}};
 
 		case HIDE_AUTH_FORM: 
@@ -64,13 +82,13 @@ export function updateState(state = initialState, action) {
 			let loose_score = 0
 
 			if(square[0] > square[1]) {
-				winner = "First"
-				looser = "Second"
+				winner = state.players[0].name
+				looser = state.players[1].name
 				win_score = square[0]
 				loose_score = square[1]
 			} else {
-				looser = "First"
-				winner = "Second"
+				winner = state.players[1].name
+				looser = state.players[0].name
 				win_score = square[1]
 				loose_score = square[0]
 			}
@@ -112,6 +130,14 @@ export function updateState(state = initialState, action) {
 				let new_state = updateState(state, {type: STOP_GAME})
 				return {...new_state}
 			}
+			return {...state}
+
+		case UPDATE_PLAYERS_NAME:
+			let new_players = state.players
+			new_players[action.payload.index].name = action.payload.name
+			
+			console.log("UPDATE", new_players)
+			return {...state, players: new_players}
 
 		default: 
 			return {...state};

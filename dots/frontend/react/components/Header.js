@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST,
-SHOW_SETTINGS } from '../redux/types.js';
+SHOW_SETTINGS, HIDE_RESULTS, SHOW_LEADERS, HIDE_LEADERS } from '../redux/types.js';
 
 import Auth from "./Auth.js";
 
@@ -19,7 +19,12 @@ class Header extends Component {
 	}
 
 	openSettings(e) {
+		this.props.hideResults();
 		this.props.openSettings();
+	}
+
+	onOpenLeaders(e) {
+		this.props.openLeaders()
 	}
 
 	render() {
@@ -27,7 +32,7 @@ class Header extends Component {
 		if(this.props.store.user.isAuth) {
 			navigation = [
 					<a href="#" key="0" className="col-sm-2" onClick={this.openSettings.bind(this)}>New game</a>,
-					<a href="#" key="1" className="col-sm-2">Leaderboard</a>,
+					<a href="#" key="1" className="col-sm-2" onClick={this.onOpenLeaders.bind(this)}>Leaderboard</a>,
 					<a href="#" key="2" className="col-sm-2" onClick={this.logoutUser.bind(this)}>Logout</a>]
 		} else {
 			navigation = [<a href="#" key="0" onClick={this.openAuthForm.bind(this)}>Login or Register</a>]
@@ -50,6 +55,7 @@ export default connect(
 
 	dispatch => ({
 		onClickOpenAuth: () => {
+			console.log("AUTH IN HEADER")
 			dispatch({type: SHOW_AUTH_FORM, payload: true})
 		},
 
@@ -74,6 +80,14 @@ export default connect(
 
 		openSettings: () => {
 			dispatch({type: SHOW_SETTINGS, payload: {}})
+		},
+
+		hideResults: () => {
+			dispatch({type: HIDE_RESULTS, payload: {}})	
+		},
+
+		openLeaders: () => {
+			dispatch({type: SHOW_LEADERS, payload: {}})	
 		}
 	})
 )(Header);

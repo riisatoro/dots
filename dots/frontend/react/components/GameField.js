@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL } from '../redux/types.js'
+import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS } from '../redux/types.js'
 import getToken from '../actions/token.js';
 import axios from 'axios';
 
@@ -11,6 +11,10 @@ import "../../static/css/game_field.css";
 
 
 class GameField extends Component {
+	componentDidMount() {
+		this.props.hideLeaders();
+	}
+
 	dot_clicked(e) {
 		let index = e.target.id;
 		let y_axe = index%5;
@@ -62,5 +66,9 @@ export default connect(
 		saveMatchResults: (results) => {
 			
 		},
+
+		hideLeaders: () => {
+			dispatch({type: HIDE_LEADERS})	
+		}
 	}
 	))(GameField);
