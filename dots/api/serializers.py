@@ -7,7 +7,7 @@ from . import models
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
-        fields = '__all__'
+        fields = ('winner', 'looser', 'win_score', 'loose_score')
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -26,7 +26,7 @@ const getEmptyField = () => {
 
 
 const set_initial = () => {
-	let results = {winner: "", looser: "", win_score: 0, loose_score: 0, user: 1}
+	let results = {winner: "", looser: "", win_score: 0, loose_score: 0}
 	let components = {showAuth: false, showSettings: false, showField: false}
 	let user = {username: "", password: "", isAuth: false}
 	let players = [{name: "", color: "red",}, {name: "", color: "green"}]

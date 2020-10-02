@@ -18,15 +18,22 @@ from . import serializers
 from . import models
 
 
-class MatchViewSet(viewsets.ModelViewSet):
+class MatchViewSet(APIView):
+    queryset = models.Match.objects.all()
     serializer_class = serializers.MatchSerializer
 
-    def get_queryset(self):
-        user = self.request.user
-        return models.Match.objects.filter(user=user)
+    def get(self, request, format=None):
+        data = []
+        for el in models.Match.objects.all(): 
+            data.append(serializers.MatchSerializer(el).data)
+        return Response(data)
 
     def post(self, request, format=None):
-        print(request.data)
+        series = serializers.MatchSerializer(data=request.data)
+        if series.is_valid():            
+            data = series.save()
+            data = serializers.MatchSerializer(data)
+        return Response(data.data)
 
 
 class Register(generics.CreateAPIView):
