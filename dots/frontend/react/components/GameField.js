@@ -11,9 +11,6 @@ import "../../static/css/game_field.css";
 
 
 class GameField extends Component {
-	componentDidMount() {
-		this.props.hideLeaders();
-	}
 
 	dot_clicked(e) {
 		let index = e.target.id;

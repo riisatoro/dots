@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST,
-SHOW_SETTINGS, HIDE_RESULTS, SHOW_LEADERS, HIDE_LEADERS } from '../redux/types.js';
+SHOW_SETTINGS, HIDE_RESULTS, SHOW_LEADERS, HIDE_LEADERS,SET_LEADERS } from '../redux/types.js';
 
 import Auth from "./Auth.js";
 
@@ -24,7 +24,8 @@ class Header extends Component {
 	}
 
 	onOpenLeaders(e) {
-		this.props.openLeaders()
+		this.props.getData();
+		this.props.openLeaders();
 	}
 
 	render() {
@@ -88,6 +89,22 @@ export default connect(
 
 		openLeaders: () => {
 			dispatch({type: SHOW_LEADERS, payload: {}})	
+		},
+
+		getData: () => {
+			const asyncGetLeaders = () => {
+				axios({
+  					method: 'get',
+  					url: '/api/match/'
+  					}
+				).then(function (response) {
+					let data = response.data
+					dispatch({type: SET_LEADERS, payload: data });
+  				});
+
+  				return {type: "", payload: {}}
+			}
+			dispatch(asyncGetLeaders())
 		}
 	})
 )(Header);
