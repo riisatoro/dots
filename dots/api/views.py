@@ -1,17 +1,11 @@
-import json
-
 from rest_framework import viewsets, generics, permissions
-
 from django.contrib.auth import login, logout, authenticate, get_user_model
 
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.authentication import BasicAuthentication
-
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from . import models
@@ -81,4 +75,3 @@ class Login(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({"error": False, "token": str(token)})
         return Response({"error": True, "message": "Invalid username or password"})
-

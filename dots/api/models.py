@@ -13,4 +13,4 @@ class Match(models.Model):
         return models.Match.objects.create(**validated_data)
 
     def __str__(self):
-    	return "WIN: {0} with {1} points LOOSE: {2} with {3} points".format(self.winner, self.win_score, self.looser, self.loose_score)
+    	return f"WIN: {self.winner} with {self.win_score} points LOOSE: {self.looser} with {self.loose_score} points"
