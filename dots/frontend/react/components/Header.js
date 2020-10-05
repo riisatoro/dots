@@ -44,7 +44,7 @@ class Header extends Component {
 				<div className="">
 				<h1 className="header">Dots game</h1>
 				<div>{navigation}</div>
-				{this.props.store.components.showAuth && <Auth />}
+				{this.props.store.components.auth && <Auth />}
 				</div>
 			</section>
 		);

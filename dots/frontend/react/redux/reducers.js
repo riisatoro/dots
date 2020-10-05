@@ -22,7 +22,7 @@ import {
 import { loadState, getEmptyField } from './local_state.js';
 import { isFullField } from '../actions/isFullField.js';
 import { calcSquare } from '../actions/calcDotsSquare.js';
-import getToken from '../actions/token.js';
+import getToken from '../actions/getToken.js';
 import axios from 'axios';
 import main from '../actions/calcSquare.js';
 
@@ -46,22 +46,22 @@ export function updateState(state = initialState, action) {
 			return {...state, game_end: false};
 
 		case SHOW_AUTH_FORM: 
-			return {...state, components: {showAuth: true}, game_end: false};
+			return {...state, components: {auth: true}, game_end: false};
 
 		case HIDE_AUTH_FORM: 
-			return {...state, components: {showAuth: false}};
+			return {...state, components: {auth: false}};
 
 		case SEND_REGISTER_REQUEST: 
 			return {...state};
 
 		case SEND_LOGIN_REQUEST:
 			if (action.payload.status == 200){
-				return {...state, components: {showAuth: false}, user: {isAuth: true}};
+				return {...state, components: {auth: false}, user: {isAuth: true}};
 			}
 			return {...state}
 
 		case SEND_LOGOUT_REQUEST: 
-			let comp = {showAuth: false, showSettings: false, showField: false}
+			let comp = {auth: false, showSettings: false, showField: false}
 			return {...state, user: {isAuth: false}, components: comp};
 
 		case SHOW_SETTINGS:

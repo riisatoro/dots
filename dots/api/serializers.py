@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from . import models
 
 
-
 class MatchSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
@@ -31,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         password2 = self.validated_data['password2']
 
         if password != password2:
-            raise serializers.ValidationError({"password": "Password must match"})
+            raise serializers.ValidationError({"error": True, "message": "Password must match"})
 
         user.set_password(validated_data['password'])
         user.save()
