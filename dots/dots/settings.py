@@ -26,8 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'frontend',
+    'rest_framework', 
+    'rest_framework.authtoken',    
+    'frontend', 
     'api'
 ]
 
@@ -62,7 +63,10 @@ TEMPLATES = [
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 WSGI_APPLICATION = 'dots.wsgi.application'
@@ -118,3 +122,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CSRF_USE_SESSIONS = True
+
+
+#a3cc1007581db2190356c9fed5499c4710bb063c
