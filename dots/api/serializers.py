@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 from . import models
 
 
+
 class MatchSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = models.Match
-        fields = ('winner', 'looser', 'win_score', 'loose_score')
+        fields = ('user', 'winner', 'looser', 'win_score', 'loose_score')
 
 
 class UserSerializer(serializers.ModelSerializer):

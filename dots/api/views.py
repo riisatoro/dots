@@ -44,17 +44,19 @@ class MatchViewSet(APIView):
     serializer_class = serializers.MatchSerializer
 
     def get(self, request, format=None):
-        print()
-        for el in models.Match.objects.all(): 
-            data.append(serializers.MatchSerializer(el).data)
-        return Response(data)
+        data = serializers.MatchSerializer(models.Match.objects.filter(user=request.user), many=True)
+        return Response(data.data)
 
     def post(self, request, format=None):
-        series = serializers.MatchSerializer(data=request.data)
-        if series.is_valid():            
+        data = request.data
+        data["user"] = request.user.id
+
+        series = serializers.MatchSerializer(data=data)
+        if series.is_valid():  
             data = series.save()
             data = serializers.MatchSerializer(data)
-        return Response(data.data)
+            return Response({"error": False})
+        return Response({"error": True, "message": series.errors})
 
 
 class Logout(APIView):
@@ -69,7 +71,6 @@ class Logout(APIView):
 
 class Login(APIView):
     def post(self, request, format=None):
-        
         body = request.data
         user = authenticate(
             username=body["username"], 
@@ -77,6 +78,7 @@ class Login(APIView):
             )
         if user:
             login(request, user)
-            return Response({"auth": True})
-        raise AuthenticationFailed("Invalid username or password")
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"error": False, "token": str(token)})
+        return Response({"error": True, "message": "Invalid username or password"})
 
