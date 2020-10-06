@@ -24,3 +24,5 @@ export const HIDE_RESULTS = "HIDE_RESULTS";
 export const SET_LEADERS = "SET_LEADERS";
 export const SHOW_LEADERS = "SHOW_LEADERS";
 export const HIDE_LEADERS = "HIDE_LEADERS";
+
+export const RECEIVE_AUTH_REPLY = "RECEIVE_AUTH_REPLY";

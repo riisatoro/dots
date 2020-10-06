@@ -28,7 +28,8 @@ const getEmptyField = (size=6) => {
 const set_initial = () => {
 	let results = {winner: "", looser: "", win_score: 0, loose_score: 0}
 	let components = {auth: false, showSettings: false, showField: false}
-	let user = {username: "", password: "", isAuth: false}
+	let user = {auth: false, token: ""}
+	let reply = {error: false, message: ""}
 	let players = [{name: "anon", color: "green",}, {name: "anon", color: "red"}]
 	
 	return {
@@ -39,7 +40,8 @@ const set_initial = () => {
 		results: results,
 		game_end: false,
 		turn: 0,
-		field_size: 10
+		field_size: 10,
+		reply: reply
 	}
 }
 

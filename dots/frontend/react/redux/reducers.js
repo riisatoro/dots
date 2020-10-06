@@ -16,7 +16,8 @@ import {
 	HIDE_RESULTS,
 	SET_LEADERS,
 	SHOW_LEADERS,
-	HIDE_LEADERS
+	HIDE_LEADERS,
+	RECEIVE_AUTH_REPLY
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -33,6 +34,19 @@ let initialState = loadState();
 
 export function updateState(state = initialState, action) {
 	switch(action.type) {
+		case RECEIVE_AUTH_REPLY:
+			if (action.payload.status == 200){
+				let data = action.payload.data
+				if (data.error){
+					return {...state, reply: {error: data.error, message: data.message}}
+				} else {
+					return {...state, reply: {error: false, message: ""}, user: {auth: true, token: data.token}, components: {}}
+				}
+
+			} else {
+				return {...state, reply: {error: true, message: "Server connection error. Try later."}}
+			}
+
 		case SHOW_LEADERS:
 			return {...state, components: {showLeaders: true}}
 	
@@ -56,13 +70,12 @@ export function updateState(state = initialState, action) {
 
 		case SEND_LOGIN_REQUEST:
 			if (action.payload.status == 200){
-				return {...state, components: {auth: false}, user: {isAuth: true}};
+				return {...state, components: {auth: false}, user: {auth: true}};
 			}
 			return {...state}
 
 		case SEND_LOGOUT_REQUEST: 
-			let comp = {auth: false, showSettings: false, showField: false}
-			return {...state, user: {isAuth: false}, components: comp};
+			return {...state, user: {auth: false, token: ""}, components: {}};
 
 		case SHOW_SETTINGS:
 			return {...state, components: {showSettings: true}};

@@ -30,7 +30,7 @@ class Header extends Component {
 
 	render() {
 		let navigation = []
-		if(this.props.store.user.isAuth) {
+		if(this.props.store.user.auth) {
 			navigation = [
 					<a href="#" key="0" className="col-sm-2" onClick={this.openSettings.bind(this)}>New game</a>,
 					<a href="#" key="1" className="col-sm-2" onClick={this.onOpenLeaders.bind(this)}>Leaderboard</a>,
