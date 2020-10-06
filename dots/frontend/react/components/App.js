@@ -24,7 +24,5 @@ class App extends Component {
 export default connect(
 	state => ({
 		store: state
-	}),
-
-	dispatch => ({})
+	})
 )(App);

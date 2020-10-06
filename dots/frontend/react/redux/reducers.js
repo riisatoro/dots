@@ -14,9 +14,10 @@ import {
 	CHECK_FIELD_FULL, 
 	UPDATE_PLAYERS_NAME,
 	HIDE_RESULTS,
-	SET_LEADERS,
+	RECIEVE_LEADERS,
 	SHOW_LEADERS,
 	HIDE_LEADERS,
+	RECEIVE_LEADERS,
 	RECEIVE_AUTH_REPLY
 } from './types.js';
 
@@ -47,14 +48,17 @@ export function updateState(state = initialState, action) {
 				return {...state, reply: {error: true, message: "Server connection error. Try later."}}
 			}
 
+		case RECEIVE_LEADERS:
+			try{
+				return {...state, leaders: action.payload.data}
+			} catch(error) {}
+			return {...state, leaders: []}
+
 		case SHOW_LEADERS:
 			return {...state, components: {showLeaders: true}}
 	
 		case HIDE_LEADERS:
 			return {...state, components: {showLeaders: false}}
-
-		case SET_LEADERS:
-			return {...state, leaders: action.payload}
 		
 		case HIDE_RESULTS:
 			return {...state, game_end: false};

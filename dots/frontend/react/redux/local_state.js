@@ -31,6 +31,7 @@ const set_initial = () => {
 	let user = {auth: false, token: ""}
 	let reply = {error: false, message: ""}
 	let players = [{name: "anon", color: "green",}, {name: "anon", color: "red"}]
+	let leaders = []
 	
 	return {
 		field: getEmptyField(), 
@@ -41,7 +42,8 @@ const set_initial = () => {
 		game_end: false,
 		turn: 0,
 		field_size: 10,
-		reply: reply
+		reply: reply,
+		leaders: leaders
 	}
 }
 

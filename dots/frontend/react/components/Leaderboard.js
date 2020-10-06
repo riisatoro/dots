@@ -3,35 +3,29 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import "../../static/css/leaderboard.css";
 
-import { SET_LEADERS } from '../redux/types.js';
+import { RECEIVE_LEADERS, } from '../redux/types.js';
 
 
 class Leaderboard extends Component {
-
+	componentDidMount() {
+		this.props.getLeaderboard(this.props.store.user.token)
+	}
+	
 	render() {
-		
-		let res = this.props.store.leaders
-
-		let list = res.map((item, index) => {
-			return <div className="row_this">
-						<div className="col_this">
-							<p key={"win-player"+index}>Winner: <span className="">{item.winner}</span></p>
-							<p key={"win-score"+index}>Score: {item.win_score}</p>
-						</div>
-						<div className="col_this">
-							<p key={"win-looser"+index}>Looser: <span className="">{item.looser}</span></p>
-							<p key={"loose-score"+index}>Score:{item.loose_score}</p>
-						</div>
-					</div>
-			
-		})
-
+		let data = this.props.store.leaders
 		return (
 			<section className="leaderboard">
 				<h1>Results</h1>
 				<div>
-					{list}
-					</div>
+					{data.map((item, index) => {
+						return <div key={index}>
+							<p>Winner: {item.winner}</p>
+							<p>captured {item.win_score} points</p>
+							<p>Looser: {item.looser}</p>
+							<p>captured {item.loose_score} points</p>
+						</div>
+					}) }
+				</div>	
 			</section>
 		);
 	}
@@ -42,6 +36,17 @@ export default connect(
 	state => ({
 		store: state
 	}),
-
-	dispatch => ({})
+	dispatch=>({
+		getLeaderboard: (token) => {
+			const getLeaderboardRequest = (token) => {
+				axios({
+					method: "GET",
+					url: "api/match/",
+					headers: {"Authorization": "Token "+token}
+				}).then( (response) => { dispatch({type: RECEIVE_LEADERS, payload: response}) } )
+				
+			}
+			getLeaderboardRequest(token)
+		}
+	})
 )(Leaderboard);
