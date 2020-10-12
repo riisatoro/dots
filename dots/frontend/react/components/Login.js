@@ -27,12 +27,12 @@ function Login(props) {
 						className="" 
 						type="text" 
 						name="username"
-						ref={register( {required: true, maxLength: 20, pattern: /^[A-za-z0–9_]/ } )}>
+						ref={register( {required: true, maxLength: 20, pattern: /^[A-za-z0–9]/ } )}>
 					</input>
 					<p>{errors.username && "This field required."}</p>
 
 					<input 
-						className="" 
+						className=""
 						type="password" 
 						name="password"
 						ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>

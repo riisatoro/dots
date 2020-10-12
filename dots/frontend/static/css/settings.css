@@ -1,42 +1,39 @@
-.orange_block,
-.green_block,
-.blue_block,
-.red_block {
-	width: 50px;
-	height: 50px;
+.wrapper_color {
+	display: flex;
+	margin: 0px auto;
 }
 
-.orange_block {
+.orange_color,
+.green_color,
+.blue_color,
+.red_color,
+.yellow_color,
+.black_color {
+	width: 50px;
+	height: 50px;
+	margin: 10px;
+}
+
+.orange_color {
 	background-color: orange;
 }
 
-.green_block {
+.green_color {
 	background-color: green;
 }
 
-.red_block {
+.red_color {
 	background-color: red;
 }
 
-.blue_block {
+.blue_color {
 	background-color: blue;
 }
 
-.container {
-	display: flex;
-	grid-template-columns: 1fr 1fr;
+.yellow_color {
+	background-color: yellow;
 }
 
-.row {
-	width: 80%;
-	margin: 10px auto;
-	text-align: center;
-}
-
-.positive {
-	display: block;
-	width: 100px;
-	height: 50px;
-	margin: 20px auto;
-	cursor: pointer;
+.black_color {
+	background-color: black;
 }
