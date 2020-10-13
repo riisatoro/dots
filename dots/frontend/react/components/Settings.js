@@ -14,13 +14,20 @@ function Settings(props) {
 	let colors1 = ["orange_color", "red_color", "blue_color"]
 	let colors2 = ["green_color", "yellow_color", "black_color"]
 
-	function colorClicked(e) {
-		console.log(e.target.id)
+	function color1Clicked(e) {
+		props.store.players[0].index = e.target.id
+	}
+
+	function color2Clicked(e) {
+		props.store.players[1].index = e.target.id
 	}
 
 	function submitForm(e) {
 		console.log("submit")
 	}
+
+	colors1[props.store.players[0].index] = colors1[props.store.players[0].index]+" choosed"
+	colors2[props.store.players[1].index] = colors2[props.store.players[1].index]+" choosed"
 
 	return (
 		<section className="field">
@@ -34,7 +41,7 @@ function Settings(props) {
 				
 				<div className="wrapper_color">
 					{colors1.map((color, index) =>
-						<div id={index} className={color} onClick={colorClicked}></div>
+						<div key={index*20} id={index} className={color} onClick={color1Clicked}></div>
 					)}
 				</div>
 
@@ -47,7 +54,7 @@ function Settings(props) {
 			
 			<div className="wrapper_color">
 				{colors2.map((color, index) => 
-					<div id={index} className={color} onClick={colorClicked}></div>
+					<div key={index*10} id={index} className={color} onClick={color2Clicked}></div>
 				)}
 			</div>
 			<button>Play!</button>

@@ -30,7 +30,7 @@ const set_initial = () => {
 	let components = {auth: false, showSettings: false, showField: false}
 	let user = {auth: false, token: ""}
 	let reply = {error: false, message: ""}
-	let players = [{name: "anon", color: "green",}, {name: "anon", color: "red"}]
+	let players = [{name: "anon", color: "green", index: 0}, {name: "anon", color: "red", index: 0}]
 	let leaders = []
 	
 	return {
