@@ -13,7 +13,7 @@ export const CALC_SQUARE = "CALC_SQUARE";
 
 export const SHOW_SETTINGS = "SHOW_SETTINGS";
 export const HIDE_SETTINGS = "HIDE_SETTINGS";
-export const START_GAME = "START_GAME";
+export const START_NEW_GAME = "START_GAME";
 export const STOP_GAME = "STOP_GAME";
 
 export const PLAYER_CHANGED = "PLAYER_CHANGED";
@@ -26,3 +26,4 @@ export const HIDE_LEADERS = "HIDE_LEADERS";
 
 export const RECEIVE_LEADERS = "RECEIVE_LEADERS";
 export const RECEIVE_AUTH_REPLY = "RECEIVE_AUTH_REPLY";
+export const COLOR_CHOOSED = "COLOR_CHOOSED";

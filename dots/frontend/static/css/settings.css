@@ -39,5 +39,8 @@
 }
 
 .choosed {
-	border: 3px solid black;
+	border-top: 3px solid black;
+	border-left: 3px solid black;
+	border-bottom: 3px solid white;
+	border-right: 3px solid white;
 }

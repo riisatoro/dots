@@ -7,7 +7,7 @@ import {
 	SEND_LOGOUT_REQUEST,
 	SHOW_SETTINGS,
 	HIDE_SETTINGS,
-	START_GAME,
+	START_NEW_GAME,
 	STOP_GAME,
 	PLAYER_CHANGED,
 	SET_COLOR,
@@ -18,7 +18,8 @@ import {
 	SHOW_LEADERS,
 	HIDE_LEADERS,
 	RECEIVE_LEADERS,
-	RECEIVE_AUTH_REPLY
+	RECEIVE_AUTH_REPLY,
+	COLOR_CHOOSED
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -29,7 +30,7 @@ import axios from 'axios';
 import main from '../actions/calcSquare.js';
 
 
-
+const color_title = ["O", "R", "B", "Y", "G"]
 
 let initialState = loadState();
 
@@ -53,6 +54,13 @@ export function updateState(state = initialState, action) {
 				return {...state, leaders: action.payload.data}
 			} catch(error) {}
 			return {...state, leaders: []}
+
+		case COLOR_CHOOSED:
+			let players_set = state.players
+			players_set[action.payload.player].index = action.payload.color
+			players_set[action.payload.player].color = color_title[action.payload.color]
+			console.log(players_set)
+			return {...state, players: players_set}
 
 		case SHOW_LEADERS:
 			return {...state, components: {showLeaders: true}}
@@ -87,9 +95,10 @@ export function updateState(state = initialState, action) {
 		case HIDE_SETTINGS:
 			return {...state, components: {showSettings: false}};
 
-		case START_GAME:
-			let tmp_field = getEmptyField()
-			return {...state, components: {showField: true}, field: tmp_field, game_end: false};
+		case START_NEW_GAME:
+			//let tmp_field = getEmptyField()
+			console.log("GAME STARTED!")
+			return {...state, components: {showSettings: false, showField: true}};
 
 		case STOP_GAME:
 			let square = calcSquare(state.field, state.players[0].color, state.players[1].color);
