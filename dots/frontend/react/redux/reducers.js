@@ -19,7 +19,8 @@ import {
 	HIDE_LEADERS,
 	RECEIVE_LEADERS,
 	RECEIVE_AUTH_REPLY,
-	COLOR_CHOOSED
+	COLOR_CHOOSED,
+	FIELD_SIZE_CHANGED
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -59,7 +60,6 @@ export function updateState(state = initialState, action) {
 			let players_set = state.players
 			players_set[action.payload.player].index = action.payload.color
 			players_set[action.payload.player].color = color_title[action.payload.color]
-			console.log(players_set)
 			return {...state, players: players_set}
 
 		case SHOW_LEADERS:
@@ -76,6 +76,11 @@ export function updateState(state = initialState, action) {
 
 		case HIDE_AUTH_FORM: 
 			return {...state, components: {auth: false}};
+
+		case FIELD_SIZE_CHANGED:
+			let newSize = action.payload.size
+			let newTmpField = getEmptyField(newSize)
+			return {...state, field: newTmpField, field_size: newSize}
 
 		case SEND_REGISTER_REQUEST: 
 			return {...state};
@@ -96,9 +101,9 @@ export function updateState(state = initialState, action) {
 			return {...state, components: {showSettings: false}};
 
 		case START_NEW_GAME:
-			//let tmp_field = getEmptyField()
-			console.log("GAME STARTED!")
-			return {...state, components: {showSettings: false, showField: true}};
+			let tmp_field = getEmptyField(state.field_size)
+			
+			return {...state, components: {showSettings: false, showField: true}, field: tmp_field};
 
 		case STOP_GAME:
 			let square = calcSquare(state.field, state.players[0].color, state.players[1].color);

@@ -10,23 +10,23 @@
 	border: 2px solid silver;
 }
 
-.orange{
+.O, .G, .B, .R, .Y {
 	width: 20px;
 	height: 20px;
 	border-radius: 20px;
+}
+
+.O {
 	border: 2px solid orange;
 	background: orange;	
 }
 
-.green {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
+.G {
 	border: 2px solid green;
 	background: green;
 }
 
-.blue {
+.B {
 	width: 20px;
 	height: 20px;
 	border-radius: 20px;
@@ -34,12 +34,29 @@
 	background: blue;
 }
 
-.red {
+.R {
 	width: 20px;
 	height: 20px;
 	border-radius: 20px;
 	border: 2px solid red;
 	background: red;
+}
+
+.Y {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px solid yellow;
+	background: yellow;	
+}
+
+.CAPTURED {
+	border: 2px solid gray;
+}
+
+.EMPTY_CAPTURED {
+	border: 2px solid gray;
+	background: grays;
 }
 
 .choice_color {
@@ -49,6 +66,7 @@
 }
 
 .field {
-	width: 250px;
+	width: 80%;
+	text-align: center;
 	margin: 20px auto;
 }

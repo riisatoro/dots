@@ -3,7 +3,14 @@ import ReacDOM from 'react-dom';
 import { useForm } from "react-hook-form";
 
 import { connect } from 'react-redux';
-import { HIDE_SETTINGS, START_NEW_GAME, SET_COLOR, UPDATE_PLAYERS_NAME, COLOR_CHOOSED } from '../redux/types.js';
+import { 
+	SET_COLOR, 
+	COLOR_CHOOSED, 
+	HIDE_SETTINGS, 
+	START_NEW_GAME, 
+	FIELD_SIZE_CHANGED,
+	UPDATE_PLAYERS_NAME, 
+} from '../redux/types.js';
 
 import "../../static/css/settings.css";
 
@@ -23,11 +30,19 @@ function Settings(props) {
 		props.setPlayerColor(1, e.target.id)
 	}
 
+	function newFieldSize(e) {
+		let size = e.target.value
+		if(size>5 && size<16){
+			props.changeFieldSize(size)
+		}
+	}
+
 	function submitForm(e) {
 		if (props.store.players[0].index != props.store.players[1].index 
 			&& props.store.players[0].index != -1
 			&& props.store.players[1].index != -1)
 		{
+
 			props.startNewGame()
 		}
 		else {
@@ -78,6 +93,14 @@ function Settings(props) {
 							onClick={color2Clicked} /> <div className={color}> </div>
 					</div>
 					)}
+
+			<input 
+				type="number"
+				key="field_size"
+				name="size"
+				onChange = {number => newFieldSize(number)}
+				ref={register({required: true, min:6, max: 15 })}/>
+			<p>{errors.size && "Field must be between 6 to 15 points"}</p>
 			<button>Play!</button>
 		</form>
 		</section>
@@ -92,6 +115,10 @@ export default connect(
 	dispatch => ({
 		setPlayerColor: (player, color) => {
 			dispatch({type: COLOR_CHOOSED, payload: {player: player, color: color} })
+		},
+
+		changeFieldSize: (size) => {
+			dispatch({type: FIELD_SIZE_CHANGED, payload: {size: size} })	
 		},
 
 		startNewGame: () => {

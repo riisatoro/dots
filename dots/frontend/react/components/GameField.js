@@ -12,10 +12,12 @@ import "../../static/css/game_field.css";
 
 class GameField extends Component {
 
+
+
 	dot_clicked(e) {
 		let index = e.target.id;
-		let y_axe = index%6;
-		let x_axe = (index-y_axe)/6;
+		let y_axe = index%this.props.store.field_size;
+		let x_axe = (index-y_axe)/this.props.store.field_size;
 
 		this.props.onDotClicked([y_axe, x_axe], this.props.store.turn)
 		this.props.checkFieldFull()
@@ -29,7 +31,7 @@ class GameField extends Component {
 		let item = this.props.store.field.map((i, index_i) => 
 			<div className="input__row" key={index_i}>
 				{i.map((j, index_j) => 
-					<div className={j} key={index_i*6 + index_j} id={index_i*6 + index_j} onClick={this.dot_clicked.bind(this)}>
+					<div className={j} key={index_i*this.props.store.field_size + index_j} id={index_i*this.props.store.field_size + index_j} onClick={this.dot_clicked.bind(this)}>
 					</div>)}
 			</div>);
 
