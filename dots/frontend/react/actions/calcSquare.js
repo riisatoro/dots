@@ -1,5 +1,5 @@
-function main(field, player) {
-	let all_points = getAllPoints(field, player)
+function main(field, player1, player2) {
+	let all_points = getAllPoints(field, player1)
 	let loops = []
 	let path = []
 	
@@ -8,11 +8,24 @@ function main(field, player) {
 	getGraphLoop(all_points, loops, visited)
 	
 	loops.forEach(loop => {
-		fillPoints(field, loop, player)
+		if(isSurrounded(loop, field)) {
+			console.log("SURROUNDED", loop)
+		} else {
+			console.log("HOMELIKE", loop)
+		}
 		return
 	})
 
 	return field
+}
+
+
+function isSurrounded(loop, field) {
+	let loopPoints = []
+
+	for(let i=0; i<loop.lenth; i++) {
+		
+	}
 }
 
 

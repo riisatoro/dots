@@ -29,6 +29,7 @@ import { calcSquare } from '../actions/calcDotsSquare.js';
 import getToken from '../actions/getToken.js';
 import axios from 'axios';
 import main from '../actions/calcSquare.js';
+import { getSurrounded } from "../tests/getSurroundedField.js";
 
 
 const color_title = ["O", "R", "B", "Y", "G"]
@@ -95,7 +96,11 @@ export function updateState(state = initialState, action) {
 			return {...state, user: {auth: false, token: ""}, components: {}};
 
 		case SHOW_SETTINGS:
-			return {...state, components: {showSettings: true}};
+// TEST CASE 1 
+			let testState = getSurrounded()
+			return {...testState}
+
+			//return {...state, components: {showSettings: true}};
 
 		case HIDE_SETTINGS:
 			return {...state, components: {showSettings: false}};
@@ -129,13 +134,14 @@ export function updateState(state = initialState, action) {
 			return {...state, components: {showField: false}, results: results, game_end: true};
 
 		case DRAW_DOT:
+			console.log("DRAWING")
 			let x = action.payload[1]
 			let y = action.payload[0]
 			let field = state.field
 			
 			let player_color = state.players[state.turn].color
 
-			if(field[x][y] == "empty"){
+			if(field[x][y] == "E"){
 				field[x][y] = player_color
 
 				let field_s = main(field, player_color)
