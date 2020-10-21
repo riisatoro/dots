@@ -13,10 +13,10 @@
 
 /* point IN loop */
 .Ol, .Gl, .Bl, .Rl, .Yl, .El {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
-	border: 2px dashed black;	
+	width: 10px;
+	height: 10px;
+	margin: 7px;
+	border-radius: 10px;
 }
 
 .El {background-color: silver;}
@@ -28,10 +28,10 @@
 
 /* FREE points (not empty) */
 .Of, .Gf, .Bf, .Rf, .Yf, .Ef {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
-	border: 2px dashed black;	
+	width: 10px;
+	height: 10px;
+	margin: 7px;
+	border-radius: 10px;
 }
 
 .Ef {background-color: silver;}
