@@ -134,7 +134,6 @@ export function updateState(state = initialState, action) {
 			return {...state, components: {showField: false}, results: results, game_end: true};
 
 		case DRAW_DOT:
-			console.log("DRAWING")
 			let x = action.payload[1]
 			let y = action.payload[0]
 			let field = state.field
@@ -146,12 +145,9 @@ export function updateState(state = initialState, action) {
 				field[x][y] = player_color
 
 				let field_s = main(field, player_color, enemy_color)
-				return {...state, field:field_s}
+				return {...state, field:field_s, turn: (1+state.turn)%2}
 			}
-			return {...state}
-
-		case PLAYER_CHANGED:
-			return {...state, turn: (1+state.turn)%2}			
+			return {...state}		
 
 		case SET_COLOR:
 			let players = state.players

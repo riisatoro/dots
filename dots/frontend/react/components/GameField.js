@@ -24,7 +24,6 @@ class GameField extends Component {
 		if(this.props.store.game_end){
 			this.props.saveMatchResults(this.props.store.results)
 		}
-		this.props.onPlayerChanged()
 	}
 
 	render(props) {
@@ -49,10 +48,6 @@ export default connect(
 		store: state
 	}),
 	dispatch => ({
-		onPlayerChanged: () => {
-			dispatch({type: PLAYER_CHANGED})
-		},
-
 		onDotClicked: (position) => {
 			dispatch({type: DRAW_DOT, payload: position})
 		},
