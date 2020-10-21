@@ -15,7 +15,7 @@ function main(field, player1, player2) {
 		if(hasCapturedPoint(loop, enemy_points)) {
 			// это окружение, так что его не нужно высчитывать
 			// нужно просто залить все точки что принадлежат ему
-			field = fillCircleSquare(field, loop)
+			field = fillCircleSquare(field, loop, player1)
 		} else {
 			console.log("HOMELIKE", loop)
 		}
@@ -25,14 +25,27 @@ function main(field, player1, player2) {
 }
 
 
-function fillCircleSquare(field, loop) {
+function fillCircleSquare(field, loop, player) {
 	for(let i=0;i<field.length; i++) {
 		for (let j=0; j<field.length; j++) {
 			if(isInLoop(loop, [i, j])) {
-				if(field[i][j][1] != "l"){
+				// если эта точка находится в цикле
+
+				if(field[i][j][1] != "l" && field[i][j][0] != player){
+					// если эта точка ещё не окружена
+					// и не принадлежит игроку
 					field[i][j] = field[i][j][0]+"l"
 				} else {
-					field[i][j] = field[i][j][0]+"f"
+					// точка окружена и принадлежит игроку
+					// тогда она освобождается
+					if(field[i][j][0] == player) {
+						field[i][j] = field[i][j][0]+"f"
+					}
+
+					// точка окружена и НЕ принадлежит игроку 
+					// к примеру, точка взята в ДВА и более несвязных между собой цикла
+					// тогда ничего не стоит делать
+
 				}
 			}
 		}
