@@ -30,7 +30,7 @@ function fillCircleSquare(field, loop) {
 		for (let j=0; j<field.length; j++) {
 			if(isInLoop(loop, [i, j])) {
 				if(field[i][j][1] != "l"){
-					field[i][j] = field[i][j]+"l"
+					field[i][j] = field[i][j][0]+"l"
 				} else {
 					field[i][j] = field[i][j][0]+"f"
 				}
