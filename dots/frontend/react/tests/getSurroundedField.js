@@ -1,7 +1,7 @@
 export const getSurrounded = () => {
 	let user = {auth: true, token: ""}
 	let components = {auth: false, showSettings: false, showField: true}
-	let players = [{name: "WhoAmI", color: "R", index: 2}, {name: "IAmGrut", color: "B", index: 0}]
+	let players = [{name: "WhoAmI", color: "R", index: 2, captured: 0}, {name: "IAmGrut", color: "B", index: 0, captured: 0}]
 	let field_size = 10
 
 	let field = [

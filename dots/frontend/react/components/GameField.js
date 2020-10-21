@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS } from '../redux/types.js'
+import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED } from '../redux/types.js'
 import getToken from '../actions/getToken.js';
 import axios from 'axios';
 
@@ -11,8 +11,6 @@ import "../../static/css/game_field.css";
 
 
 class GameField extends Component {
-
-
 
 	dot_clicked(e) {
 		let index = e.target.id;
@@ -24,6 +22,7 @@ class GameField extends Component {
 		if(this.props.store.game_end){
 			this.props.saveMatchResults(this.props.store.results)
 		}
+		this.props.calcCaptured()
 	}
 
 	render(props) {
@@ -37,6 +36,9 @@ class GameField extends Component {
 
 		return (
 			<section className="field">
+				<div> 
+					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured} ||| {this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
+				</div>
 		    	<div>{item}</div>
 		    </section>
 		  )
@@ -62,6 +64,10 @@ export default connect(
 
 		hideLeaders: () => {
 			dispatch({type: HIDE_LEADERS})	
+		},
+
+		calcCaptured: () => {
+			dispatch({type: CALC_CAPTURED})
 		}
 	}
 	))(GameField);

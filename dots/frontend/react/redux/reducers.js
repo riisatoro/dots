@@ -20,7 +20,8 @@ import {
 	RECEIVE_LEADERS,
 	RECEIVE_AUTH_REPLY,
 	COLOR_CHOOSED,
-	FIELD_SIZE_CHANGED
+	FIELD_SIZE_CHANGED,
+	CALC_CAPTURED
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -62,6 +63,15 @@ export function updateState(state = initialState, action) {
 			players_set[action.payload.player].index = action.payload.color
 			players_set[action.payload.player].color = color_title[action.payload.color]
 			return {...state, players: players_set}
+
+		case CALC_CAPTURED:
+			let captured =  calcSquare(state.field, state.players[0].color, state.players[1].color);
+			
+			let resultCaptured = state.players
+			resultCaptured[0].captured = captured[0]
+			resultCaptured[1].captured = captured[1]
+			
+			return {...state, players: resultCaptured}
 
 		case SHOW_LEADERS:
 			return {...state, components: {showLeaders: true}}
@@ -111,7 +121,6 @@ export function updateState(state = initialState, action) {
 			return {...state, components: {showSettings: false, showField: true}, field: tmp_field};
 
 		case STOP_GAME:
-			let square = calcSquare(state.field, state.players[0].color, state.players[1].color);
 			let winner = ""
 			let looser = ""
 			let win_score = 0
