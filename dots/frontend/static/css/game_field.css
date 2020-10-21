@@ -2,6 +2,7 @@
 	display: flex;
 }
 
+/* empty point */
 .E {
 	width: 20px;
 	height: 20px;
@@ -10,6 +11,37 @@
 	border: 2px solid silver;
 }
 
+/* point IN loop */
+.Ol, .Gl, .Bl, .Rl, .Yl, .El {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px dashed black;	
+}
+
+.El {background-color: silver;}
+.Ol {background-color: orange;}
+.Gl {background-color: green;}
+.Bl {background-color: blue;}
+.Rl {background-color: red;}
+.Yl {background-color: yellow;}
+
+/* FREE points (not empty) */
+.Of, .Gf, .Bf, .Rf, .Yf, .Ef {
+	width: 20px;
+	height: 20px;
+	border-radius: 20px;
+	border: 2px dashed black;	
+}
+
+.Ef {background-color: silver;}
+.Of {background-color: orange;}
+.Gf {background-color: green;}
+.Bf {background-color: blue;}
+.Rf {background-color: red;}
+.Yf {background-color: yellow;}
+
+/* single color point */
 .O, .G, .B, .R, .Y {
 	width: 20px;
 	height: 20px;
@@ -27,37 +59,20 @@
 }
 
 .B {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
 	border: 2px solid blue;
 	background: blue;
 }
 
 .R {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
 	border: 2px solid red;
 	background: red;
 }
 
 .Y {
-	width: 20px;
-	height: 20px;
-	border-radius: 20px;
 	border: 2px solid yellow;
 	background: yellow;	
 }
 
-.CAPTURED {
-	border: 2px solid gray;
-}
-
-.EMPTY_CAPTURED {
-	border: 2px solid gray;
-	background: grays;
-}
 
 .choice_color {
 	border-radius: 0px;

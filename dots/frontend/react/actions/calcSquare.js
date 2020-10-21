@@ -1,31 +1,87 @@
 function main(field, player1, player2) {
-	let all_points = getAllPoints(field, player1)
-	let loops = []
+	let player_points = getAllPoints(field, player1)
+	let enemy_points = getAllPoints(field, player2)
+	let player_loops = []
+	let enemy_loops = []
 	let path = []
 	
-	let visited = setVisited(all_points.length)
+	let player_visited = setVisited(player_points.length)
+	let enemy_visited = setVisited(enemy_points.length)
 
-	getGraphLoop(all_points, loops, visited)
-	
-	loops.forEach(loop => {
-		if(isSurrounded(loop, field)) {
-			console.log("SURROUNDED", loop)
+	getGraphLoop(player_points, player_loops, player_visited)
+
+	// проверяем, не появился ли цикл, окружение и домик
+	player_loops.forEach(loop => {
+		if(hasCapturedPoint(loop, enemy_points)) {
+			// это окружение, так что его не нужно высчитывать
+			// нужно просто залить все точки что принадлежат ему
+			field = fillCircleSquare(field, loop)
 		} else {
 			console.log("HOMELIKE", loop)
 		}
-		return
 	})
 
 	return field
 }
 
 
-function isSurrounded(loop, field) {
-	let loopPoints = []
-
-	for(let i=0; i<loop.lenth; i++) {
-		
+function fillCircleSquare(field, loop) {
+	for(let i=0;i<field.length; i++) {
+		for (let j=0; j<field.length; j++) {
+			if(isInLoop(loop, [i, j])) {
+				if(field[i][j][1] != "l"){
+					field[i][j] = field[i][j]+"l"
+				} else {
+					field[i][j] = field[i][j][0]+"f"
+				}
+			}
+		}
 	}
+
+	return field
+}
+
+
+function hasCapturedPoint(loop, points) {
+	let loopPoints = []
+	
+	for(let i=0; i<points.length; i++){
+		if(isInLoop(loop, points[i])) {
+			return true
+		}
+	}
+	
+	return false
+}
+
+
+function isInLoop(loop, point){
+	let x = point[0]
+	let y = point[1]
+	let left = 0
+	let right = 0
+	let top = 0
+	let bottom = 0
+	// ищем окружение сразу в 4х направлениях
+	loop.forEach(item => {
+		if(item[0] == x && item[1] < y && left == 0) {
+			left++;
+		} else if(item[0] == x && item[1] > y && right == 0) {
+			right++;
+		} 
+		else if(item[1] == y && item[0] < x && top == 0) {
+			top++;
+		} else if(item[1] == y && item[0] > x && bottom == 0) {
+			bottom++;
+		} else {
+
+		}
+	})
+
+	if(left+right+top+bottom == 4) {
+		return true
+	}
+	return false
 }
 
 
@@ -115,6 +171,7 @@ function getGraphLoop(graph, loops, visited) {
 	}
 }
 
+
 function inArray(point, loop) {
 	for(let i=0; i<loop.length; i++) {
 		if (JSON.stringify(point) == JSON.stringify(loop[i])) {
@@ -123,6 +180,7 @@ function inArray(point, loop) {
 	}
 	return false
 }
+
 
 function isSurrounded(field, point, loop){
 	const i = point[0];
@@ -161,38 +219,7 @@ function isSurrounded(field, point, loop){
 		}
 	}
 
-	
-	//проверяем в направлении диагональ слева-направо сверху
-	// !!!--------
-	m = i
-	n = j
-	while(true){
-		if(m == -1 || n == -1) {
-			break
-		}
-		if (inArray([m, n], loop)) {
-			borders++;
-			break;
-		}
-		m--;
-		n--;
-	}
-	
-	// проверяем в направлении диагональ справа-налево сверху
-	m = i
-	n = j
-	while(true){
-		if(m == field.length || n == field.length) {
-			break
-		}
-		if (inArray([m, n], loop)) {
-			borders++;
-			break;
-		}
-		m++;
-		n++;
-	}
-	
+
 	if(borders >= 4){ return true}
 	return false
 }

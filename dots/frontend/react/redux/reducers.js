@@ -140,11 +140,12 @@ export function updateState(state = initialState, action) {
 			let field = state.field
 			
 			let player_color = state.players[state.turn].color
+			let enemy_color = state.players[((state.turn+1) % 2)].color
 
 			if(field[x][y] == "E"){
 				field[x][y] = player_color
 
-				let field_s = main(field, player_color)
+				let field_s = main(field, player_color, enemy_color)
 				return {...state, field:field_s}
 			}
 			return {...state}

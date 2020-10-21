@@ -10,7 +10,7 @@ export const getSurrounded = () => {
 		["R", "E", "E", "E", "E", "E", "R", "E", "E", "E"],
 		["R", "E", "E", "R", "R", "E", "R", "E", "E", "E"],
 		["R", "E", "R", "E", "E", "R", "R", "E", "E", "E"],
-		["E", "R", "E", "E", "E", "R", "R", "E", "E", "E"],
+		["E", "R", "E", "E", "E", "E", "E", "E", "E", "E"],
 		["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
 		["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
 		["E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
@@ -24,7 +24,7 @@ export const getSurrounded = () => {
 		players: players,
 		field: field, 
 		game_end: false,
-		turn: 0,
+		turn: 1,
 		field_size: field_size
 	}
 }
