@@ -39,7 +39,7 @@ class GameField extends Component {
 				<div> 
 					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured} ||| {this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
 				</div>
-		    	<div>{item}</div>
+		    	<div className="field__wrapper">{item}</div>
 		    </section>
 		  )
 		}

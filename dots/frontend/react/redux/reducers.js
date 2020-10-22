@@ -30,7 +30,7 @@ import { calcSquare } from '../actions/calcDotsSquare.js';
 import getToken from '../actions/getToken.js';
 import axios from 'axios';
 import main from '../actions/calcSquare.js';
-import { getSurrounded } from "../tests/getSurroundedField.js";
+import { getSurrounded, getMaxField, getHardField } from "../tests/getSurroundedField.js";
 
 
 const color_title = ["O", "R", "B", "Y", "G"]
@@ -106,8 +106,16 @@ export function updateState(state = initialState, action) {
 			return {...state, user: {auth: false, token: ""}, components: {}};
 
 		case SHOW_SETTINGS:
-// TEST CASE 1 
-			let testState = getSurrounded()
+		// TEST CASE 1 
+		//	let testState = getSurrounded()
+		//	return {...testState}
+		
+		//TEST CASE 2
+		//	let testState = getMaxField()
+		//	return {...testState}
+
+		//TEST CASE 3
+			let testState = getHardField()
 			return {...testState}
 
 			//return {...state, components: {showSettings: true}};

@@ -16,8 +16,6 @@ function main(field, player1, player2) {
 			// это окружение, так что его не нужно высчитывать
 			// нужно просто залить все точки что принадлежат ему
 			field = fillCircleSquare(field, loop, player1)
-		} else {
-			console.log("HOMELIKE", loop)
 		}
 	})
 
@@ -31,10 +29,13 @@ function fillCircleSquare(field, loop, player) {
 			if(isInLoop(loop, [i, j])) {
 				// если эта точка находится в цикле
 
-				if(field[i][j][1] != "l" && field[i][j][0] != player){
+				if(field[i][j][1] != "l"){
 					// если эта точка ещё не окружена
 					// и не принадлежит игроку
-					field[i][j] = field[i][j][0]+"l"
+					// и если точка не освобождена
+					if(field[i][j][0] != player && field[i][j][1] != "f"){
+						field[i][j] = field[i][j][0]+"l"
+					}
 				} else {
 					// точка окружена и принадлежит игроку
 					// тогда она освобождается

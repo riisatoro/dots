@@ -1,6 +1,12 @@
+.field__wrapper {
+	text-align: center;
+}
+
 .input__row {
 	display: flex;
+	justify-content: center;
 }
+
 
 /* empty point */
 .E {
