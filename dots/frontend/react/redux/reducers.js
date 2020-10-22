@@ -15,7 +15,6 @@ import {
 	UPDATE_PLAYERS_NAME,
 	HIDE_RESULTS,
 	RECIEVE_LEADERS,
-	SHOW_LEADERS,
 	HIDE_LEADERS,
 	RECEIVE_LEADERS,
 	RECEIVE_AUTH_REPLY,
@@ -53,9 +52,10 @@ export function updateState(state = initialState, action) {
 			}
 
 		case RECEIVE_LEADERS:
-			try{
-				return {...state, leaders: action.payload.data}
-			} catch(error) {}
+			console.log(action.payload)
+			if(action.payload.status == 200) {
+				return {...state, leaders: action.payload.data, components: {showLeaders: true}}	
+			}
 			return {...state, leaders: []}
 
 		case COLOR_CHOOSED:
@@ -72,9 +72,6 @@ export function updateState(state = initialState, action) {
 			resultCaptured[1].captured = captured[1]
 			
 			return {...state, players: resultCaptured}
-
-		case SHOW_LEADERS:
-			return {...state, components: {showLeaders: true}}
 	
 		case HIDE_LEADERS:
 			return {...state, components: {showLeaders: false}}
@@ -115,10 +112,9 @@ export function updateState(state = initialState, action) {
 		//	return {...testState}
 
 		//TEST CASE 3
-			let testState = getHardField()
-			return {...testState}
-
-			//return {...state, components: {showSettings: true}};
+		//	let testState = getHardField()
+		//	return {...testState}
+			return {...state, components: {showSettings: true}};
 
 		case HIDE_SETTINGS:
 			return {...state, components: {showSettings: false}};

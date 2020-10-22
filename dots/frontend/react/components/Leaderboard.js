@@ -13,18 +13,15 @@ class Leaderboard extends Component {
 	
 	render() {
 		let data = this.props.store.leaders
+		let win_list = []
+		let equal_list = []
+
 		return (
 			<section className="leaderboard">
-				<h1>Results</h1>
 				<div>
-					{data.map((item, index) => {
-						return <div key={index}>
-							<p>Winner: {item.winner}</p>
-							<p>captured {item.win_score} points</p>
-							<p>Looser: {item.looser}</p>
-							<p>captured {item.loose_score} points</p>
-						</div>
-					}) }
+					{data.map(item =>
+						<p></p>
+					)}
 				</div>	
 			</section>
 		);

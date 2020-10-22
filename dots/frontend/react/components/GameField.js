@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED } from '../redux/types.js'
+import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED, STOP_GAME } from '../redux/types.js'
 import getToken from '../actions/getToken.js';
 import axios from 'axios';
 
@@ -25,6 +25,10 @@ class GameField extends Component {
 		this.props.calcCaptured()
 	}
 
+	gameEnd(e) {
+		this.props.saveMatchResults(this.props.store.results)
+	}
+
 	render(props) {
 		let item = this.props.store.field.map((i, index_i) => 
 			<div className="input__row" key={index_i}>
@@ -40,6 +44,7 @@ class GameField extends Component {
 					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured} ||| {this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
 				</div>
 		    	<div className="field__wrapper">{item}</div>
+		    	<button className="end__btn" onClick={this.gameEnd.bind(this)}>End game</button>
 		    </section>
 		  )
 		}
@@ -58,8 +63,8 @@ export default connect(
 			dispatch({type: CHECK_FIELD_FULL})
 		},
 
-		saveMatchResults: (results) => {
-			
+		saveMatchResults: () => {
+			dispatch({type: STOP_GAME})
 		},
 
 		hideLeaders: () => {

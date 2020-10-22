@@ -8,7 +8,7 @@ class MatchSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = models.Match
-        fields = ('user', 'winner', 'looser', 'win_score', 'loose_score')
+        fields = ('user', 'winner', 'looser', 'win_score', 'loose_score', 'equal')
 
 
 class UserSerializer(serializers.ModelSerializer):

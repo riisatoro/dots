@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST,
-SHOW_SETTINGS, HIDE_RESULTS, SHOW_LEADERS, HIDE_LEADERS, RECEIVE_AUTH_REPLY } from '../redux/types.js';
+SHOW_SETTINGS, HIDE_RESULTS, HIDE_LEADERS, RECEIVE_AUTH_REPLY, RECEIVE_LEADERS } from '../redux/types.js';
 import "../../static/css/header.css";
 import Auth from "./Auth.js";
 
@@ -24,7 +24,7 @@ class Header extends Component {
 	}
 
 	onOpenLeaders(e) {
-		this.props.openLeaders();
+		this.props.getLeaderboard(this.props.store.user.token);
 	}
 
 	render() {
@@ -87,8 +87,16 @@ export default connect(
 			dispatch({type: HIDE_RESULTS, payload: {}})	
 		},
 
-		openLeaders: () => {
-			dispatch({type: SHOW_LEADERS, payload: {}})	
+		getLeaderboard: (token) => {
+			const getLeaderboardRequest = (token) => {
+				axios({
+					method: "GET",
+					url: "api/match/",
+					headers: {"Authorization": "Token "+token}
+				}).then( (response) => { dispatch({type: RECEIVE_LEADERS, payload: response}) } )
+				
+			}
+			getLeaderboardRequest(token)
 		}
 	})
 )(Header);
