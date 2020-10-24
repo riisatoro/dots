@@ -27,7 +27,6 @@ import {
 import { loadState, getEmptyField } from './local_state.js';
 import { isFullField } from '../actions/isFullField.js';
 import { calcSquare } from '../actions/calcDotsSquare.js';
-import getToken from '../actions/getToken.js';
 import axios from 'axios';
 import main from '../actions/calcSquare.js';
 import { getSurrounded, getMaxField, getHardField } from "../tests/getSurroundedField.js";
@@ -130,9 +129,22 @@ export function updateState(state = initialState, action) {
 			let looser = ""
 			let win_score = 0
 			let loose_score = 0
+			let equal = state.players[0].captured == state.players[1].captured
 
-			let results = {winner: winner, looser: looser, win_score: win_score, loose_score: loose_score}
-			send_results(results)
+			if(state.players[0].captured >= state.players[1].captured) {
+				winner = state.players[0].name
+				looser = state.players[1].name
+				win_score = state.players[0].captured
+				loose_score = state.players[1].captured
+			} else {
+				winner = state.players[1].name
+				looser = state.players[0].name
+				win_score = state.players[1].captured
+				loose_score = state.players[0].captured
+			}
+			let results = {winner: winner, looser: looser, win_score: win_score, loose_score: loose_score, equal: equal}
+			send_results(results, state.user.token)
+
 			return {...state, components: {showField: false}, results: results, game_end: true};
 
 		case DRAW_DOT:
@@ -181,12 +193,11 @@ export function updateState(state = initialState, action) {
 	return {...state};
 }
 
-function send_results(results) {
-	let token = getToken()
+function send_results(results, token) {
 	axios({
   		method: 'post',
   		url: '/api/match/',
-  		headers: {"X-CSRFToken": getToken(), 'Content-Type': 'application/json'},
+  		headers: {"Authorization": "Token "+token},
   		data: results
   	}).then(function (response) {
   	});

@@ -3,7 +3,6 @@ import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
 import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED, STOP_GAME } from '../redux/types.js'
-import getToken from '../actions/getToken.js';
 import axios from 'axios';
 
 import "../../static/css/game_field.css";
