@@ -13,16 +13,31 @@ class Leaderboard extends Component {
 	
 	render() {
 		let data = this.props.store.leaders
-		let win_list = []
-		let equal_list = []
 
 		return (
 			<section className="leaderboard">
-				<div>
-					{data.map(item =>
-						<p></p>
-					)}
-				</div>	
+
+					{data.map((item, index) =>{
+
+						if(item.equal)
+						{return(
+							<div key={index}>
+								<p>No winners here!</p>
+								<p>{item.winner} and {item.looser}</p>
+								<p>Score: {item.win_score}</p>
+							</div>)
+						}
+						else 
+						{return(
+							<div key={index}>
+								<p>Winner: {item.winner}</p>
+								<p>Looser: {item.looser}</p>
+								<p>Win score: {item.win_score}</p>
+								<p>Loose score: {item.loose_score}</p>
+							</div>)
+						}
+					})}
+				
 			</section>
 		);
 	}

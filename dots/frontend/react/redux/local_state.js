@@ -19,7 +19,7 @@ const getEmptyField = (size=10) => {
 			tmp_field.push(row);
 		row = [];
 		}
-		row.push("empty");
+		row.push("E");
 	}
 	return tmp_field
 }

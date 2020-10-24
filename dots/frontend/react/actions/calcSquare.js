@@ -20,6 +20,7 @@ function main(field, player1, player2) {
 		}
 	})
 
+	// проверяем, не поставил ли противник точку в домик
 	enemy_loops.forEach(loop => {
 		if(hasCapturedPoint(loop, player_points)) {
 			// это окружение, так что его не нужно высчитывать

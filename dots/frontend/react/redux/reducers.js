@@ -20,7 +20,8 @@ import {
 	RECEIVE_AUTH_REPLY,
 	COLOR_CHOOSED,
 	FIELD_SIZE_CHANGED,
-	CALC_CAPTURED
+	CALC_CAPTURED,
+	RESET_PLAYERS
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -52,7 +53,6 @@ export function updateState(state = initialState, action) {
 			}
 
 		case RECEIVE_LEADERS:
-			console.log(action.payload)
 			if(action.payload.status == 200) {
 				return {...state, leaders: action.payload.data, components: {showLeaders: true}}	
 			}
@@ -114,10 +114,11 @@ export function updateState(state = initialState, action) {
 		//TEST CASE 3
 		//	let testState = getHardField()
 		//	return {...testState}
-			return {...state, components: {showSettings: true}};
+			return {...state, components: {showSettings: true}, 
+				players: [{name: "anon", color: "green", index: -1, captured: 0}, {name: "anon", color: "red", index: -1, captured: 0}]};
 
 		case HIDE_SETTINGS:
-			return {...state, components: {showSettings: false}};
+			return {...state, components: {showSettings: false, showField: true}};
 
 		case START_NEW_GAME:
 			let tmp_field = getEmptyField(state.field_size)
@@ -129,18 +130,6 @@ export function updateState(state = initialState, action) {
 			let looser = ""
 			let win_score = 0
 			let loose_score = 0
-
-			if(square[0] > square[1]) {
-				winner = state.players[0].name
-				looser = state.players[1].name
-				win_score = square[0]
-				loose_score = square[1]
-			} else {
-				winner = state.players[1].name
-				looser = state.players[0].name
-				win_score = square[1]
-				loose_score = square[0]
-			}
 
 			let results = {winner: winner, looser: looser, win_score: win_score, loose_score: loose_score}
 			send_results(results)
@@ -180,7 +169,8 @@ export function updateState(state = initialState, action) {
 
 		case UPDATE_PLAYERS_NAME:
 			let new_players = state.players
-			new_players[action.payload.index].name = action.payload.name
+			new_players[0].name = action.payload.p1
+			new_players[1].name = action.payload.p2
 			
 			return {...state, players: new_players}
 

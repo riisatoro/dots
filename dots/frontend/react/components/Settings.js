@@ -42,13 +42,10 @@ function Settings(props) {
 			&& props.store.players[0].index != -1
 			&& props.store.players[1].index != -1)
 		{
-
+			props.setPlayersName(e.player1, e.player2)
 			props.startNewGame()
 		}
-		else {
-			console.log("error")
-			color_error = "Please, choose a color. Colors can' be the same."
-		}
+		
 	}
 
 
@@ -61,7 +58,8 @@ function Settings(props) {
 					type="text"
 					name="player1"
 					placeholder="Nickname"
-					ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-za-z0–9]/ })} />
+					autoComplete="off"
+					ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-Za-zА-Яа-я0–9]/ })} />
 				
 				
 					{colors.map((color, index) =>
@@ -81,7 +79,8 @@ function Settings(props) {
 				type="text"
 				name="player2"
 				placeholder="Nickname"
-				ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-za-z0–9]/ })} />
+				autoComplete="off"
+				ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-Za-zА-Яа-я0–9]/ })} />
 			
 			{colors.map((color, index) =>
 					<div className="wrapper_color" key={index+"_wrapper"}>
@@ -123,6 +122,10 @@ export default connect(
 
 		startNewGame: () => {
 			dispatch({type: START_NEW_GAME, payload: {} })	
+		},
+
+		setPlayersName: (p1, p2) => {
+			dispatch({type: UPDATE_PLAYERS_NAME, payload: {p1: p1, p2: p2}})
 		}
 	}
 	))(Settings);

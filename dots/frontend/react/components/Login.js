@@ -14,19 +14,17 @@ function Login(props) {
 	const onSubmitLogin = (data) => {
 		props.sendLoginForm(data)
 	}
-
+          
 	return (
 		<section>
 			<div>
-				<div>
-					<p>{ props.store.reply.error && props.store.reply.message }</p>
-				</div>
 
 				<form onSubmit={handleSubmit(onSubmitLogin)}>
 					<input 
 						className="" 
 						type="text" 
 						name="username"
+						placeholder="Username"
 						ref={register( {required: true, maxLength: 20, pattern: /^[A-za-z0–9]/ } )}>
 					</input>
 					<p>{errors.username && "This field required."}</p>
@@ -35,6 +33,7 @@ function Login(props) {
 						className=""
 						type="password" 
 						name="password"
+						placeholder="Password"
 						ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
 					</input>
 					<p>{errors.password && "This field required."}</p>
