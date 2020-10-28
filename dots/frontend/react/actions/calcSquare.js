@@ -6,10 +6,8 @@ function main(field, player1, player2) {
 	let path = []
 	
 	let player_visited = setVisited(player_points.length)
-	let enemy_visited = setVisited(enemy_points.length)
 
 	getGraphLoop(player_points, player_loops, player_visited)
-	getGraphLoop(enemy_points, enemy_loops, enemy_visited)
 
 	// проверяем, не появился ли цикл, окружение и домик
 	player_loops.forEach(loop => {
@@ -17,15 +15,6 @@ function main(field, player1, player2) {
 			// это окружение, так что его не нужно высчитывать
 			// нужно просто залить все точки что принадлежат ему
 			field = fillCircleSquare(field, loop, player1)
-		}
-	})
-
-	// проверяем, не поставил ли противник точку в домик
-	enemy_loops.forEach(loop => {
-		if(hasCapturedPoint(loop, player_points)) {
-			// это окружение, так что его не нужно высчитывать
-			// нужно просто залить все точки что принадлежат ему
-			field = fillCircleSquare(field, loop, player2)
 		}
 	})
 

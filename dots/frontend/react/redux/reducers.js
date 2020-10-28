@@ -53,7 +53,7 @@ export function updateState(state = initialState, action) {
 
 		case RECEIVE_LEADERS:
 			if(action.payload.status == 200) {
-				return {...state, leaders: action.payload.data, components: {showLeaders: true}}	
+				return {...state, leaders: action.payload.data, components: {showLeaders: true}, game_end: false}	
 			}
 			return {...state, leaders: []}
 
@@ -99,7 +99,7 @@ export function updateState(state = initialState, action) {
 			return {...state}
 
 		case SEND_LOGOUT_REQUEST: 
-			return {...state, user: {auth: false, token: ""}, components: {}};
+			return {...state, user: {auth: false, token: ""}, components: {}, game_end: false};
 
 		case SHOW_SETTINGS:
 		// TEST CASE 1 
@@ -159,6 +159,7 @@ export function updateState(state = initialState, action) {
 				field[x][y] = player_color
 
 				let field_s = main(field, player_color, enemy_color)
+				field_s = main(field_s, enemy_color, player_color)
 				return {...state, field:field_s, turn: (1+state.turn)%2}
 			}
 			return {...state}		

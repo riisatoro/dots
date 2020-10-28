@@ -18,6 +18,9 @@ function Login(props) {
 	return (
 		<section>
 			<div>
+				<div>
+					<p>{ props.store.reply.error && props.store.reply.message }</p>
+				</div>
 
 				<form onSubmit={handleSubmit(onSubmitLogin)}>
 					<input 

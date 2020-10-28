@@ -10,32 +10,34 @@ class Results extends Component {
 
 	render() {
 
-		let win_color = ""
-		let loose_color = ""
-		let res = this.props.store.results
-		let players = this.props.store.players
+		let results = this.props.store.results
 
-		if (players[0].name == res.winner) {
-			win_color = players[0].color
-			loose_color = players[1].color
+		let result_board = ""
+		if(results.equal) {
+			result_board = <div className="wrapper_this">
+								<div>
+									<p className="" key="win">No winners here!</p>
+									<p className="" key="players">Players: {results.winner} and {results.looser}</p>
+									<p className="" key="loose">Common score: {results.win_score}</p>
+								</div>
+							</div>
 		} else {
-			win_color = players[1].color
-			loose_color = players[0].color
+			result_board = <div className="wrapper_this">
+								<div>
+									<p className="" key="win">Winner: </p>
+									<p className="" key="loose">Score:</p>
+								</div>
+								<div>
+									<p className="" key="win_score">Looser:</p>
+									<p className="" key="loose_score">Score:</p>
+								</div>
+							</div>
 		}
 		
 		return (
 			<section className="results">
 				<h1 className="header">Results</h1>
-				<div className="wrapper_this">
-					<div>
-						<p className="" key="win">Winner: {res.winner} ({win_color})</p>
-						<p className="" key="loose">Score: {res.win_score}</p>
-					</div>
-					<div>
-						<p className="" key="win_score">Looser: {res.looser} ({loose_color})</p>
-						<p className="" key="loose_score">Score: {res.loose_score}</p>
-					</div>
-				</div>
+				{result_board}
 			</section>
 		);
 	}

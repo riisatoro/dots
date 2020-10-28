@@ -97,6 +97,7 @@ function Settings(props) {
 				type="number"
 				key="field_size"
 				name="size"
+				placeholder="Field size"
 				onChange = {number => newFieldSize(number)}
 				ref={register({required: true, min:6, max: 15 })}/>
 			<p>{errors.size && "Field must be between 6 to 15 points"}</p>
