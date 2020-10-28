@@ -2,11 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST,
-SHOW_SETTINGS, HIDE_RESULTS, HIDE_LEADERS, RECEIVE_AUTH_REPLY, RECEIVE_LEADERS } from '../redux/types.js';
-import "../../static/css/header.css";
-import Auth from "./Auth.js";
+import { 
+	SHOW_AUTH_FORM, 
+	SEND_LOGOUT_REQUEST,
+	SHOW_SETTINGS, 
+	HIDE_RESULTS, 
+	HIDE_LEADERS, 
+	RECEIVE_AUTH_REPLY, 
+	RECEIVE_LEADERS } from '../redux/types.js';
 
+import Auth from "./Auth.js";
 
 class Header extends Component {
 
@@ -31,19 +36,36 @@ class Header extends Component {
 		let navigation = []
 		if(this.props.store.user.auth) {
 			navigation = [
-					<a href="#" key="0" className="col-sm-2" onClick={this.openSettings.bind(this)}>New game</a>,
-					<a href="#" key="1" className="col-sm-2" onClick={this.onOpenLeaders.bind(this)}>Leaderboard</a>,
-					<a href="#" key="2" className="col-sm-2" onClick={this.logoutUser.bind(this)}>Logout</a>]
+				<div className="col-sm-8 col-md-3" key="new-game">
+					<a href="#" key="0" className="container" onClick={this.openSettings.bind(this)}>New game</a>
+				</div>,
+				<div className="col-sm-8 col-md-3" key="leaders">
+					<a href="#" key="1" className="container" onClick={this.onOpenLeaders.bind(this)}>Leaderboard</a>
+				</div>,
+				<div className="col-sm-8 col-md-3" key="logout">
+					<a href="#" key="2" className="container" onClick={this.logoutUser.bind(this)}>Logout</a>
+				</div>
+			]
 		} else {
-			navigation = [<a href="#" key="0" onClick={this.openAuthForm.bind(this)}>Login or Register</a>]
+			navigation = [
+				<div className="col-6 align-center" key="login">
+					<a href="#" key="0" onClick={this.openAuthForm.bind(this)}>Login or Register</a>
+				</div>
+			]
 		}
 
 		return (
 			<section className="header">
-				<div className="">
-				<h1 className="header">Dots game</h1>
-				<div>{navigation}</div>
-				{this.props.store.components.auth && <Auth />}
+				<div className="container-fluid">
+					
+					<div className="row">
+						<h1 className="container align-center">Dots game</h1>
+					</div>
+
+					<div className="row justify-content-center">
+						{navigation}
+					</div>
+
 				</div>
 			</section>
 		);

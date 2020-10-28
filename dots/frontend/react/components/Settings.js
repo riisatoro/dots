@@ -51,19 +51,29 @@ function Settings(props) {
 
 	return (
 		<section className="field">
-		<p>Choose a color. Colors can't be the same.</p>
+		<div className="alert alert-primary" role="alert">Choose a color. Colors can't be the same</div>
+
 		<form onSubmit={handleSubmit(submitForm)}>
-			<p>Player 1</p>
+			<p className="h2">Player 1</p>
+
+			<div className="row justify-content-center">
+			<div className="form-group col-10" key="username">
 				<input 
+					className="form-control space-around" 
 					type="text"
 					name="player1"
 					placeholder="Nickname"
 					autoComplete="off"
 					ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-Za-zА-Яа-я0–9]/ })} />
+					{errors.player1 && <div className="alert alert-danger">Nickname reqiured (only characters and numbers)</div>}
+			</div>
+			</div>
+
+
 				
-				
+				<div className="row justify-content-center">
 					{colors.map((color, index) =>
-					<div className="wrapper_color" key={index+"_wrapper"}>
+					<div className="col-2" key={index+"_wrapper"}>
 						<input 
 							type="radio" 
 							key={index*10} 
@@ -72,18 +82,27 @@ function Settings(props) {
 							onClick={color1Clicked} /> <div className={color}> </div>
 					</div>
 					)}
+				</div>
 				
 
-			<p>Player 2</p>
+			<p className="h2">Player 2</p>
+
+			<div className="row justify-content-center">
+			<div className="form-group col-10" key="username">
 			<input 
+				className="form-control space-around" 
 				type="text"
 				name="player2"
 				placeholder="Nickname"
 				autoComplete="off"
 				ref={register({required: true, minLength:5, maxLength: 20, pattern: /^[A-Za-zА-Яа-я0–9]/ })} />
-			
+			{errors.player2 && <div className="alert alert-danger">Nickname required (only characters and numbers)</div>}
+			</div>
+			</div>
+
+			<div className="row justify-content-center">
 			{colors.map((color, index) =>
-					<div className="wrapper_color" key={index+"_wrapper"}>
+					<div className="wrapper_color col-2" key={index+"_wrapper"}>
 						<input 
 							type="radio" 
 							key={index*20} 
@@ -92,16 +111,25 @@ function Settings(props) {
 							onClick={color2Clicked} /> <div className={color}> </div>
 					</div>
 					)}
+			</div>
 
+		<div className="row justify-content-center">
+		<div className="form-group col-10" key="username">
 			<input 
+				className="form-control space-around" 
 				type="number"
 				key="field_size"
 				name="size"
 				placeholder="Field size"
 				onChange = {number => newFieldSize(number)}
 				ref={register({required: true, min:6, max: 15 })}/>
-			<p>{errors.size && "Field must be between 6 to 15 points"}</p>
-			<button>Play!</button>
+		</div>
+		</div>
+
+			{errors.size && <div className="alert alert-danger">Field size required (6-15)</div>}
+			<div className="align-center">
+					<button className="btn btn-success">Play!</button>
+				</div>
 		</form>
 		</section>
 	)

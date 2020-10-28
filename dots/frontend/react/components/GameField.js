@@ -39,11 +39,16 @@ class GameField extends Component {
 
 		return (
 			<section className="field">
-				<div> 
-					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured} ||| {this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
+				<div className="align-center"> 
+					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured}</p><p>{this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
 				</div>
+
 		    	<div className="field__wrapper">{item}</div>
-		    	<button className="end__btn" onClick={this.gameEnd.bind(this)}>End game</button>
+		    	
+		    	<div className="align-center">
+					<button className="btn btn-danger space-around" onClick={this.gameEnd.bind(this)}>End game</button>
+				</div>
+		    	
 		    </section>
 		  )
 		}

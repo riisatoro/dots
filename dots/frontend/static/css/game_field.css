@@ -1,6 +1,19 @@
 .field__wrapper {
+	width: 100%;
 	text-align: center;
+	margin: 20px auto;
 }
+
+@media (min-width: 992px) {
+.field__wrapper {
+	width: 80%;
+	text-align: center;
+	margin: 20px auto;
+}
+}
+
+
+
 
 .input__row {
 	display: flex;
@@ -21,7 +34,7 @@
 .Ol, .Gl, .Bl, .Rl, .Yl, .El {
 	width: 10px;
 	height: 10px;
-	margin: 7px;
+	margin: 5px;
 	border-radius: 10px;
 }
 
@@ -36,7 +49,7 @@
 .Of, .Gf, .Bf, .Rf, .Yf, .Ef {
 	width: 10px;
 	height: 10px;
-	margin: 7px;
+	margin: 5px;
 	border-radius: 10px;
 }
 
@@ -86,13 +99,4 @@
 	height: 50px;
 }
 
-.field {
-	width: 80%;
-	text-align: center;
-	margin: 20px auto;
-}
 
-.end__btn {
-	text-align: center;
-	margin: 10px;
-}

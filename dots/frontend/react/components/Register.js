@@ -20,51 +20,69 @@ function Register(props) {
 	return (
 		<section>
 			<div>
-				<div>
-					<p>{ props.store.reply.error && props.store.reply.message }</p>
+				<div className="container-fluid">
+					{ props.store.reply.error && <div className="alert alert-danger">{props.store.reply.message}</div> }
 				</div>
-				<form onSubmit={handleSubmit(onSubmitRegister)}>
-					<input 
-						className="" 
-						type="text" 
-						name="username"
-						placeholder="Username"
-						ref={register( {required: true, minLength: 5, maxLength: 20, pattern: /^[A-za-z0–9_]/ } )}>
-					</input>
-					<p>{errors.username && "Max 20 characters only A-z and numbers"}</p>
 
-					<input 
-						className="" 
-						type="email" 
-						name="email"
-						placeholder="Email"
-						ref={register( {required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.(com)/ } )}>
-					</input>
-					<p>{errors.email && "Invalid email"}</p>
+				<form  onSubmit={handleSubmit(onSubmitRegister)}>
 
-					<input 
-						className="" 
-						type="password" 
-						name="password"
-						placeholder="Password"
-						ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
-					</input>
-					<p>{errors.password && "Password should be more than 5 characters and numbers"}</p>
-					
-					<input 
-						className="" 
-						type="password" 
-						name="password2"
-						placeholder="Confirm password"
-						ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
-					</input>
-					<p>{errors.password2 && "Password should be more than 5 characters and numbers"}</p>
+					<div className="col-1"></div>
+					<div className="form-group col-10" key="username">
+						<input 
+							className="form-control input-space"
+							type="text" 
+							name="username"
+							placeholder="Username"
+							autoComplete="off"
+							ref={register( {required: true, minLength: 5, maxLength: 20, pattern: /^[A-za-z0–9_]/ } )}>
+						</input>
+						{errors.username && <div className="alert alert-danger input-space">Max 20 characters only A-z and numbers</div>}
+					</div>
 
-					<button>Register</button>
-				</form>
+				<div className="col-1"></div>
+					<div className="form-group col-10" key="email">
+						<input 
+							className="form-control input-space" 
+							type="email" 
+							name="email"
+							placeholder="Email"
+							autoComplete="off"
+							ref={register( {required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.(com)/ } )}>
+						</input>
+						{errors.email && <div className="alert alert-danger input-space">Invalid email</div>}
+					</div>
 
-			</div>
-		</section>
+				<div className="col-1"></div>
+					<div className="form-group col-10" key="password">
+						<input 
+							className="form-control input-space" 
+							type="password" 
+							name="password"
+							placeholder="Password"
+							ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
+						</input>
+						{errors.password && <div className="alert alert-danger input-space">Password should be more than 5 characters and numbers</div>}
+					</div>
+
+				<div className="col-1"></div>
+					<div className="form-group col-10" key="password2">
+						<input 
+							className="form-control input-space" 
+							type="password" 
+							name="password2"
+							placeholder="Confirm password"
+							ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
+						</input>
+						{errors.password2 && <div className="alert alert-danger input-space">Password should be more than 5 characters and numbers</div>}
+					</div>
+
+				<div className="align-center">
+					<button className="btn btn-primary">Register</button>
+				</div>
+			</form>
+
+		</div>
+	</section>
 	)
 }
 

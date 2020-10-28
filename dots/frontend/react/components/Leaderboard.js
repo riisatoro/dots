@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import "../../static/css/leaderboard.css";
 
 import { RECEIVE_LEADERS } from '../redux/types.js';
 

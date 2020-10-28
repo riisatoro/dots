@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import "../../static/css/results.css";
+
 
 import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST, SHOW_SETTINGS } from '../redux/types.js';
 
@@ -24,12 +24,12 @@ class Results extends Component {
 		} else {
 			result_board = <div className="wrapper_this">
 								<div>
-									<p className="" key="win">Winner: </p>
-									<p className="" key="loose">Score:</p>
+									<p className="" key="win">Winner: {results.winner}</p>
+									<p className="" key="loose">Score: {results.win_score}</p>
 								</div>
 								<div>
-									<p className="" key="win_score">Looser:</p>
-									<p className="" key="loose_score">Score:</p>
+									<p className="" key="win_score">Looser: {results.looser}</p>
+									<p className="" key="loose_score">Score: {results.loose_score}</p>
 								</div>
 							</div>
 		}

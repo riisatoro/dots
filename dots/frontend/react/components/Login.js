@@ -17,31 +17,38 @@ function Login(props) {
           
 	return (
 		<section>
-			<div>
-				<div>
-					<p>{ props.store.reply.error && props.store.reply.message }</p>
-				</div>
-
+			<div className="space-around">
 				<form onSubmit={handleSubmit(onSubmitLogin)}>
+
+				<div className="col-1"></div>
+					<div className="form-group col-10" key="username-login">
 					<input 
-						className="" 
+						className="form-control input-space"
 						type="text" 
 						name="username"
 						placeholder="Username"
+						autoComplete="off"
 						ref={register( {required: true, maxLength: 20, pattern: /^[A-za-z0–9]/ } )}>
 					</input>
-					<p>{errors.username && "This field required."}</p>
+					{errors.username && <div className="alert alert-danger input-space">This field required</div>}
+					</div>
 
+
+				<div className="col-1"></div>
+					<div className="form-group col-10" key="password-login">
 					<input 
-						className=""
+						className="form-control input-space"
 						type="password" 
 						name="password"
 						placeholder="Password"
 						ref={register( {required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ } )}>
 					</input>
-					<p>{errors.password && "This field required."}</p>
+					{errors.username && <div className="alert alert-danger input-space">This field required</div>}
+					</div>
 
-					<button>Login</button>
+					<div className="align-center">
+					<button className="btn btn-primary">Login</button>
+				</div>
 				</form>
 			</div>
 		</section>
