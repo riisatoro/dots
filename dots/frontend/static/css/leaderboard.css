@@ -1,0 +1,33 @@
+.grid__wrapper {
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+.grid__col {
+	text-align: center;
+	margin: 20px;
+	border-bottom: 2px solid silver;
+}
+
+.grid__col:nth-child(2n-1) {
+		background-color: #bfffff;
+	}
+
+
+@media (min-width: 576px) {
+	.grid__wrapper {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (min-width: 992px) {
+	.grid__wrapper {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+}
+
+@media (min-width: 1200px) {
+	.grid__wrapper {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
+}

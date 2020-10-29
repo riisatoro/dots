@@ -5,6 +5,8 @@ import axios from 'axios';
 import { RECEIVE_LEADERS } from '../redux/types.js';
 
 
+import "../../static/css/leaderboard.css";
+
 class Leaderboard extends Component {
 	componentDidMount() {
 		this.props.getLeaderboard(this.props.store.user.token)
@@ -15,12 +17,12 @@ class Leaderboard extends Component {
 
 		return (
 			<section className="leaderboard">
-
+				<div className="grid__wrapper">
 					{data.map((item, index) =>{
 
 						if(item.equal)
 						{return(
-							<div key={index}>
+							<div key={index} className="grid__col">
 								<p>No winners here!</p>
 								<p>{item.winner} and {item.looser}</p>
 								<p>Score: {item.win_score}</p>
@@ -28,7 +30,7 @@ class Leaderboard extends Component {
 						}
 						else 
 						{return(
-							<div key={index}>
+							<div key={index} className="grid__col">
 								<p>Winner: {item.winner}</p>
 								<p>Looser: {item.looser}</p>
 								<p>Win score: {item.win_score}</p>
@@ -36,7 +38,7 @@ class Leaderboard extends Component {
 							</div>)
 						}
 					})}
-				
+			</div>
 			</section>
 		);
 	}

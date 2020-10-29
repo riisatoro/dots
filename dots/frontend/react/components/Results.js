@@ -14,29 +14,29 @@ class Results extends Component {
 
 		let result_board = ""
 		if(results.equal) {
-			result_board = <div className="wrapper_this">
-								<div>
-									<p className="" key="win">No winners here!</p>
-									<p className="" key="players">Players: {results.winner} and {results.looser}</p>
-									<p className="" key="loose">Common score: {results.win_score}</p>
+			result_board = <div className="container">
+								<div className="space-around">
+									<p className="align-center" key="win">No winners here!</p>
+									<p className="align-center" key="players">Players: {results.winner} and {results.looser}</p>
+									<p className="align-center" key="loose">Common score: {results.win_score}</p>
 								</div>
 							</div>
 		} else {
-			result_board = <div className="wrapper_this">
-								<div>
-									<p className="" key="win">Winner: {results.winner}</p>
-									<p className="" key="loose">Score: {results.win_score}</p>
+			result_board = <div className="container">
+								<div className="space-around">
+									<p className="align-center" key="win">Winner: {results.winner}</p>
+									<p className="align-center" key="loose">Score: {results.win_score}</p>
 								</div>
 								<div>
-									<p className="" key="win_score">Looser: {results.looser}</p>
-									<p className="" key="loose_score">Score: {results.loose_score}</p>
+									<p className="align-center" key="win_score">Looser: {results.looser}</p>
+									<p className="align-center" key="loose_score">Score: {results.loose_score}</p>
 								</div>
 							</div>
 		}
 		
 		return (
 			<section className="results">
-				<h1 className="header">Results</h1>
+				<p className="header align-center h3 space-around">Results</p>
 				{result_board}
 			</section>
 		);

@@ -51,13 +51,13 @@ function Settings(props) {
 
 	return (
 		<section className="field">
-		<div className="alert alert-primary" role="alert">Choose a color. Colors can't be the same</div>
+		<div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can't be the same</div>
 
 		<form onSubmit={handleSubmit(submitForm)}>
-			<p className="h2">Player 1</p>
+			<p className="h2 align-center">Player 1</p>
 
-			<div className="row justify-content-center">
-			<div className="form-group col-10" key="username">
+			<div className="row justify-content-center width-90">
+			<div className="form-group col-8" key="username">
 				<input 
 					className="form-control space-around" 
 					type="text"
@@ -71,10 +71,11 @@ function Settings(props) {
 
 
 				
-				<div className="row justify-content-center">
+				<div className="row justify-content-center width-90">
 					{colors.map((color, index) =>
 					<div className="col-2" key={index+"_wrapper"}>
 						<input 
+							className="block-margin"
 							type="radio" 
 							key={index*10} 
 							id={index} 
@@ -85,10 +86,10 @@ function Settings(props) {
 				</div>
 				
 
-			<p className="h2">Player 2</p>
+			<p className="h2 align-center">Player 2</p>
 
-			<div className="row justify-content-center">
-			<div className="form-group col-10" key="username">
+			<div className="row justify-content-center width-90">
+			<div className="form-group col-8" key="username">
 			<input 
 				className="form-control space-around" 
 				type="text"
@@ -100,10 +101,11 @@ function Settings(props) {
 			</div>
 			</div>
 
-			<div className="row justify-content-center">
+			<div className="row justify-content-center width-90">
 			{colors.map((color, index) =>
 					<div className="wrapper_color col-2" key={index+"_wrapper"}>
 						<input 
+							className="block-margin"
 							type="radio" 
 							key={index*20} 
 							id={index} 
@@ -113,8 +115,8 @@ function Settings(props) {
 					)}
 			</div>
 
-		<div className="row justify-content-center">
-		<div className="form-group col-10" key="username">
+		<div className="row justify-content-center width-90">
+		<div className="form-group col-8" key="username">
 			<input 
 				className="form-control space-around" 
 				type="number"
@@ -128,7 +130,7 @@ function Settings(props) {
 
 			{errors.size && <div className="alert alert-danger">Field size required (6-15)</div>}
 			<div className="align-center">
-					<button className="btn btn-success">Play!</button>
+					<button className="btn btn-success space-bottom">Play!</button>
 				</div>
 		</form>
 		</section>
