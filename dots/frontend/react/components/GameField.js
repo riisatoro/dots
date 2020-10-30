@@ -40,7 +40,8 @@ class GameField extends Component {
 		return (
 			<section className="field">
 				<div className="align-center"> 
-					<p>{this.props.store.players[0].name} captured {this.props.store.players[0].captured}</p><p>{this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
+					<p className="">{this.props.store.players[0].name} captured {this.props.store.players[0].captured}</p>
+					<p className="">{this.props.store.players[1].name} captured {this.props.store.players[1].captured}</p>
 				</div>
 
 		    	<div className="field__wrapper">{item}</div>

@@ -13,8 +13,20 @@ function Auth(props) {
 
 	return (
 		<section>
-			<Register />
-			<Login />
+		<div className="row">
+			<div className="container-fluid col--12 width-90">
+						{ props.store.reply.error && <div className="alert alert-danger">{props.store.reply.message}</div> }
+			</div>
+			
+			<div className="col-6">
+				<Register />
+			</div>
+
+			<div className="col-6">
+				<Login />
+			</div>
+		
+		</div>
 		</section>
 	)
 }

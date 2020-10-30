@@ -20,9 +20,6 @@ function Register(props) {
 	return (
 		<section>
 			<div>
-				<div className="container-fluid">
-					{ props.store.reply.error && <div className="alert alert-danger">{props.store.reply.message}</div> }
-				</div>
 
 				<form  onSubmit={handleSubmit(onSubmitRegister)}>
 

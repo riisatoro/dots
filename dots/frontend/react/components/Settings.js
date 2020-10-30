@@ -127,11 +127,13 @@ function Settings(props) {
 				ref={register({required: true, min:6, max: 15 })}/>
 		</div>
 		</div>
-
-			{errors.size && <div className="alert alert-danger">Field size required (6-15)</div>}
+		<div className="row justify-content-center">
+			{errors.size && <div className="alert alert-danger col-8">Field size required (6-15)</div>}
+		</div>
 			<div className="align-center">
 					<button className="btn btn-success space-bottom">Play!</button>
 				</div>
+
 		</form>
 		</section>
 	)
