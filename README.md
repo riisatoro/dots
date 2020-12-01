@@ -3,17 +3,42 @@
 Game "Dots" is a game for two players.
 
 # Requirements
-* Python 3.x
-* NodeJs 6.x  
-* PostgreSQL 9.x/10.x/11.x
+* Python 3.8
+* NodeJs 7.0.4  
+* PostgreSQL 13.1
 
 Also, don't forget about ***.env*** file in *dots/* . See *.env.example* and create your own ***.env***.
 
 # Install dependencies  
-Install pipenv for python:
+Install virtualenv for Windows:
 ```
-pip install pipenv
+pip install virtualenv
 ```
+or for Unix:
+```
+pip3 install virtualenv
+```
+
+Then install all required packages:
+```
+pip install -r requirements.txt
+```
+
+# Troubles with psycopg2
+To use postgres you should install psycopg2. It installs form venv, however, there can be some issues. To fix that, try:
+```
+pip install psycopg2-binary
+```
+
+# Migrations
+To apply migrations from django to database, run:
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+***Don't forget*** to fill ***.env*** file with database name, user & password.
+
+# Run
 Now you can run django server, that includes compiled ***React.js*** app.  
 ```
 cd dots
