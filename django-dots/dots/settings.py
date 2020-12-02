@@ -26,9 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework', 
     'rest_framework.authtoken',    
-    'frontend', 
     'api'
 ]
 
@@ -122,6 +122,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CSRF_USE_SESSIONS = True
-
-
-#a3cc1007581db2190356c9fed5499c4710bb063c
