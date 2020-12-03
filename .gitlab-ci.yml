@@ -7,10 +7,15 @@ build-job:
 test-backend:
   stage: test
   script:
+    - sudo apt-get install -y postgresql postgresql-client libpq-dev
+    - sudo -u postgres psql -d dots
+
     - virtualenv venv
     - . venv/bin/activate 
     - pip3 install -r django-dots/requirements.txt
-    - python django-dots/manage.py test
+    
+    - python3 django-dots/manage.py migrate
+    - python3 django-dots/manage.py test
 
 
 deploy-prod:
