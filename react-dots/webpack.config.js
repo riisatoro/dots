@@ -1,5 +1,8 @@
 const HtmlWebPackPlugin = require( 'html-webpack-plugin' );
 const path = require( 'path' );
+const ESLintPlugin = require('eslint-webpack-plugin');
+
+
 module.exports = {
    context: __dirname,
    entry: './src/index.js',
@@ -8,12 +11,14 @@ module.exports = {
       filename: 'main.js',
       publicPath: '/',
    },
+
    devServer: {
       historyApiFallback: true,
       proxy: {
          "/api": "http://localhost:8000"
       }
    },
+
    module: {
       rules: [
          {
@@ -38,6 +43,7 @@ module.exports = {
       new HtmlWebPackPlugin({
          template: path.resolve( __dirname, 'public/index.html' ),
          filename: 'index.html'
-      })
+      }), 
+      new ESLintPlugin()
    ]
 };
