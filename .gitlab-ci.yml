@@ -1,8 +1,8 @@
 build-job:
   stage: build
   script:
-    - apt-get install -y postgresql postgresql-client libpq-dev
-    - -u postgres psql -d dots
+    - whoami apt-get install -y postgresql postgresql-client libpq-dev
+    - whoami -u postgres psql -d dots
 
     - virtualenv venv
     - . venv/bin/activate 
