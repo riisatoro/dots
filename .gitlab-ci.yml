@@ -9,7 +9,7 @@ test-backend:
   script:
     - virtualenv venv
     - . venv/bin/activate 
-    - pip3 install -r requirements.txt
+    - pip3 install -r django-dots/requirements.txt
     - python django-dots/manage.py test
 
 deploy-prod:
