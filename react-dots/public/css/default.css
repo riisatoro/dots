@@ -27,4 +27,6 @@
 .header-btn {
 	background-color: inherit;
 	border: none;
+	border-left: 2px solid silver;
+	border-right: 2px solid silver
 }
