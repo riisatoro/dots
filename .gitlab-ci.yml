@@ -1,7 +1,6 @@
 build-job:
   stage: build
   script:
-    - sudo apt-get install -y postgresql postgresql-client libpq-dev
     - sudo -u postgres psql -d dots
 
     - virtualenv venv
