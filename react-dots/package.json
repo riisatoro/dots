@@ -19,11 +19,14 @@
   "scripts": {
     "webpack-dev-server": "webpack-dev-server",
     "dev": "webpack serve --mode=development",
+    
     "prod": "webpack --mode=production",
+    
+    "lint": "eslint . --ext .js --ext .jsx --ignore-path ../.gitignore --cache",
+
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test"
   },
   "proxy": "http://localhost:8000",
   "eslintConfig": {
