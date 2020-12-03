@@ -2,15 +2,15 @@ build-job:
   stage: build
   script:
     - cd react-dots/
-    - npm install
-    - npm run dev
 
-test-job1:
+
+test-backend:
   stage: test
   script:
-    - echo "This job tests something, but takes more time than test-job1."
-    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
-    - echo "which simulates a test that runs 20 seconds longer than test-job1"
+    - virtualenv venv
+    - . venv/bin/activate 
+    - pip3 install -r requirements.txt
+    - python django-dots/manage.py test
 
 deploy-prod:
   stage: deploy
