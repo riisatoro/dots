@@ -10,6 +10,7 @@ test-backend:
     - virtualenv venv
     - . venv/bin/activate 
     - cd django-dots/
+    - ls
     - pip3 install -r requirements.txt
     - python django-dots/manage.py test
 
