@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import ReacDOM from 'react-dom';
+import React from 'react';
 import axios from 'axios';
 import { useForm } from "react-hook-form";
 
 import { connect } from 'react-redux';
-import { RECEIVE_AUTH_REPLY, BASE_API_URL } from '../redux/types.js';
+import { RECEIVE_AUTH_REPLY } from '../redux/types.js';
 
 
 function Login(props) {

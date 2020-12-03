@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
-
-
-import { SHOW_AUTH_FORM, SEND_LOGOUT_REQUEST, SHOW_SETTINGS } from '../redux/types.js';
 
 
 class Results extends Component {

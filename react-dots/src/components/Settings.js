@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useForm } from "react-hook-form";
 
 import { connect } from 'react-redux';
 import { 
-	SET_COLOR, 
 	COLOR_CHOOSED, 
-	HIDE_SETTINGS, 
 	START_NEW_GAME, 
 	FIELD_SIZE_CHANGED,
 	UPDATE_PLAYERS_NAME, 
@@ -18,8 +16,6 @@ function Settings(props) {
 	const {register, handleSubmit, errors} = useForm();
 
 	let colors = ["orange_color", "red_color", "blue_color", "yellow_color", "green_color"]
-
-	let color_error = ""
 
 	function color1Clicked(e) {
 		props.setPlayerColor(0, e.target.id)
@@ -37,9 +33,9 @@ function Settings(props) {
 	}
 
 	function submitForm(e) {
-		if (props.store.players[0].index != props.store.players[1].index 
-			&& props.store.players[0].index != -1
-			&& props.store.players[1].index != -1)
+		if (props.store.players[0].index !== props.store.players[1].index 
+			&& props.store.players[0].index !== -1
+			&& props.store.players[1].index !== -1)
 		{
 			props.setPlayersName(e.player1, e.player2)
 			props.startNewGame()

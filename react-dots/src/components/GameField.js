@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import ReacDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import { DRAW_DOT, PLAYER_CHANGED, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED, STOP_GAME } from '../redux/types.js'
-import axios from 'axios';
+import { DRAW_DOT, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED, STOP_GAME } from '../redux/types.js'
 
 import "../../public/css/game_field.css";
-
 
 
 class GameField extends Component {

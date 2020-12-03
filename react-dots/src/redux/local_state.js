@@ -2,7 +2,7 @@ import { LOCAL_STORAGE } from './types.js';
 
 
 const loadState = () => {
-	let state = localStorage['reduxDots'];
+	let state = localStorage[LOCAL_STORAGE];
 	try{
 		state = JSON.parse(state)
 	} catch(error) {
@@ -15,7 +15,7 @@ const getEmptyField = (size=10) => {
 	let tmp_field = []
 	let row = []
 	for(let i=0; i<=size*size; i++) {
-		if(i % size == 0 && i!=0) {
+		if(i % size === 0 && i !== 0) {
 			tmp_field.push(row);
 		row = [];
 		}

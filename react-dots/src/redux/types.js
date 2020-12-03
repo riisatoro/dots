@@ -1,4 +1,4 @@
-export const LOCAL_STORAGE = "DOTS_STATE";
+export const LOCAL_STORAGE = "reduxDots";
 
 export const SHOW_AUTH_FORM = "SHOW_AUTH_FORM";
 export const HIDE_AUTH_FORM = "HIDE_AUTH_FORM";

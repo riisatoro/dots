@@ -4,9 +4,9 @@ export const calcSquare = (field, player1, player2) => {
 
 	for(let i=0; i<field.length; i++){
 		for(let j=0; j<field.length; j++){
-			if(field[i][j][0] == player1 && field[i][j][1] == "l"){
+			if(field[i][j][0] === player1 && field[i][j][1] === "l"){
 				p1++;
-			}else if(field[i][j][0] == player2 && field[i][j][1] == "l") {
+			}else if(field[i][j][0] === player2 && field[i][j][1] === "l") {
 				p2++
 			}else {
 

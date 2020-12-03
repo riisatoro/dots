@@ -1,6 +1,5 @@
 import { hot } from 'react-hot-loader/root';
-import { Provider } from 'react-redux';
-import React, { Component } from 'react';
+import React from 'react';
 
 import Header from './Header.js';
 import ComponentContainer from './ComponentContainer.js';

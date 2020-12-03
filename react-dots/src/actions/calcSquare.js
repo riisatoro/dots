@@ -2,9 +2,10 @@ function main(field, player1, player2) {
 	let player_points = getAllPoints(field, player1)
 	let enemy_points = getAllPoints(field, player2)
 	let player_loops = []
+	/*
 	let enemy_loops = []
 	let path = []
-	
+	*/	
 	let player_visited = setVisited(player_points.length)
 
 	getGraphLoop(player_points, player_loops, player_visited)
@@ -27,18 +28,17 @@ function fillCircleSquare(field, loop, player) {
 		for (let j=0; j<field.length; j++) {
 			if(isInLoop(loop, [i, j])) {
 				// если эта точка находится в цикле
-
-				if(field[i][j][1] != "l"){
+				if(field[i][j][1] !== "l"){
 					// если эта точка ещё не окружена
 					// и не принадлежит игроку
 					// и если точка не освобождена
-					if(field[i][j][0] != player && field[i][j][1] != "f"){
+					if(field[i][j][0] !== player && field[i][j][1] !== "f"){
 						field[i][j] = field[i][j][0]+"l"
 					}
 				} else {
 					// точка окружена и принадлежит игроку
 					// тогда она освобождается
-					if(field[i][j][0] == player) {
+					if(field[i][j][0] === player) {
 						field[i][j] = field[i][j][0]+"f"
 					}
 
@@ -56,8 +56,6 @@ function fillCircleSquare(field, loop, player) {
 
 
 function hasCapturedPoint(loop, points) {
-	let loopPoints = []
-	
 	for(let i=0; i<points.length; i++){
 		if(isInLoop(loop, points[i])) {
 			return true
@@ -77,21 +75,19 @@ function isInLoop(loop, point){
 	let bottom = 0
 	// ищем окружение сразу в 4х направлениях
 	loop.forEach(item => {
-		if(item[0] == x && item[1] < y && left == 0) {
+		if(item[0] === x && item[1] < y && left === 0) {
 			left++;
-		} else if(item[0] == x && item[1] > y && right == 0) {
+		} else if(item[0] === x && item[1] > y && right === 0) {
 			right++;
 		} 
-		else if(item[1] == y && item[0] < x && top == 0) {
+		else if(item[1] === y && item[0] < x && top === 0) {
 			top++;
-		} else if(item[1] == y && item[0] > x && bottom == 0) {
+		} else if(item[1] === y && item[0] > x && bottom === 0) {
 			bottom++;
-		} else {
-
 		}
 	})
 
-	if(left+right+top+bottom == 4) {
+	if(left+right+top+bottom === 4) {
 		return true
 	}
 	return false
@@ -103,7 +99,7 @@ function getAllPoints(field, player) {
 
 	for(let i=0; i<field.length; i++) {
 		for(let j=0; j<field.length; j++) {
-			if (field[i][j] == player) {
+			if (field[i][j] === player) {
 				all_points.push([i, j])
 			}
 		}
@@ -123,10 +119,10 @@ function setVisited(num) {
 
 function isNeighbour(point1, point2) {
 	try {
-		if (JSON.stringify(point1) != JSON.stringify(point2)
+		if (JSON.stringify(point1) !== JSON.stringify(point2)
 			&& Math.abs(point1[0] - point2[0]) < 2
 			&& Math.abs(point1[1] - point2[1]) < 2
-			&& Math.abs(point1[0] - point2[0]) - (Math.abs(point1[1] - point2[1])) <=2)
+			&& Math.abs(point1[0] - point2[0]) - (Math.abs(point1[1] - point2[1])) <= 2)
 		{
 			return true
 		}
@@ -159,7 +155,7 @@ function getGraphLoop(graph, loops, visited) {
 		visited[index] = GRAY
 		for(let j=visited.length-1; j>=0; j--) {
 			if (isNeighbour(graph[index], graph[j])) {
-				if(visited[j] == WHITE) {
+				if(visited[j] === WHITE) {
 					path.push(graph[j])
 					dfs(j)
 					path.pop()
@@ -168,7 +164,7 @@ function getGraphLoop(graph, loops, visited) {
 		}
 		if(path.length > 2){
 			let tmp = findLoop(path)
-			if(JSON.stringify([]) != JSON.stringify(tmp)) {
+			if(JSON.stringify([]) !== JSON.stringify(tmp)) {
 				loops.push(tmp)
 			}
 		}
@@ -176,7 +172,7 @@ function getGraphLoop(graph, loops, visited) {
 	}
 
 	for(let i=0; i<graph.length; i++) {
-		if (visited[i] == WHITE) {
+		if (visited[i] === WHITE) {
 			path.push(graph[i])
 			dfs(i)
 			path.pop()
@@ -185,90 +181,10 @@ function getGraphLoop(graph, loops, visited) {
 }
 
 
-function inArray(point, loop) {
-	for(let i=0; i<loop.length; i++) {
-		if (JSON.stringify(point) == JSON.stringify(loop[i])) {
-			return true;
-		}
-	}
-	return false
-}
-
-
-function isSurrounded(field, point, loop){
-	const i = point[0];
-	const j = point[1];
-	let m = 0;
-	let n = 0;
-	let borders = 0;
-
-	// проверяем в направлении вверх и низ
-	for(let m=i; m>=0; m--){
-		if (inArray([m, j], loop)) {
-			borders++;
-			break;
-		}
-	}
-
-	for(let m=i; m<=field.length; m++){
-		if (inArray([m, j], loop)) {
-			borders++;
-			break;
-		}
-	}
-
-	// проверяем в направлении лево-право
-	for(let m=j; m>=0; m--){
-		if (inArray([i, m], loop)) {
-			borders++;
-			break;
-		}
-	}
-
-	for(let m=j; m<field.length; m++){
-		if (inArray([i, m], loop)) {
-			borders++;
-			break;
-		}
-	}
-
-
-	if(borders >= 4){ return true}
-	return false
-}
-
-
-function fillPoints(field, loop, player){
-	for(let i=0; i<field.length; i++){
-		for(let j=0; j<field.length; j++)  {
-			if( field[i][j]!=player && isSurrounded(field, [i, j], loop)) {
-				field[i][j] = player
-			}
-		}
-	}
-}
-
-
-// let visited = []
 let WHITE = "white"
 let GRAY = "gray"
 let BLACK = "black"
-let EMPTY = "empty"
 
 
-// let path = []
-// let loops = []
-// let player = ""
-// let field = [[]]
-/*
-let player = "red"
-let field = [
-	["", "", "red", "", ""],
-	["", "", "red", "", ""],
-	["", "red", "", "red", ""],
-	["red", "", "red", "", "red"],
-	["red", "red", "", "red", "red"],
-]
-*/
 
 export default main
