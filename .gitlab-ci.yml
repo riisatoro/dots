@@ -6,6 +6,7 @@ build-job:
 test-job1:
   stage: test
   script:
+    - cd react-dots/
     - npm install
     - npm run lint
 
