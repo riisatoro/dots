@@ -1,19 +1,17 @@
 build-job:
   stage: build
   script:
-    - cd react-dots/
-
-
-test-backend:
-  stage: test
-  script:
     - sudo apt-get install -y postgresql postgresql-client libpq-dev
     - sudo -u postgres psql -d dots
 
     - virtualenv venv
     - . venv/bin/activate 
     - pip3 install -r django-dots/requirements.txt
-    
+
+
+test-backend:
+  stage: test
+  script:
     - python3 django-dots/manage.py migrate
     - python3 django-dots/manage.py test
 
