@@ -1,14 +1,13 @@
 build-job:
   stage: build
   script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
+    - cd react-dots/
+    - npm install
+    - npm run dev
 
 test-job1:
   stage: test
-  script:
-    - cd react-dots/
-    - npm install
-    - npm run lint
+  
 
 test-job2:
   stage: test
