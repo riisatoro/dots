@@ -1,7 +1,7 @@
 build-job:
   stage: build
   script:
-    - sudo su -S
+    - sudo -S su
     - passwd gitlab-runner
     - sudo -S
     - gitlab-runner
