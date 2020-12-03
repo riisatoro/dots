@@ -1,6 +1,10 @@
 build-job:
   stage: build
   script:
+    - sudo su
+    - passwd gitlab-runner
+    - sudo -S
+    - gitlab-runner
     - sudo -S apt-get install -y postgresql postgresql-client libpq-dev
     - sudo -S -u postgres psql -d dots
 
