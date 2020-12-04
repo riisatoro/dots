@@ -27,8 +27,14 @@ test-linter-django:
 test-backend:
   services:  
     - postgres:latest
+  variables:
+    POSTGRES_DB: dots
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
   stage: test
   image: python:3.8
+  
   script:
     - export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dots
     - pip3 install virtualenv
