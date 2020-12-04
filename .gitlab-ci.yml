@@ -1,7 +1,6 @@
 build-job:
   stage: build
   script:
-    
     - cd react-dots/
     - npm install
 
@@ -25,10 +24,9 @@ test-linter-django:
     - pip3 install -r django-dots/requirements.txt
     - prospector django-dots/api
 
-services:  
-  - postgres:latest
-
 test-backend:
+  services:  
+    - postgres:latest
   stage: test
   image: python:3.8
   script:
