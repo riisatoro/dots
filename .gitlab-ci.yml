@@ -27,7 +27,11 @@ test-linter-django:
 test-backend:
   services:  
     - postgres:latest
-
+  variables:
+    POSTGRES_DB: dots
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
   stage: test
   image: python:3.8
   
