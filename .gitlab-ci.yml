@@ -29,6 +29,8 @@ test-linter-django:
 test-backend:
   stage: test
   image: python:3.8
+  services:  
+    - postgres:12.2-alpine
   script:
     - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
     - pip3 install virtualenv
