@@ -30,7 +30,7 @@ test-backend:
   stage: test
   image: python:3.8
   script:
-    - export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dots"
+    - export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dots
     - pip3 install virtualenv
     - virtualenv venv
     - . venv/bin/activate
