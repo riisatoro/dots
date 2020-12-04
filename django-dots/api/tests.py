@@ -24,7 +24,7 @@ class LoginTest(TestCase):
 
 
     def test_wrong_password(self):
-        response = self.client.post(self.url, {"username": "awdawdawd", "password": "admin"}, content_type=self.content)
+        response = self.client.post(self.url, {"username": "admin", "password": "awdawdawd"}, content_type=self.content)
         self.assertEqual(response.status_code, 401)
 
 
