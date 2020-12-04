@@ -1,8 +1,7 @@
 build-job:
   stage: build
   script:
-    - cd react-dots/
-    - npm install
+    - echo "Build"
 
 
 test-linter-react:
