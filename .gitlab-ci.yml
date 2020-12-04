@@ -24,7 +24,7 @@ test-linter-django:
     - pip install virtualenv
     - virtualenv venv
     - . venv/bin/activate
-    - pip -r django-dots/requirements.txt
+    - pip install -r django-dots/requirements.txt
     - prospector django-dots/
 
 
