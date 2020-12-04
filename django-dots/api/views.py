@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse
 
+from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -88,4 +89,4 @@ class Login(APIView):
             login(request, user)
             token = Token.objects.get_or_create(user=user)[0]
             return Response({"error": False, "token": str(token)})
-        return Response({"error": True, "message": "Invalid username or password"})
+        return Response({"error": True, "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)

@@ -27,14 +27,14 @@ class LoginTest(TestCase):
         reply = json.loads(response.content.decode('utf8').replace("'", '"'))
 
         self.assertEqual(response.status_code, 401)
-        self.assertContains("Invalid login", reply["message"])
+        self.assertContains("Invalid", reply["message"])
 
     def test_wrong_password(self):
         response = self.client.post(self.url, {"username": "awdawdawd", "password": "admin"}, content_type=self.content)
         reply = json.loads(response.content.decode('utf8').replace("'", '"'))
 
         self.assertEqual(response.status_code, 401)
-        self.assertContains("Invalid password", reply["message"])
+        self.assertContains("Invalid", reply["message"])
 
 
 class RegistrationTest(TestCase):
