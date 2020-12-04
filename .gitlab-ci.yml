@@ -20,6 +20,7 @@ test-linter-react:
 test-linter-django:
   stage: test
   script: 
+    - . venv/bin/activate
     - prospector django-dots/
 
 
