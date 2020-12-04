@@ -1,12 +1,11 @@
 build-job:
   stage: build
   script:
-    - cd react-dots/
-    - npm install
-
     - virtualenv venv
     - . venv/bin/activate 
     - pip3 install -r django-dots/requirements.txt
+    - cd react-dots/
+    - npm install
 
 
 test-linter-react:
