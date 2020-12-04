@@ -35,7 +35,7 @@ test-backend:
     - virtualenv venv
     - . venv/bin/activate
     - pip3 install -r django-dots/requirements.txt
-    - python3 django-dots/manage.py test
+    - python3 django-dots/manage.py test api
 
 
 deploy-prod:
