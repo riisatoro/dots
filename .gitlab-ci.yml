@@ -5,7 +5,9 @@ build-job:
     - cd react-dots/
     - npm install
     
-    
+before_script:
+
+
 test-linter-react:
   stage: test
   script:
@@ -16,9 +18,9 @@ test-linter-react:
 
 test-linter-django:
   stage: test
+  image: python:3.8
   script: 
     - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
-    - apt-get install -y python-dev python-pip
     - pip install -r djngo-dots/requirements.txt
     - prospector django-dots/
 
