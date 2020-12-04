@@ -4,12 +4,11 @@ build-job:
     
     - cd react-dots/
     - npm install
-    
-before_script:
 
 
 test-linter-react:
   stage: test
+  image: node:latest
   script:
     - cd react-dots/
     - npm install
