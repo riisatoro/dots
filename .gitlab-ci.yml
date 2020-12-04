@@ -21,7 +21,7 @@ test-linter-django:
   image: python:3.8
   script: 
     - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
-    - pip install -r djngo-dots/requirements.txt
+    - pip install -r django-dots/requirements.txt
     - prospector django-dots/
 
 
