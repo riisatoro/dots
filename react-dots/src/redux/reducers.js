@@ -34,7 +34,7 @@ let initialState = loadState();
 export function updateState(state = initialState, action) {
 	switch(action.type) {
 		case RECEIVE_AUTH_REPLY:
-			if (action.payload.status == 200){
+			if (action.payload.status === 200){
 				let data = action.payload.data
 				if (data.error){
 					return {...state, reply: {error: data.error, message: data.message}}
@@ -48,7 +48,7 @@ export function updateState(state = initialState, action) {
 
 		case RECEIVE_LEADERS:
 			if(action.payload.status === 200) {
-				return {...state, leaders: action.payload.data, components: {showLeaders: true}, game_end: false}	
+				return {...state, leaders: action.payload.data components: {showLeaders: true}, game_end: false}	
 			}
 			return {...state, leaders: []}
 
