@@ -29,7 +29,13 @@ test-linter-django:
 
 test-backend:
   stage: test
+  image: python:3.8
   script:
+  - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
+    - pip install virtualenv
+    - virtualenv venv
+    - . venv/bin/activate
+    - pip3 install -r django-dots/requirements.txt
     - python3 django-dots/manage.py migrate
     - python3 django-dots/manage.py test
 
