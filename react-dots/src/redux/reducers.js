@@ -48,7 +48,7 @@ export function updateState(state = initialState, action) {
 
 		case RECEIVE_LEADERS:
 			if(action.payload.status === 200) {
-				return {...state, leaders: action.payload.data components: {showLeaders: true}, game_end: false}	
+				return {...state, leaders: action.payload.data, components: {showLeaders: true}, game_end: false}	
 			}
 			return {...state, leaders: []}
 
