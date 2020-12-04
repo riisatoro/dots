@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'dots.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -85,7 +85,18 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+'''
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "dots",
+        'USER': "postgres",
+        'PASSWORD': "postgres",
+        'HOST': "postgres",
+        'PORT': 5432,
+    }
+}
 
 
 # Password validation
