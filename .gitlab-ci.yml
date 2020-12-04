@@ -31,7 +31,7 @@ test-backend:
   image: python:3.8
   script:
     - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
-    - pip install virtualenv
+    - pip3 install virtualenv
     - virtualenv venv
     - . venv/bin/activate
     - pip3 install -r django-dots/requirements.txt
