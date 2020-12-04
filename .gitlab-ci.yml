@@ -31,6 +31,11 @@ test-backend:
   image: python:3.8
   services:  
     - postgres:12.2-alpine
+  variables:
+    POSTGRES_DB: dots
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
   script:
     - export DATABASE_URL=postgres://postgres:@postgres:5432/dots
     - pip3 install virtualenv
