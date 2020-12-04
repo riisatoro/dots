@@ -1,16 +1,17 @@
 build-job:
   stage: build
   script:
-    - sudo -S su
-    - passwd gitlab-runner
-    - sudo -S
-    - gitlab-runner
-    - sudo -S apt-get install -y postgresql postgresql-client libpq-dev
-    - sudo -S -u postgres psql -d dots
-
     - virtualenv venv
     - . venv/bin/activate 
     - pip3 install -r django-dots/requirements.txt
+
+
+test-linter:
+  stage: test
+  script:
+    - cd react-dots/
+    - npm install
+    - npm run lint
 
 
 test-backend:
