@@ -28,6 +28,28 @@ class LoginTest(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
+class GameRoom(TestCase):
+    def setUp(self):
+        pass
+    
+    def test_autorized_get_room_list(self):
+        pass
+    
+    def test_unauth_get_room_list(self):
+        pass
+
+    def test_auth_room_created(self):
+        pass
+
+    def test_unauth_room_created(self):
+        pass
+
+    def test_second_room_created(self):
+        pass
+
+
+'''
+
 class RegistrationTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -71,3 +93,5 @@ class GetMatch(TestCase):
 
     def unauthorized_request(self):
         pass
+
+'''

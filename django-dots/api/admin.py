@@ -15,4 +15,4 @@ class GameRoomAdmin(admin.ModelAdmin):
 
 @admin.register(models.UserGame)
 class UserGameAdmin(admin.ModelAdmin):
-    list_display = ('user', 'game_room', 'score', 'turn')
+    list_display = ('user', 'game_room', 'color', 'score', 'turn')

@@ -90,3 +90,34 @@ class Login(APIView):
             token = Token.objects.get_or_create(user=user)[0]
             return Response({"error": False, "token": str(token)})
         return Response({"error": True, "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class GameRoomView(APIView):
+    """Get free rooms or create a new one"""
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        free_rooms = models.UserGame.objects.filter(game_room__is_started = False)
+        return Response(
+            {"free_room": serializers.UserGameSerializer(free_rooms, many=True).data})
+
+    def post(self, request):
+        data = request.data
+        
+        size = data["size"]
+        already_waiting = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
+        if not already_waiting and size in range(5, 15):
+            room = models.GameRoom(field = [["E"]*size]*size, size=size)
+        else:
+            return Response({"error": True, "message": "Unexpected color or field size, or user already created a room."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        try:
+            room.full_clean()
+        except Exception as E:
+            print(E)
+
+        room.save()
+        room.players.add(request.user)
+        room.save()
+
+        return Response({"error": False, "message": "Room was created!", "room_id": room.id})

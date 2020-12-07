@@ -19,6 +19,9 @@ function Settings(props) {
 
 	function color1Clicked(e) {
 		props.setPlayerColor(0, e.target.id)
+		
+		/* pass */
+		props.setPlayersName("default1", "default2")
 	}
 
 	function color2Clicked(e) {

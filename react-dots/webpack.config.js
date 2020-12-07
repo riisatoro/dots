@@ -45,5 +45,8 @@ module.exports = {
          filename: 'index.html'
       }), 
       new ESLintPlugin()
-   ]
+   ],
+   watchOptions: {
+      ignored: "/node_modules/"
+    }
 };

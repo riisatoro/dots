@@ -42,7 +42,7 @@ class GameRoom(models.Model):
 class UserGame(models.Model):
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
     game_room = models.ForeignKey(GameRoom, verbose_name="Game room", on_delete=models.CASCADE)
-    color = models.CharField(max_length=255)
+    color = models.CharField(max_length=255, null=False, blank=False)
     score = models.IntegerField(default=0)
     turn = models.BooleanField(default=False)
 
