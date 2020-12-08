@@ -172,6 +172,18 @@ class SetPoint(APIView):
 
             # get previous game field to change the point
             field = game.game_room.field
+            point = request.data["point"]
+            # check if this point is available for updates
+            if field[point[0]][point[1]] == "E":
+                # get the player color
+                field[point[0]][point[1]] = game.color
+                new_field = models.GameRoom.objects.get(id=room_id)
+                new_field.field = field
+                new_field.save()
+            else:
+                return Response({"error": True, "message": "This point is not available."},
+                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
             # change the turn of the player | will work only when 2 user are playing
             # set end of the turn for this player
             this_player = models.UserGame.objects.filter(game_room__id=room_id, turn=True).get()
@@ -181,7 +193,7 @@ class SetPoint(APIView):
             this_player.save()
             next_player.save()
 
-            return Response({"field": field})
+            return Response({"field": game.game_room.field})
 
         return Response({"error": True, "message": "Now is not your turn"},
                         status = status.HTTP_422_UNPROCESSABLE_ENTITY)
