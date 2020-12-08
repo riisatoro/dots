@@ -95,7 +95,6 @@ class MatchViewSet(APIView):
 
 class GameRoomView(APIView):
     """Get free rooms or create a new one"""
-    # ! can't handle user color
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
@@ -119,7 +118,8 @@ class GameRoomView(APIView):
             print(E)
 
         room.save()
-        room.players.add(request.user)
+        user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
+        user_game.save()
         room.save()
 
         return Response({"error": False, "message": "Room was created!", "room_id": room.id})
@@ -145,7 +145,9 @@ class GameRoomJoin(APIView):
             if room.exists() and owner.exists():
                 owner = owner.get()
                 room = room.get()
-                room.players.add(request.user)
+                #
+                user_game = models.UserGame(user=request.user, game_room = room, color=request.data["color"])
+                user_game.save()
                 # start a new game in this room and give the first turn
                 room.is_started = True
                 owner.turn = True
