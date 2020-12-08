@@ -2,10 +2,7 @@ function main(field, player1, player2) {
 	let player_points = getAllPoints(field, player1)
 	let enemy_points = getAllPoints(field, player2)
 	let player_loops = []
-	/*
-	let enemy_loops = []
-	let path = []
-	*/	
+	/* OK */
 	let player_visited = setVisited(player_points.length)
 
 	getGraphLoop(player_points, player_loops, player_visited)
@@ -93,7 +90,7 @@ function isInLoop(loop, point){
 	return false
 }
 
-
+/* OK */
 function getAllPoints(field, player) {
 	let all_points = []
 
@@ -107,7 +104,7 @@ function getAllPoints(field, player) {
 	return all_points
 }
 
-
+/* DEPRECATED */
 function setVisited(num) {
 	let visited = []
 	for(;num>0; num--) {
@@ -116,7 +113,7 @@ function setVisited(num) {
 	return visited
 }
 
-
+/* OK */
 function isNeighbour(point1, point2) {
 	try {
 		if (JSON.stringify(point1) !== JSON.stringify(point2)
@@ -148,9 +145,10 @@ function findLoop(path) {
 	}
 }
 
-
+/* OK */
 function getGraphLoop(graph, loops, visited) {
 	let path =[]
+	/* OK */
 	function dfs(index){
 		visited[index] = GRAY
 		for(let j=visited.length-1; j>=0; j--) {
@@ -162,6 +160,7 @@ function getGraphLoop(graph, loops, visited) {
 				}
 			}
 		}
+
 		if(path.length > 2){
 			let tmp = findLoop(path)
 			if(JSON.stringify([]) !== JSON.stringify(tmp)) {
@@ -181,9 +180,10 @@ function getGraphLoop(graph, loops, visited) {
 }
 
 
-let WHITE = "white"
-let GRAY = "gray"
-let BLACK = "black"
+/* OK */
+let WHITE = 'white';
+let GRAY = 'gray';
+let BLACK = 'black'
 
 
 
