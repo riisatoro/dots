@@ -12,6 +12,6 @@ urlpatterns = [
 	path('api/v2/rooms/', views.GameRoomView.as_view(), name="game_room"),
 	path('api/v2/join/', views.GameRoomJoin.as_view(), name="join_room"),
 	path('api/v2/setpoint/', views.SetPoint.as_view(), name="setpoint"),
-	#path('api/v2/leave/'), leave from the game
+	path('api/v2/leave/', views.GameRoomLeave.as_view(), name="leave_room"),
 
 ]

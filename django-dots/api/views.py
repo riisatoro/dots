@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from . import models
+from .game import main as game_logic
 
 
 class Main(APIView):
@@ -94,6 +95,7 @@ class MatchViewSet(APIView):
 
 class GameRoomView(APIView):
     """Get free rooms or create a new one"""
+    # ! can't handle user color
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
@@ -133,15 +135,15 @@ class GameRoomJoin(APIView):
     def post(self, request):
         already_joined = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
 
-        # if NOT already_joined:
         if not already_joined:
             room_id = request.data["room_id"]
             owner = models.UserGame.objects.filter(
                 game_room__id = room_id, game_room__is_started = False)\
-                .exclude(user=request.user).get()
+                .exclude(user=request.user)
 
             room = models.GameRoom.objects.filter(id = room_id)
-            if room.exists():
+            if room.exists() and owner.exists():
+                owner = owner.get()
                 room = room.get()
                 room.players.add(request.user)
                 # start a new game in this room and give the first turn
@@ -150,6 +152,9 @@ class GameRoomJoin(APIView):
                 room.save()
                 owner.save()
                 return Response({"error": False, "start_game": True})
+            else:
+                return Response({"error": True, "message": "Room does not exists."},
+                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         else:
             # дать возможность выйти/закончить игру, отправив её айдишник
@@ -175,10 +180,11 @@ class SetPoint(APIView):
             point = request.data["point"]
             # check if this point is available for updates
             if field[point[0]][point[1]] == "E":
-                # get the player color
                 field[point[0]][point[1]] = game.color
                 new_field = models.GameRoom.objects.get(id=room_id)
-                new_field.field = field
+
+                # process the game field
+                new_field.field = game_logic.process(field)
                 new_field.save()
             else:
                 return Response({"error": True, "message": "This point is not available."},
@@ -197,3 +203,17 @@ class SetPoint(APIView):
 
         return Response({"error": True, "message": "Now is not your turn"},
                         status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class GameRoomLeave(APIView):
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        # get two players
+        room = models.UserGame.objects.filter(
+            user=request.user, game_room__is_started=True, game_room__is_ended=False)\
+            .get().game_room
+        room.is_ended = True
+        room.save()
+        return Response()
