@@ -115,7 +115,7 @@ class GameRoomView(APIView):
         try:
             room.full_clean()
         except Exception as E:
-            print(E)
+            return Response({"error": True, "message": "Unexpected field size."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room.save()
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
@@ -185,8 +185,9 @@ class SetPoint(APIView):
                 field[point[0]][point[1]] = game.color
                 new_field = models.GameRoom.objects.get(id=room_id)
 
-                # process the game field
-                new_field.field = game_logic.process(field)
+                # process the game field, receiving the colors for all players
+                colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
+                new_field.field = game_logic.process(field, colors)
                 new_field.save()
             else:
                 return Response({"error": True, "message": "This point is not available."},
