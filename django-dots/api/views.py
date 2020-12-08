@@ -43,29 +43,6 @@ class Register(APIView):
         return Response({"error": False, "token": str(token)})
 
 
-class MatchViewSet(APIView):
-    """Allow logged users get match results and save their own"""
-    permission_classes = (IsAuthenticated, )
-    queryset = models.Match.objects.all()
-    serializer_class = serializers.MatchSerializer
-
-    def get(self, request):
-        data = serializers.MatchSerializer(
-            models.Match.objects.filter(user=request.user), many=True)
-        return Response(data.data)
-
-    def post(self, request):
-        data = request.data
-        data["user"] = request.user.id
-
-        series = serializers.MatchSerializer(data=data)
-        if series.is_valid():
-            data = series.save()
-            data = serializers.MatchSerializer(data)
-            return Response({"error": False})
-        return Response({"error": True, "message": series.errors})
-
-
 class Logout(APIView):
     """Logout user"""
     def get(self, request):
@@ -90,6 +67,29 @@ class Login(APIView):
             token = Token.objects.get_or_create(user=user)[0]
             return Response({"error": False, "token": str(token)})
         return Response({"error": True, "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class MatchViewSet(APIView):
+    """Allow logged users get match results and save their own"""
+    permission_classes = (IsAuthenticated, )
+    queryset = models.Match.objects.all()
+    serializer_class = serializers.MatchSerializer
+
+    def get(self, request):
+        data = serializers.MatchSerializer(
+            models.Match.objects.filter(user=request.user), many=True)
+        return Response(data.data)
+
+    def post(self, request):
+        data = request.data
+        data["user"] = request.user.id
+
+        series = serializers.MatchSerializer(data=data)
+        if series.is_valid():
+            data = series.save()
+            data = serializers.MatchSerializer(data)
+            return Response({"error": False})
+        return Response({"error": True, "message": series.errors})
 
 
 class GameRoomView(APIView):
@@ -121,3 +121,67 @@ class GameRoomView(APIView):
         room.save()
 
         return Response({"error": False, "message": "Room was created!", "room_id": room.id})
+
+
+class GameRoomJoin(APIView):
+    """Allow users join to the room and start the game"""
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        already_joined = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
+
+        # if NOT already_joined:
+        if not already_joined:
+            room_id = request.data["room_id"]
+            owner = models.UserGame.objects.filter(
+                game_room__id = room_id, game_room__is_started = False)\
+                .exclude(user=request.user).get()
+
+            room = models.GameRoom.objects.filter(id = room_id)
+            if room.exists():
+                room = room.get()
+                room.players.add(request.user)
+                # start a new game in this room and give the first turn
+                room.is_started = True
+                owner.turn = True
+                room.save()
+                owner.save()
+                return Response({"error": False, "start_game": True})
+
+        else:
+            # дать возможность выйти/закончить игру, отправив её айдишник
+            return Response({"error": True, "message": "User already playing or created a room."},
+                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class SetPoint(APIView):
+    """ Update game field and change the player turn """
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        game = models.UserGame.objects.filter(
+            user=request.user, turn=True,
+            game_room__is_started=True, game_room__is_ended=False)
+        if game.exists():
+            game = game.get()
+            room_id = game.game_room.id
+
+            # get previous game field to change the point
+            field = game.game_room.field
+            # change the turn of the player | will work only when 2 user are playing
+            # set end of the turn for this player
+            this_player = models.UserGame.objects.filter(game_room__id=room_id, turn=True).get()
+            next_player = models.UserGame.objects.filter(game_room__id=room_id, turn=False).get()
+            this_player.turn = False
+            next_player.turn = True
+            this_player.save()
+            next_player.save()
+
+            return Response({"field": field})
+
+        return Response({"error": True, "message": "Now is not your turn"},
+                        status = status.HTTP_422_UNPROCESSABLE_ENTITY)

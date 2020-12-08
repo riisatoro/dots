@@ -46,9 +46,10 @@ class UserGame(models.Model):
     score = models.IntegerField(default=0)
     turn = models.BooleanField(default=False)
 
+    '''
     class Meta:
         unique_together = ('user', 'game_room',)
-
+    '''
     def __str__(self):
         return f"{self.game_room}"
     
