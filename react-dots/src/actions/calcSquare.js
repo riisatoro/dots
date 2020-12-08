@@ -19,7 +19,7 @@ function main(field, player1, player2) {
 	return field
 }
 
-
+/* OK */
 function fillCircleSquare(field, loop, player) {
 	for(let i=0;i<field.length; i++) {
 		for (let j=0; j<field.length; j++) {
@@ -51,7 +51,7 @@ function fillCircleSquare(field, loop, player) {
 	return field
 }
 
-
+/* OK */
 function hasCapturedPoint(loop, points) {
 	for(let i=0; i<points.length; i++){
 		if(isInLoop(loop, points[i])) {
@@ -62,7 +62,7 @@ function hasCapturedPoint(loop, points) {
 	return false
 }
 
-
+/* OK */
 function isInLoop(loop, point){
 	let x = point[0]
 	let y = point[1]
@@ -127,7 +127,7 @@ function isNeighbour(point1, point2) {
 	return false
 }
 
-
+/* OK */
 function findLoop(path) {
 	for (let q=path.length-1; q>=2; q--){
 		for(let p=0; p<path.length; p++) {
@@ -160,7 +160,7 @@ function getGraphLoop(graph, loops, visited) {
 				}
 			}
 		}
-
+        /* OK */
 		if(path.length > 2){
 			let tmp = findLoop(path)
 			if(JSON.stringify([]) !== JSON.stringify(tmp)) {
@@ -169,7 +169,7 @@ function getGraphLoop(graph, loops, visited) {
 		}
 		visited[index] = BLACK
 	}
-
+    /* OK */
 	for(let i=0; i<graph.length; i++) {
 		if (visited[i] === WHITE) {
 			path.push(graph[i])

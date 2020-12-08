@@ -2,7 +2,6 @@
 def process(field, colors):
     captured = [0]*len(colors)
     captured_colors = list(map(lambda color: color+"l", colors))
-    print(captured_colors)
 
     for row in field:
         for point in row:

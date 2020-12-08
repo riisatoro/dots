@@ -15,12 +15,22 @@ class TestStringMethods(unittest.TestCase):
             ["E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
             ["E", "E", "E", "R", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
             ["E", "E", "E", "G", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
-            ["E", "E", "G", "R", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
-            ["R", "G", "R", "G", "R", "G", "R", "E", "E", "E", "E", "E", "E", "E", "E"],
+            ["E", "E", "G", "R", "G", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
+            ["R", "G", "R", "Gl", "R", "G", "R", "E", "E", "E", "E", "E", "E", "E", "E"],
             ["E", "E", "G", "R", "G", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
             ["E", "E", "E", "G", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"],
             ["E", "E", "E", "R", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E"]
         ]
+
+        self.loop_in_loop = [
+            ["E","E","E","E","E","E"],
+            ["E","E","G","E","E","E"],
+            ["E","G","R","G","E","E"],
+            ["E","G","E","G","E","E"],
+            ["E","E","G","E","E","E"],
+            ["E","E","E","E","E","E"],
+        ]
+
         self.full_field = [["R"]*8]*8
 
         self.captured_field = [
@@ -45,14 +55,12 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertEqual(new_field[2][2], 'R')
         self.assertEqual(new_field[11][3], 'Gl')
-    '''
+
     def test_released(self):
-        self.loop_field[10][4] = ""
-        data = process(self.loop_field, self.colors)
+        data = process(self.loop_in_loop, self.colors[::-1])
         new_field = data["field"]
 
-        self.assertEqual(new_field[11][3], 'G')
-        self.assertEqual(new_field[11][4], 'Rl')
+        self.assertEqual(new_field[2][2], 'Rl')
 
     def test_full_field(self):
         data = process(self.full_field, self.colors)
@@ -65,7 +73,7 @@ class TestStringMethods(unittest.TestCase):
 
         captured = data["captured"]
         self.assertEqual(captured, [2, 2])
-    '''
+
 
 if __name__ == '__main__':
     unittest.main()
