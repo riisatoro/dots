@@ -16,8 +16,8 @@ def process(field, colors):
 
 
 
-    is_full = False
-    captured = [0, 0]
+    is_full = full(field)
+    captured = square(field, colors)
 
     return {"field": field, "is_full": is_full, "captured": captured}
 
