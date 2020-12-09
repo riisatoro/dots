@@ -197,13 +197,12 @@ class SetPoint(APIView):
                 colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
                 # get the `field`, `is_full` and `captured` amount
                 data = game_logic.process(field, colors)
-                print(data)
 
                 # if out field is full, redirect to the finish game page
                 if data["is_full"]:
                     return redirect("endgame")
 
-                new_field.field = data[field]
+                new_field.field = data["field"]
                 new_field.save()
                 # !
 
