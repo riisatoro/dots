@@ -10,7 +10,6 @@ class LoginTest(TestCase):
         self.content = "application/json"
 
         self.user = User(username="admin")
-        self.user.save()
         self.user.set_password("admin")
         self.user.save()
 
@@ -22,6 +21,8 @@ class LoginTest(TestCase):
         response = self.client.post(self.url, {"username": "awdawdawd", "password": "admin"}, content_type=self.content)
         self.assertEqual(response.status_code, 401)
 
+
     def test_wrong_password(self):
         response = self.client.post(self.url, {"username": "admin", "password": "awdawdawd"}, content_type=self.content)
         self.assertEqual(response.status_code, 401)
+

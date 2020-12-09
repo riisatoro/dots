@@ -213,7 +213,7 @@ class SetPoint(APIView):
             return Response(data)
 
         return Response(
-            {"error": True, "message": "Now is not your turn"},
+            {"error": True, "message": "Now is not your turn."},
             status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
