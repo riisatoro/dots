@@ -14,4 +14,6 @@ urlpatterns = [
 	path('api/v2/setpoint/', views.SetPoint.as_view(), name="setpoint"),
 	path('api/v2/leave/', views.GameRoomLeave.as_view(), name="leave_room"),
 
+	path('api/v2/endgame/', views.GameRoomFinish.as_view(), name="end_game")
+
 ]

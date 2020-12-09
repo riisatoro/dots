@@ -30,7 +30,8 @@ class LoginTest(TestCase):
 
 class GameRoom(TestCase):
     def setUp(self):
-        pass
+        self.client = Client()
+
     
     def test_autorized_get_room_list(self):
         pass

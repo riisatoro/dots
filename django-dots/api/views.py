@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse
 
@@ -166,6 +167,8 @@ class GameRoomJoin(APIView):
 
 class SetPoint(APIView):
     """ Update game field and change the player turn """
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         return Response()
 
@@ -185,10 +188,22 @@ class SetPoint(APIView):
                 field[point[0]][point[1]] = game.color
                 new_field = models.GameRoom.objects.get(id=room_id)
 
+                # !
+                # may not work 'cause colors always get as an ordered list, so we should reverse it
                 # process the game field, receiving the colors for all players
                 colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
-                new_field.field = game_logic.process(field, colors)
+                # get the `field`, `is_full` and `captured` amount
+                data = game_logic.process(field, colors)
+                print(data)
+
+                # if out field is full, redirect to the finish game page
+                if data["is_full"]:
+                    return redirect("endgame")
+
+                new_field.field = data[field]
                 new_field.save()
+                # !
+
             else:
                 return Response({"error": True, "message": "This point is not available."},
                                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
@@ -197,6 +212,7 @@ class SetPoint(APIView):
             # set end of the turn for this player
             this_player = models.UserGame.objects.filter(game_room__id=room_id, turn=True).get()
             next_player = models.UserGame.objects.filter(game_room__id=room_id, turn=False).get()
+            # this duplicate may can be changed, if we can receive two orders in one request
             this_player.turn = False
             next_player.turn = True
             this_player.save()
@@ -209,6 +225,8 @@ class SetPoint(APIView):
 
 
 class GameRoomLeave(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         return Response()
 
@@ -219,4 +237,15 @@ class GameRoomLeave(APIView):
             .get().game_room
         room.is_ended = True
         room.save()
+        return Response()
+
+
+class GameRoomFinish(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+
         return Response()
