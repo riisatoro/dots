@@ -1,3 +1,13 @@
+image: python:3.8
+
+variables:
+  DATABASE_URL: postgresql://postgres:postgres@postgres:5432/dots
+  POSTGRES_DB: dots
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+
 test-linter-react:
   stage: test
   image: node:latest
@@ -9,29 +19,16 @@ test-linter-react:
 
 test-linter-django:
   stage: test
-  image: python:3.8
-  script: 
-    - pip install virtualenv
-    - virtualenv venv
-    - . venv/bin/activate
-    - pip3 install -r django-dots/requirements.txt
+  script:
+    - pip install -r django-dots/requirements.txt
     - prospector django-dots/api
 
     
 test-backend:
   services:  
     - postgres:latest
-  variables:
-    POSTGRES_DB: dots
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    POSTGRES_HOST_AUTH_METHOD: trust
   stage: test
-  image: python:3.8
   script:
-    - export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dots
-    - pip3 install virtualenv
-    - virtualenv venv
-    - . venv/bin/activate
-    - pip3 install -r django-dots/requirements.txt
-    - python3 django-dots/manage.py test api
+    - export DATABASE_URL=$DATABASE_URL
+    - pip install -r django-dots/requirements.txt
+    - python django-dots/manage.py test api
