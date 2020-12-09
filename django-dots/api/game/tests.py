@@ -1,7 +1,7 @@
-import unittest
-from main import process
+from django.test import TestCase
+from .main import process
 
-class TestStringMethods(unittest.TestCase):
+class TestStringMethods(TestCase):
 
     def setUp(self):
         self.loop_field = [
@@ -73,7 +73,3 @@ class TestStringMethods(unittest.TestCase):
 
         captured = data["captured"]
         self.assertEqual(captured, [2, 2])
-
-
-if __name__ == '__main__':
-    unittest.main()

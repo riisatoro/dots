@@ -111,11 +111,13 @@ class GameRoomView(APIView):
         if not already_waiting and size in range(5, 15):
             room = models.GameRoom(field = [["E"]*size]*size, size=size)
         else:
-            return Response({"error": True, "message": "Unexpected color or field size, or user already created a room."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return Response(
+                {"error": True, "message": "Unexpected color or field size, or user already created a room."},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         try:
             room.full_clean()
-        except Exception as E:
+        finally:
             return Response({"error": True, "message": "Unexpected field size."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room.save()
