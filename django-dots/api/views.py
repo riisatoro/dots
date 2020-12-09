@@ -151,10 +151,10 @@ class GameRoomJoin(APIView):
             if room.exists() and owner.exists():
                 owner = owner.get()
                 room = room.get()
-                #
+
                 user_game = models.UserGame(user=request.user, game_room=room, color=request.data["color"])
                 user_game.save()
-                # start a new game in this room and give the first turn
+
                 room.is_started = True
                 owner.turn = True
                 room.save()
@@ -183,43 +183,34 @@ class SetPoint(APIView):
             game = game.get()
             room_id = game.game_room.id
 
-            # get previous game field to change the point
             field = game.game_room.field
             point = request.data["point"]
-            # check if this point is available for updates
+
             if field[point[0]][point[1]] == "E":
                 field[point[0]][point[1]] = game.color
                 new_field = models.GameRoom.objects.get(id=room_id)
 
-                # !
-                # may not work 'cause colors always get as an ordered list, so we should reverse it
-                # process the game field, receiving the colors for all players
                 colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
-                # get the `field`, `is_full` and `captured` amount
                 data = game_logic.process(field, colors)
-
-                # if out field is full, redirect to the finish game page
+                data = game_logic.process(data["field"], list(colors)[::-1])
                 if data["is_full"]:
                     return redirect("endgame")
 
                 new_field.field = data["field"]
                 new_field.save()
-                # !
 
             else:
                 return Response({"error": True, "message": "This point is not available."},
                                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-            # change the turn of the player | will work only when 2 user are playing
-            # set end of the turn for this player
             this_player = models.UserGame.objects.filter(game_room__id=room_id, turn=True).get()
             next_player = models.UserGame.objects.filter(game_room__id=room_id, turn=False).get()
-            # this duplicate may can be changed, if we can receive two orders in one request
+
             this_player.turn = False
             next_player.turn = True
             this_player.save()
             next_player.save()
-            return Response({"field": game.game_room.field})
+            return Response(data)
 
         return Response(
             {"error": True, "message": "Now is not your turn"},
@@ -233,7 +224,6 @@ class GameRoomLeave(APIView):
         return Response()
 
     def post(self, request):
-        # get two players
         room = models.UserGame.objects.filter(
             user=request.user, game_room__is_started=True, game_room__is_ended=False)\
             .get().game_room
