@@ -13,6 +13,7 @@ from . import calc_square as square
 
 def process(field, colors):
     new_field = capture.process(field, colors)
+    new_field = capture.process(new_field, colors[::-1])
     is_full = full.process(field)
     captured = square.process(field, colors)
 
