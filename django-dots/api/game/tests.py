@@ -81,7 +81,6 @@ class TestRawGameLogic(TestCase):
         self.assertEqual(data["field"][3][2], "R")
 
 
-'''
 class TestPointTurn(TestCase):
     fixtures = ['dump.json']
 
@@ -120,18 +119,9 @@ class TestFieldCalc(TestCase):
 
     def test_surrounded(self):
         response = self.client.post(self.url, {"point": [1, 12]}, self.content, **self.admin_headers)
-        print()
-        for i, _ in enumerate(response.data["field"]):
-            print(_)
-
-    def test_related(self):
-        pass
-
-    def test_is_full(self):
-        pass
+        self.assertEqual(response.data["field"][1][12], "Rl")
 
     def test_captured(self):
-        pass
+        response = self.client.post(self.url, {"point": [1, 2]}, self.content, **self.admin_headers)
+        self.assertEqual(response.data["captured"], [0, 4])
 
-
-'''

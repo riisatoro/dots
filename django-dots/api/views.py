@@ -191,8 +191,10 @@ class SetPoint(APIView):
                 new_field = models.GameRoom.objects.get(id=room_id)
 
                 colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
+                colors = [colors[0][0], colors[1][0]]
+
                 data = game_logic.process(field, colors)
-                data = game_logic.process(data["field"], list(colors)[::-1])
+                data = game_logic.process(data["field"], colors[::-1])
                 if data["is_full"]:
                     return redirect("endgame")
 
