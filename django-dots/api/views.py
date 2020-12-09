@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse
+from django.core.exceptions import ValidationError
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -117,7 +118,7 @@ class GameRoomView(APIView):
 
         try:
             room.full_clean()
-        finally:
+        except ValidationError:
             return Response({"error": True, "message": "Unexpected field size."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         room.save()
@@ -157,14 +158,12 @@ class GameRoomJoin(APIView):
                 room.save()
                 owner.save()
                 return Response({"error": False, "start_game": True})
-            else:
-                return Response({"error": True, "message": "Room does not exists."},
-                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        else:
-            # дать возможность выйти/закончить игру, отправив её айдишник
-            return Response({"error": True, "message": "User already playing or created a room."},
+            return Response({"error": True, "message": "Room does not exists."},
                             status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return Response({"error": True, "message": "User already playing or created a room."},
+                        status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class SetPoint(APIView):
