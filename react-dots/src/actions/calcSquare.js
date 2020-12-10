@@ -1,3 +1,5 @@
+/* THIS LOGIC IS NOW DEPRECATED */
+
 function main(field, player1, player2) {
 	let player_points = getAllPoints(field, player1)
 	let enemy_points = getAllPoints(field, player2)

@@ -63,7 +63,6 @@ export default connect(
 	dispatch => ({
 
 		sendLoginForm: (data) => {
-			console.log("data before request", data)
 			const loginFormRequest = (data) => {
 				axios({
 					method: "post",

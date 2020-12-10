@@ -30,3 +30,8 @@
 	border-left: 2px solid silver;
 	border-right: 2px solid silver
 }
+
+.room_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr
+}

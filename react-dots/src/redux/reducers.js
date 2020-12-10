@@ -18,6 +18,7 @@ import {
 	COLOR_CHOOSED,
 	FIELD_SIZE_CHANGED,
 	CALC_CAPTURED,
+	UPDATE_GAME_ROOMS
 } from './types.js';
 
 import { loadState, getEmptyField } from './local_state.js';
@@ -170,6 +171,13 @@ export function updateState(state = initialState, action) {
 			new_players[1].name = action.payload.p2
 			
 			return {...state, players: new_players}
+
+        case UPDATE_GAME_ROOMS:
+            if(action.payload.status === 200) {
+                console.log(action.payload)
+                return {...state, rooms: action.payload.data.free_room}
+            }
+
 
 		default: 
 			return {...state};
