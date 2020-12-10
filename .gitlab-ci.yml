@@ -5,7 +5,6 @@ variables:
   POSTGRES_DB: dots
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  POSTGRES_HOST_AUTH_METHOD: trust
 
 
 test-linter-react:
@@ -20,7 +19,7 @@ test-linter-react:
 test-linter-django:
   stage: test
   script:
-    - pip install -r django-dots/requirements.txt
+    - pip install prospector
     - prospector django-dots/api
 
     
@@ -29,6 +28,5 @@ test-backend:
     - postgres:latest
   stage: test
   script:
-    - export DATABASE_URL=$DATABASE_URL
     - pip install -r django-dots/requirements.txt
     - python django-dots/manage.py test api
