@@ -19,7 +19,7 @@ test-linter-react:
 test-linter-django:
   stage: test
   script:
-    - pip install django prospector
+    - pip install django djangorestframework prospector
     - prospector django-dots/api
 
     
