@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import PropTypes from 'prop-types';
 import {
-  DRAW_DOT, CHECK_FIELD_FULL, HIDE_LEADERS, CALC_CAPTURED, STOP_GAME,
+  DRAW_DOT, CHECK_FIELD_FULL, CALC_CAPTURED, STOP_GAME,
 } from '../redux/types';
 
 import '../../public/css/game_field.css';
@@ -14,29 +14,31 @@ class GameField extends Component {
 
   dotClicked(e) {
     const index = e.target.id;
-    const yAxe = index % this.props.store.field_size;
-    const xAxe = (index - yAxe) / this.props.store.field_size;
+    const yAxe = index % this.props.fieldSize;
+    const xAxe = (index - yAxe) / this.props.fieldSize;
 
-    this.props.onDotClicked([yAxe, xAxe], this.props.store.turn);
+    this.props.onDotClicked([yAxe, xAxe], this.props.turn);
     this.props.checkFieldFull();
-    if (this.props.store.game_end) {
-      this.props.saveMatchResults(this.props.store.results);
+    if (this.props.gameEnd) {
+      this.props.saveMatchResults(this.props.results);
     }
     this.props.calcCaptured();
   }
 
   gameEnd() {
-    this.props.saveMatchResults(this.props.store.results);
+    this.props.saveMatchResults(this.props.results);
   }
 
   render() {
-    const item = this.props.store.field.map((i, pIndex) => (
+    const { field, fieldSize, players } = this.props;
+
+    const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
           <div
             className={j}
-            key={(pIndex * this.props.store.field_size + qIndex).toString()}
-            id={pIndex * this.props.store.field_size + qIndex}
+            key={(pIndex * fieldSize + qIndex).toString()}
+            id={pIndex * fieldSize + qIndex}
             onKeyPress={this.handleKeyPress}
             onClick={this.dotClicked.bind(this)}
             role="button"
@@ -51,18 +53,14 @@ class GameField extends Component {
       <section className="field">
         <div className="align-center">
           <p className="">
-            {this.props.store.players[0].name}
-            {' '}
+            {players[0].name}
             captured
-            {' '}
-            {this.props.store.players[0].captured}
+            {players[0].captured}
           </p>
           <p className="">
-            {this.props.store.players[1].name}
-            {' '}
+            {players[1].name}
             captured
-            {' '}
-            {this.props.store.players[1].captured}
+            {players[1].captured}
           </p>
         </div>
 
@@ -77,7 +75,33 @@ class GameField extends Component {
   }
 }
 
+GameField.propTypes = {
+  onDotClicked: PropTypes.func.isRequired,
+  checkFieldFull: PropTypes.func.isRequired,
+  saveMatchResults: PropTypes.func.isRequired,
+  calcCaptured: PropTypes.func.isRequired,
+  fieldSize: PropTypes.number.isRequired,
+  turn: PropTypes.bool.isRequired,
+  gameEnd: PropTypes.bool.isRequired,
+  players: PropTypes.objectOf(PropTypes.object).isRequired,
+  field: PropTypes.objectOf(PropTypes.object).isRequired,
+  results: PropTypes.objectOf(PropTypes.object).isRequired,
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    fieldSize: state.field_size,
+    turn: state.turn,
+    gameEnd: state.game_end,
+    players: state.players,
+    field: state.field,
+    results: state.results,
+  };
+  return data;
+};
+
 export default connect(
+  mapStateToProps,
   (state) => ({
     store: state,
   }),
@@ -92,10 +116,6 @@ export default connect(
 
     saveMatchResults: () => {
       dispatch({ type: STOP_GAME });
-    },
-
-    hideLeaders: () => {
-      dispatch({ type: HIDE_LEADERS });
     },
 
     calcCaptured: () => {
