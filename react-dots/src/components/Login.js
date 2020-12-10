@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { connect } from 'react-redux';
@@ -50,6 +51,10 @@ function Login(props) {
     </section>
   );
 }
+
+Login.propTypes = {
+  sendLoginForm: PropTypes.func.isRequired,
+};
 
 export default connect(
   (state) => ({

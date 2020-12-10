@@ -15,6 +15,10 @@ const setInitial = () => {
   }];
   const leaders = [];
   const fieldSize = 10;
+  const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
+  const colorTable = {
+    O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
+  };
 
   return {
     field: getEmptyField(fieldSize),
@@ -27,6 +31,8 @@ const setInitial = () => {
     field_size: fieldSize,
     reply,
     leaders,
+    colors,
+    colorTable,
   };
 };
 

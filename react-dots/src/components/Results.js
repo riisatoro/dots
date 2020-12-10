@@ -1,25 +1,27 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 function Results(props) {
-  const { results } = props.store;
+  const {
+    isEqual, winner, looser, winScore, looseScore,
+  } = props;
 
   let resultBoard = '';
-  if (results.equal) {
+  if (isEqual) {
     resultBoard = (
       <div className="container">
         <div className="space-around">
           <p className="align-center" key="win">No winners here!</p>
           <p className="align-center" key="players">
             Players:
-            {results.winner}
-            {' '}
+            {winner}
             and
-            {results.looser}
+            {looser}
           </p>
           <p className="align-center" key="loose">
             Common score:
-            {results.win_score}
+            {winScore}
           </p>
         </div>
       </div>
@@ -30,21 +32,21 @@ function Results(props) {
         <div className="space-around">
           <p className="align-center" key="win">
             Winner:
-            {results.winner}
+            {winner}
           </p>
           <p className="align-center" key="loose">
             Score:
-            {results.win_score}
+            {winScore}
           </p>
         </div>
         <div>
           <p className="align-center" key="win_score">
             Looser:
-            {results.looser}
+            {looser}
           </p>
           <p className="align-center" key="loose_score">
             Score:
-            {results.loose_score}
+            {looseScore}
           </p>
         </div>
       </div>
@@ -59,7 +61,27 @@ function Results(props) {
   );
 }
 
+Results.propTypes = {
+  isEqual: PropTypes.bool.isRequired,
+  winner: PropTypes.string.isRequired,
+  looser: PropTypes.string.isRequired,
+  winScore: PropTypes.number.isRequired,
+  looseScore: PropTypes.number.isRequired,
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    isEqual: state.results.equal,
+    winner: state.results.winner,
+    looser: state.results.looser,
+    winScore: state.results.loose_score,
+    looseScore: state.results.win_score,
+  };
+  return data;
+};
+
 export default connect(
+  mapStateToProps,
   (state) => ({
     store: state,
   }),

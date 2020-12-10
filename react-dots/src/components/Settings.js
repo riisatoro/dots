@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import {
@@ -14,7 +15,7 @@ import '../../public/css/settings.css';
 
 class Settings extends Component {
   componentDidMount() {
-    this.props.getGameRooms(this.props.store.user.token);
+    this.props.getGameRooms(this.props.token);
   }
 
   color1Clicked(e) {
@@ -35,19 +36,16 @@ class Settings extends Component {
   }
 
   submitForm(e) {
-    if (this.props.store.players[0].index !== this.props.store.players[1].index
-            && this.props.store.players[0].index !== -1
-            && this.props.store.players[1].index !== -1) {
+    if (this.props.players[0].index !== this.props.players[1].index
+            && this.props.players[0].index !== -1
+            && this.props.players[1].index !== -1) {
       this.props.setPlayersName(e.player1, e.player2);
       this.props.startNewGame();
     }
   }
 
   render() {
-    const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
-    const colorTable = {
-      O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
-    };
+    const { rooms, colors, colorTable } = this.props;
 
     return (
       <section className="field">
@@ -79,7 +77,6 @@ class Settings extends Component {
                   name="color1"
                   onClick={this.color1Clicked}
                 />
-                {' '}
                 <div className={color}> </div>
               </div>
             ))}
@@ -111,7 +108,6 @@ class Settings extends Component {
                   name="color2"
                   onClick={this.color2Clicked}
                 />
-                {' '}
                 <div className={color}> </div>
               </div>
             ))}
@@ -148,13 +144,15 @@ class Settings extends Component {
 
           <div className="join-room room_grid">
             {
-                this.props.store.rooms.map((element) => (
+                rooms.map((element) => (
                   <div className="">
-                    <p>{element.user.username}</p>
+                    <p>
+                      Player:
+                      {element.user.username}
+                    </p>
                     <p>
                       Field:
                       {element.game_room.size}
-                      {' '}
                       *
                       {element.game_room.size}
                     </p>
@@ -174,7 +172,36 @@ class Settings extends Component {
   }
 }
 
+Settings.propTypes = {
+  setPlayerColor: PropTypes.func.isRequired,
+  changeFieldSize: PropTypes.func.isRequired,
+  startNewGame: PropTypes.func.isRequired,
+  setPlayersName: PropTypes.func.isRequired,
+  getGameRooms: PropTypes.func.isRequired,
+  token: PropTypes.func.isRequired,
+  players: PropTypes.objectOf(PropTypes.object).isRequired,
+  colors: PropTypes.objectOf(PropTypes.string).isRequired,
+  colorTable: PropTypes.objectOf(PropTypes.object).isRequired,
+  rooms: PropTypes.objectOf(PropTypes.object),
+};
+
+Settings.defaultProps = {
+  rooms: [],
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    token: state.user.token,
+    players: state.players,
+    rooms: state.rooms,
+    colors: state.colors,
+    colorTable: state.colorTable,
+  };
+  return data;
+};
+
 export default connect(
+  mapStateToProps,
   (state) => ({
     store: state,
   }),

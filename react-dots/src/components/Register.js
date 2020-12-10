@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { connect } from 'react-redux';
@@ -81,6 +82,10 @@ function Register(props) {
     </section>
   );
 }
+
+Register.propTypes = {
+  sendRegisterForm: PropTypes.func.isRequired,
+};
 
 export default connect(
   (state) => ({

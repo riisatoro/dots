@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import { RECEIVE_LEADERS } from '../redux/types';
@@ -8,11 +9,11 @@ import '../../public/css/leaderboard.css';
 
 class Leaderboard extends Component {
   componentDidMount() {
-    this.props.getLeaderboard(this.props.store.user.token);
+    this.props.getLeaderboard(this.props.token);
   }
 
   render() {
-    const data = this.props.store.leaders;
+    const { data } = this.props;
 
     return (
       <section className="leaderboard">
@@ -24,9 +25,7 @@ class Leaderboard extends Component {
                   <p>No winners here!</p>
                   <p>
                     {item.winner}
-                    {' '}
                     and
-                    {' '}
                     {item.looser}
                   </p>
                   <p>
@@ -40,22 +39,18 @@ class Leaderboard extends Component {
               <div key={index.toString()} className="grid__col">
                 <p>
                   Winner:
-                  {' '}
                   {item.winner}
                 </p>
                 <p>
                   Looser:
-                  {' '}
                   {item.looser}
                 </p>
                 <p>
                   Win score:
-                  {' '}
                   {item.win_score}
                 </p>
                 <p>
                   Loose score:
-                  {' '}
                   {item.loose_score}
                 </p>
               </div>
@@ -67,7 +62,25 @@ class Leaderboard extends Component {
   }
 }
 
+Leaderboard.propTypes = {
+  token: PropTypes.string.isRequired,
+  data: PropTypes.objectOf(PropTypes.object),
+  getLeaderboard: PropTypes.func.isRequired,
+};
+
+Leaderboard.defaultProps = {
+  data: [],
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    token: state.user.token,
+  };
+  return data;
+};
+
 export default connect(
+  mapStateToProps,
   (state) => ({
     store: state,
   }),

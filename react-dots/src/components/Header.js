@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import {
@@ -12,11 +13,11 @@ import {
 
 class Header extends Component {
   onOpenLeaders() {
-    this.props.getLeaderboard(this.props.store.user.token);
+    this.props.getLeaderboard(this.props.token);
   }
 
   openAuthForm() {
-    this.props.onClickOpenAuth();
+    this.props.onClickOpenAuth(this.props.token);
   }
 
   logoutUser() {
@@ -29,8 +30,10 @@ class Header extends Component {
   }
 
   render() {
+    const { isAuth } = this.props;
+
     let navigation = [];
-    if (this.props.store.user.auth) {
+    if (isAuth) {
       navigation = [
         <div className="col-sm-8 col-md-3 new-ga me" key="new-game">
           <button type="button" key="0" className="container header-btn" onClick={this.openSettings.bind(this)}>New game</button>
@@ -68,7 +71,31 @@ class Header extends Component {
   }
 }
 
+Header.propTypes = {
+  onClickOpenAuth: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
+  openSettings: PropTypes.func.isRequired,
+  hideResults: PropTypes.func.isRequired,
+  getLeaderboard: PropTypes.func.isRequired,
+  token: PropTypes.string,
+  isAuth: PropTypes.bool,
+};
+
+Header.defaultProps = {
+  token: '',
+  isAuth: false,
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    token: state.user.token,
+    isAuth: state.user.auth,
+  };
+  return data;
+};
+
 export default connect(
+  mapStateToProps,
   (state) => ({
     store: state,
   }),
