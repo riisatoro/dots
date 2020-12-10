@@ -9,7 +9,8 @@ import '../../public/css/leaderboard.css';
 
 class Leaderboard extends Component {
   componentDidMount() {
-    this.props.getLeaderboard(this.props.token);
+    const { getLeaderboard, token } = this.props;
+    getLeaderboard(token);
   }
 
   render() {

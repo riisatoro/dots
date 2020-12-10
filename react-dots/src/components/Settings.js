@@ -15,32 +15,36 @@ import '../../public/css/settings.css';
 
 class Settings extends Component {
   componentDidMount() {
-    this.props.getGameRooms(this.props.token);
+    const { getGameRooms, token } = this.props;
+    getGameRooms(token);
   }
 
   color1Clicked(e) {
-    this.props.setPlayerColor(0, e.target.id);
-
-    this.props.setPlayersName('default1', 'default2');
+    const { setPlayerColor, setPlayersName } = this.props;
+    setPlayerColor(0, e.target.id);
+    setPlayersName('default1', 'default2');
   }
 
   color2Clicked(e) {
-    this.props.setPlayerColor(1, e.target.id);
+    const { setPlayerColor } = this.props;
+    setPlayerColor(1, e.target.id);
   }
 
   newFieldSize(e) {
+    const { changeFieldSize } = this.props;
     const size = e.target.value;
     if (size > 5 && size < 16) {
-      this.props.changeFieldSize(size);
+      changeFieldSize(size);
     }
   }
 
   submitForm(e) {
-    if (this.props.players[0].index !== this.props.players[1].index
-            && this.props.players[0].index !== -1
-            && this.props.players[1].index !== -1) {
-      this.props.setPlayersName(e.player1, e.player2);
-      this.props.startNewGame();
+    const { players, setPlayersName, startNewGame } = this.props;
+    if (players[0].index !== players[1].index
+            && players[0].index !== -1
+            && players[1].index !== -1) {
+      setPlayersName(e.player1, e.player2);
+      startNewGame();
     }
   }
 

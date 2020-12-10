@@ -13,20 +13,31 @@ class GameField extends Component {
   }
 
   dotClicked(e) {
+    const {
+      onDotClicked,
+      checkFieldFull,
+      saveMatchResults,
+      calcCaptured,
+      fieldSize,
+      turn,
+      gameEnd,
+      results,
+    } = this.props;
     const index = e.target.id;
-    const yAxe = index % this.props.fieldSize;
-    const xAxe = (index - yAxe) / this.props.fieldSize;
+    const yAxe = index % fieldSize;
+    const xAxe = (index - yAxe) / fieldSize;
 
-    this.props.onDotClicked([yAxe, xAxe], this.props.turn);
-    this.props.checkFieldFull();
-    if (this.props.gameEnd) {
-      this.props.saveMatchResults(this.props.results);
+    onDotClicked([yAxe, xAxe], turn);
+    checkFieldFull();
+    if (gameEnd) {
+      saveMatchResults(results);
     }
-    this.props.calcCaptured();
+    calcCaptured();
   }
 
   gameEnd() {
-    this.props.saveMatchResults(this.props.results);
+    const { saveMatchResults, results } = this.props;
+    saveMatchResults(results);
   }
 
   render() {

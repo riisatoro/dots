@@ -13,20 +13,24 @@ import {
 
 class Header extends Component {
   onOpenLeaders() {
-    this.props.getLeaderboard(this.props.token);
+    const { getLeaderboard, token } = this.props;
+    getLeaderboard(token);
   }
 
   openAuthForm() {
-    this.props.onClickOpenAuth(this.props.token);
+    const { onClickOpenAuth, token } = this.props;
+    onClickOpenAuth(token);
   }
 
   logoutUser() {
-    this.props.logoutUser();
+    const { logoutUser } = this.props;
+    logoutUser();
   }
 
   openSettings() {
-    this.props.hideResults();
-    this.props.openSettings();
+    const { hideResults, openSettings } = this.props;
+    hideResults();
+    openSettings();
   }
 
   render() {
