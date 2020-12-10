@@ -1,31 +1,29 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
-import Auth from './Auth.js';
-import GameField from './GameField.js';
-import Settings from './Settings.js';
-import Results from './Results.js';
-import Leaderboard from './Leaderboard.js';
+import Auth from './Auth';
+import GameField from './GameField';
+import Settings from './Settings';
+import Results from './Results';
+import Leaderboard from './Leaderboard';
 
-import "../../public/css/default.css";
+import '../../public/css/default.css';
 
-
-class ComponentContainer extends Component {
-	render() {
-		return (
-			<section className="ComponentContainer">
-				{ this.props.store.components.auth && <Auth /> }
-		  		{ this.props.store.components.showSettings && <Settings /> }
-			    { this.props.store.components.showField && <GameField /> }
-			    { this.props.store.game_end && <Results /> }
-			    { this.props.store.components.showLeaders && <Leaderboard /> }
-		    </section>
-		)
-	}
+function ComponentContainer(props) {
+  const thisProps = props;
+  return (
+    <section className="ComponentContainer">
+      { thisProps.store.components.auth && <Auth /> }
+      { thisProps.store.components.showSettings && <Settings /> }
+      { thisProps.store.components.showField && <GameField /> }
+      { thisProps.store.game_end && <Results /> }
+      { thisProps.store.components.showLeaders && <Leaderboard /> }
+    </section>
+  );
 }
 
 export default connect(
-	state => ({
-		store: state
-	})
+  (state) => ({
+    store: state,
+  }),
 )(ComponentContainer);
