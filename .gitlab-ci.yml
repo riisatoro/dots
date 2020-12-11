@@ -20,7 +20,7 @@ test-linter-django:
   stage: test
   script:
     - pip install django djangorestframework prospector
-    - prospector django-dots/api
+    - prospector django-dots/api --tool pylint --tool pep8
 
     
 test-backend:
