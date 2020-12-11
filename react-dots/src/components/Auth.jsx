@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Login from './Login';
-import Register from './Register';
+import Login from './Login.jsx';
+import Register from './Register.jsx';
 
 function Auth(props) {
   const { error, reply } = props;

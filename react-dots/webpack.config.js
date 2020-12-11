@@ -5,7 +5,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = {
    context: __dirname,
-   entry: './src/index.js',
+   entry: './src/index.jsx',
    output: {
       path: path.resolve( __dirname, 'dist' ),
       filename: 'main.js',
@@ -22,7 +22,7 @@ module.exports = {
    module: {
       rules: [
          {
-            test: /\.js$/,
+            test: /\.(js|jsx)$/,
             use: 'babel-loader',
          },
          {
