@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Auth from './Auth.jsx';
-import GameField from './GameField.jsx';
-import Settings from './Settings.jsx';
-import Results from './Results.jsx';
-import Leaderboard from './Leaderboard.jsx';
+import Auth from './Auth';
+import GameField from './GameField';
+import Settings from './Settings';
+import Results from './Results';
+import Leaderboard from './Leaderboard';
 
 import '../../public/css/default.css';
 

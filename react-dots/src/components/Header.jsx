@@ -52,7 +52,7 @@ class Header extends Component {
     } else {
       navigation = [
         <div className="col-6 align-center" key="login">
-          <button type="button" key="0" className="header-btn" onClick={this.openAuthForm.bind(this)}>Login or Register</button>
+          <button type="button" key="0" className="header-btn" onClick={this.openAuthForm()}>Login or Register</button>
         </div>,
       ];
     }
@@ -81,13 +81,8 @@ Header.propTypes = {
   openSettings: PropTypes.func.isRequired,
   hideResults: PropTypes.func.isRequired,
   getLeaderboard: PropTypes.func.isRequired,
-  token: PropTypes.string,
-  isAuth: PropTypes.bool,
-};
-
-Header.defaultProps = {
-  token: '',
-  isAuth: false,
+  token: PropTypes.string.isRequired,
+  isAuth: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -100,10 +95,6 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  (state) => ({
-    store: state,
-  }),
-
   (dispatch) => ({
     onClickOpenAuth: () => {
       dispatch({ type: SHOW_AUTH_FORM, payload: true });

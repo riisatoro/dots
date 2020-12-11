@@ -206,9 +206,6 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  (state) => ({
-    store: state,
-  }),
   (dispatch) => ({
     setPlayerColor: (player, color) => {
       dispatch({ type: COLOR_CHOOSED, payload: { player, color } });

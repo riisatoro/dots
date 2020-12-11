@@ -44,7 +44,7 @@ function Login(props) {
           </div>
 
           <div className="align-center">
-            <button type="button" className="btn btn-primary">Login</button>
+            <button type="submit" className="btn btn-primary">Login</button>
           </div>
         </form>
       </div>
@@ -57,12 +57,8 @@ Login.propTypes = {
 };
 
 export default connect(
-  (state) => ({
-    store: state,
-  }),
-
+  null,
   (dispatch) => ({
-
     sendLoginForm: (data) => {
       const loginFormRequest = () => {
         axios({
@@ -74,7 +70,7 @@ export default connect(
             dispatch({ type: RECEIVE_AUTH_REPLY, payload: response });
           },
         ).catch(
-          () => { },
+          () => {},
         );
       };
       loginFormRequest();

@@ -113,9 +113,6 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  (state) => ({
-    store: state,
-  }),
   (dispatch) => ({
     onDotClicked: (position) => {
       dispatch({ type: DRAW_DOT, payload: position });

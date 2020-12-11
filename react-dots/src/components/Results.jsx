@@ -80,9 +80,4 @@ const mapStateToProps = (state) => {
   return data;
 };
 
-export default connect(
-  mapStateToProps,
-  (state) => ({
-    store: state,
-  }),
-)(Results);
+export default connect(mapStateToProps)(Results);

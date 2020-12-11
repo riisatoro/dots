@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Login from './Login.jsx';
-import Register from './Register.jsx';
+import Login from './Login';
+import Register from './Register';
 
 function Auth(props) {
   const { error, reply } = props;
@@ -45,9 +45,4 @@ const mapStateToProps = (state) => {
   return data;
 };
 
-export default connect(
-  mapStateToProps,
-  (state) => ({
-    store: state,
-  }),
-)(Auth);
+export default connect(mapStateToProps)(Auth);

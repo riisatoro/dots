@@ -74,7 +74,7 @@ function Register(props) {
           </div>
 
           <div className="align-center">
-            <button type="button" className="btn btn-primary">Register</button>
+            <button type="submit" className="btn btn-primary">Register</button>
           </div>
         </form>
 
@@ -88,10 +88,7 @@ Register.propTypes = {
 };
 
 export default connect(
-  (state) => ({
-    store: state,
-  }),
-
+  null,
   (dispatch) => ({
     sendRegisterForm: (data) => {
       const registerFormRequest = () => {
