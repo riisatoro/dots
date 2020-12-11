@@ -39,11 +39,11 @@ def get_graph_loop(player_loop, loops, visited):
 
 def is_neighbour(point_1, point_2):
     try:
-        if point_1 != point_2 \
-            and abs(point_1[0] - point_2[0]) < 2 \
-            and abs(point_1[1] - point_2[1]) < 2 \
-            and (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <=2:
-            return True
+        if point_1 != point_2:
+            if abs(point_1[0] - point_2[0]) < 2:
+                if abs(point_1[1] - point_2[1]) < 2:
+                    if (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <= 2:
+                        return True
     except IndexError:
         print("in_neighbour", IndexError)
     return False

@@ -64,7 +64,7 @@ class Login(APIView):
         user = authenticate(
             username=body["username"],
             password=body["password"]
-            )
+        )
         if user:
             login(request, user)
             token = Token.objects.get_or_create(user=user)[0]
@@ -106,7 +106,7 @@ class GameRoomView(APIView):
 
     def post(self, request):
         data = request.data
-        
+
         size = data["size"]
         already_waiting = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
         if not already_waiting and size in range(5, 15):

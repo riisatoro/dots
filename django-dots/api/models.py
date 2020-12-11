@@ -37,7 +37,7 @@ class GameRoom(models.Model):
 
     def __str__(self):
         return f"#{self.id} | start is {self.is_started}; end is {self.is_ended}"
-    
+
 
 class UserGame(models.Model):
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
@@ -52,4 +52,3 @@ class UserGame(models.Model):
     '''
     def __str__(self):
         return f"{self.game_room}"
-    
