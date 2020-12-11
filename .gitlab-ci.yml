@@ -19,9 +19,8 @@ test-linter-react:
 test-linter-django:
   stage: test
   script:
-    - pip install django djangorestframework prospector
-    - prospector django-dots/api --tool pylint
-    - prospector django-dots/api --full-pep8
+    - pip install django djangorestframework prospector[with_everything]
+    - prospector django-dots/api --profile django-dots/profile.yaml
 
     
 test-backend:

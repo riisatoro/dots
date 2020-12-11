@@ -1,0 +1,26 @@
+test-warnings: true
+doc-warnings: false
+
+inherits:
+  - full_pep8
+
+uses:
+  - django
+
+pep8:
+  run: true
+
+pyflakes:
+  run: true
+
+pylint:
+  run: true
+
+pyflakes:
+  run: true
+
+mccabe:
+  run: true
+
+dodgy:
+  run: true
