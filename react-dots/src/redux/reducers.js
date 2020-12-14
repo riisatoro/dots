@@ -1,34 +1,13 @@
-import {
-  SEND_REGISTER_REQUEST,
-  DRAW_DOT, SHOW_AUTH_FORM,
-  HIDE_AUTH_FORM,
-  SEND_LOGIN_REQUEST,
-  SEND_LOGOUT_REQUEST,
-  SHOW_SETTINGS,
-  HIDE_SETTINGS,
-  START_NEW_GAME,
-  STOP_GAME,
-  SET_COLOR,
-  CHECK_FIELD_FULL,
-  UPDATE_PLAYERS_NAME,
-  HIDE_RESULTS,
-  HIDE_LEADERS,
-  RECEIVE_LEADERS,
-  RECEIVE_AUTH_REPLY,
-  COLOR_CHOOSED,
-  FIELD_SIZE_CHANGED,
-  CALC_CAPTURED,
-  UPDATE_GAME_ROOMS,
-} from './types';
+import { TYPES } from './types';
+
 import loadState from './local_state';
-import getEmptyField from './getEmptyField';
 
 const initialState = loadState();
 const colorTitle = ['O', 'R', 'B', 'Y', 'G'];
 
 export default function updateState(state = initialState, action) {
   switch (action.type) {
-    case RECEIVE_AUTH_REPLY: {
+    case TYPES.RECEIVE_AUTH_REPLY: {
       if (action.payload.status === 200) {
         const { data } = action.payload;
         if (data.error) {
@@ -46,7 +25,7 @@ export default function updateState(state = initialState, action) {
       };
     }
 
-    case RECEIVE_LEADERS: {
+    case TYPES.RECEIVE_LEADERS: {
       if (action.payload.status === 200) {
         return {
           ...state,
@@ -58,51 +37,47 @@ export default function updateState(state = initialState, action) {
       return { ...state, leaders: [] };
     }
 
-    case COLOR_CHOOSED: {
-      const playersSet = state.players;
-      playersSet[action.payload.player].index = action.payload.color;
-      playersSet[action.payload.player].color = colorTitle[action.payload.color];
-      return { ...state, players: playersSet };
+    case TYPES.COLOR_CHOOSED: {
+      return { ...state, playerColor: colorTitle[action.payload.color] };
     }
 
-    case CALC_CAPTURED: {
+    case TYPES.CALC_CAPTURED: {
       return { ...state };
     }
 
-    case HIDE_LEADERS: {
+    case TYPES.HIDE_LEADERS: {
       return { ...state, components: { showLeaders: false } };
     }
 
-    case HIDE_RESULTS: {
+    case TYPES.HIDE_RESULTS: {
       return { ...state, game_end: false };
     }
 
-    case SHOW_AUTH_FORM: {
+    case TYPES.SHOW_AUTH_FORM: {
       return { ...state, components: { auth: true }, game_end: false };
     }
 
-    case HIDE_AUTH_FORM: {
+    case TYPES.HIDE_AUTH_FORM: {
       return { ...state, components: { auth: false } };
     }
 
-    case FIELD_SIZE_CHANGED: {
+    case TYPES.FIELD_SIZE_CHANGED: {
       const newSize = action.payload.size;
-      const newTmpField = getEmptyField(newSize);
-      return { ...state, field: newTmpField, field_size: newSize };
+      return { ...state, field_size: newSize };
     }
 
-    case SEND_REGISTER_REQUEST: {
+    case TYPES.SEND_REGISTER_REQUEST: {
       return { ...state };
     }
 
-    case SEND_LOGIN_REQUEST: {
+    case TYPES.SEND_LOGIN_REQUEST: {
       if (action.payload.status === 200) {
         return { ...state, components: { auth: false }, user: { auth: true } };
       }
       return { ...state };
     }
 
-    case SEND_LOGOUT_REQUEST: {
+    case TYPES.SEND_LOGOUT_REQUEST: {
       return {
         ...state,
         user: { auth: false, token: '' },
@@ -111,7 +86,7 @@ export default function updateState(state = initialState, action) {
       };
     }
 
-    case SHOW_SETTINGS: {
+    case TYPES.SHOW_SETTINGS: {
       return {
         ...state,
         components: { showSettings: true },
@@ -126,20 +101,18 @@ export default function updateState(state = initialState, action) {
       };
     }
 
-    case HIDE_SETTINGS: {
+    case TYPES.HIDE_SETTINGS: {
       return { ...state, components: { showSettings: false, showField: true } };
     }
 
-    case START_NEW_GAME: {
-      const tmpField = getEmptyField(state.field_size);
+    case TYPES.START_NEW_GAME: {
       return {
         ...state,
         components: { showSettings: false, showField: true },
-        field: tmpField,
       };
     }
 
-    case STOP_GAME: {
+    case TYPES.STOP_GAME: {
       let winner = '';
       let looser = '';
       let winScore = 0;
@@ -170,7 +143,7 @@ export default function updateState(state = initialState, action) {
       };
     }
 
-    case DRAW_DOT: {
+    case TYPES.DRAW_DOT: {
       const x = action.payload[1];
       const y = action.payload[0];
       const { field } = state;
@@ -182,7 +155,7 @@ export default function updateState(state = initialState, action) {
       return { ...state };
     }
 
-    case SET_COLOR: {
+    case TYPES.SET_COLOR: {
       const { players } = state;
       const thisPlayer = action.payload.player - 1;
       const thisColor = action.payload.color;
@@ -190,22 +163,43 @@ export default function updateState(state = initialState, action) {
       return { ...state, players };
     }
 
-    case CHECK_FIELD_FULL: {
+    case TYPES.CHECK_FIELD_FULL: {
       return { ...state };
     }
 
-    case UPDATE_PLAYERS_NAME: {
+    case TYPES.UPDATE_PLAYERS_NAME: {
       const NewPlayers = state.players;
       NewPlayers[0].name = action.payload.p1;
       NewPlayers[1].name = action.payload.p2;
       return { ...state, players: NewPlayers };
     }
 
-    case UPDATE_GAME_ROOMS: {
+    case TYPES.UPDATE_GAME_ROOMS: {
       if (action.payload.status === 200) {
         return { ...state, rooms: action.payload.data.free_room };
       }
       return { ...state, rooms: [] };
+    }
+
+    case TYPES.NEW_ROOM_CREATED: {
+      if (action.payload.status === 200) {
+        const reply = action.payload.data;
+        const socketData = {
+          connect: true,
+          roomId: reply.room_id,
+          field: reply.field,
+          fieldSize: reply.fieldSize,
+          turn: false,
+          isGameStarted: false,
+        };
+        return { ...state, socket: socketData, components: { gameField: true } };
+      }
+      return { ...state };
+    }
+
+    case TYPES.WS_MESSAGE_UPDATE: {
+      console.log(action.payload);
+      return { ...state, wsMessage: action.payload };
     }
 
     default:

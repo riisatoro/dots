@@ -1,5 +1,4 @@
 import { LOCAL_STORAGE } from './types';
-import getEmptyField from './getEmptyField';
 
 const setInitial = () => {
   const results = {
@@ -8,22 +7,24 @@ const setInitial = () => {
   const components = { auth: false, showSettings: false, showField: false };
   const user = { auth: false, token: '' };
   const reply = { error: false, message: '' };
-  const players = [{
-    name: 'anon', color: 'green', index: -1, captured: 0,
-  }, {
-    name: 'anon', color: 'red', index: -1, captured: 0,
-  }];
+  const playerColor = 'B';
+  const playerScore = 0;
   const leaders = [];
   const fieldSize = 10;
   const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
   const colorTable = {
     O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
   };
+  const socket = {
+    connect: false, roomId: '-1', data: {}, isGameStarted: false, turn: false,
+  };
 
   return {
-    field: getEmptyField(fieldSize),
+    socket,
+    field: [[]],
     user,
-    players,
+    playerColor,
+    playerScore,
     components,
     results,
     game_end: false,

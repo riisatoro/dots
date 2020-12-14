@@ -3,13 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
-import {
-  COLOR_CHOOSED,
-  START_NEW_GAME,
-  FIELD_SIZE_CHANGED,
-  UPDATE_PLAYERS_NAME,
-  UPDATE_GAME_ROOMS,
-} from '../redux/types';
+import { TYPES } from '../redux/types';
 
 import '../../public/css/settings.css';
 
@@ -19,15 +13,14 @@ class Settings extends Component {
     getGameRooms(token);
   }
 
-  color1Clicked(e) {
-    const { setPlayerColor, setPlayersName } = this.props;
-    setPlayerColor(0, e.target.id);
-    setPlayersName('default1', 'default2');
+  onCreateNewRoom() {
+    const { createNewRoom, token } = this.props;
+    createNewRoom(token, 10, 'R');
   }
 
-  color2Clicked(e) {
+  onColorClicked(e) {
     const { setPlayerColor } = this.props;
-    setPlayerColor(1, e.target.id);
+    setPlayerColor(e.target.id);
   }
 
   newFieldSize(e) {
@@ -50,26 +43,12 @@ class Settings extends Component {
 
   render() {
     const { rooms, colors, colorTable } = this.props;
-
     return (
       <section className="field">
+        <h2 className="">Create the room</h2>
         <div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can&apos;t be the same</div>
 
         <form onSubmit={this.submitForm}>
-          <p className="h2 align-center">Player 1</p>
-
-          <div className="row justify-content-center width-90">
-            <div className="form-group col-8" key="username">
-              <input
-                className="form-control space-around"
-                type="text"
-                name="player1"
-                placeholder="Nickname"
-                autoComplete="off"
-              />
-            </div>
-          </div>
-
           <div className="row justify-content-center width-90">
             {colors.map((color, index) => (
               <div className="col-2" key={index.toString()}>
@@ -79,38 +58,7 @@ class Settings extends Component {
                   key={index.toString()}
                   id={index}
                   name="color1"
-                  onClick={this.color1Clicked}
-                />
-                <div className={color}> </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="h2 align-center">Player 2</p>
-
-          <div className="row justify-content-center width-90">
-            <div className="form-group col-8" key="username">
-              <input
-                className="form-control space-around"
-                type="text"
-                name="player2"
-                placeholder="Nickname"
-                autoComplete="off"
-              />
-
-            </div>
-          </div>
-
-          <div className="row justify-content-center width-90">
-            {colors.map((color, index) => (
-              <div className="wrapper_color col-2" key={index.toString()}>
-                <input
-                  className="block-margin"
-                  type="radio"
-                  key={index.toString()}
-                  id={index}
-                  name="color2"
-                  onClick={this.color2Clicked}
+                  onClick={this.onColorClicked.bind(this)}
                 />
                 <div className={color}> </div>
               </div>
@@ -125,13 +73,12 @@ class Settings extends Component {
                 key="field_size"
                 name="size"
                 placeholder="Field size"
-                onChange={(number) => this.newFieldSize(number)}
-              />
+                onChange={(number) => this.newFieldSize(number)}/>
             </div>
           </div>
 
           <div className="align-center">
-            <button type="button" className="btn btn-success space-bottom">Play!</button>
+            <button type="button" className="btn btn-success" onClick={this.onCreateNewRoom.bind(this)}>New room</button>
           </div>
 
         </form>
@@ -139,13 +86,8 @@ class Settings extends Component {
         <hr />
         <hr />
 
-        <h2 className="">Create or join the room</h2>
+        <h2 className="">Join the room</h2>
         <div className="container">
-
-          <div className="new-room">
-            <button type="button" className="btn btn-success">New room</button>
-          </div>
-
           <div className="join-room room_grid">
             {
                 rooms.map((element) => (
@@ -177,6 +119,7 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
+  createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   startNewGame: PropTypes.func.isRequired,
@@ -200,6 +143,7 @@ const mapStateToProps = (state) => {
     rooms: state.rooms,
     colors: state.colors,
     colorTable: state.colorTable,
+    socket: state.webSocket,
   };
   return data;
 };
@@ -207,20 +151,20 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    setPlayerColor: (player, color) => {
-      dispatch({ type: COLOR_CHOOSED, payload: { player, color } });
+    setPlayerColor: (color) => {
+      dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
     },
 
     changeFieldSize: (size) => {
-      dispatch({ type: FIELD_SIZE_CHANGED, payload: { size } });
+      dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
     },
 
     startNewGame: () => {
-      dispatch({ type: START_NEW_GAME, payload: {} });
+      dispatch({ type: TYPES.START_NEW_GAME, payload: {} });
     },
 
     setPlayersName: (p1, p2) => {
-      dispatch({ type: UPDATE_PLAYERS_NAME, payload: { p1, p2 } });
+      dispatch({ type: TYPES.UPDATE_PLAYERS_NAME, payload: { p1, p2 } });
     },
 
     getGameRooms: (token) => {
@@ -229,11 +173,25 @@ export default connect(
           method: 'get',
           headers: { Authorization: `Token ${token}` },
           url: '/api/v2/rooms/',
-        }).then((response) => { dispatch({ type: UPDATE_GAME_ROOMS, payload: response }); });
+        }).then((response) => { dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: response }); });
       };
       gameRoomRequest();
     },
 
+    createNewRoom: (token, fieldSize, gameColor) => {
+      const data = { color: gameColor, size: fieldSize };
+      const newRoomRequest = () => {
+        axios({
+          method: 'post',
+          headers: { Authorization: `Token ${token}` },
+          url: '/api/v2/rooms/',
+          data,
+        }).then((response) => {
+          dispatch({ type: TYPES.NEW_ROOM_CREATED, payload: response });
+        });
+      };
+      newRoomRequest();
+    },
   }
   ),
 )(Settings);

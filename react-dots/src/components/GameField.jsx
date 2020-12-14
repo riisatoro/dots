@@ -1,38 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  DRAW_DOT, CHECK_FIELD_FULL, CALC_CAPTURED, STOP_GAME,
-} from '../redux/types';
+import { TYPES } from '../redux/types';
 
 import '../../public/css/game_field.css';
 
 class GameField extends Component {
+  constructor(props) {
+    super(props);
+    const { roomId } = this.props;
+    this.socket = new WebSocket(`ws://127.0.0.1:8000/ws/room/${roomId}/`);
+  }
+
   handleKeyPress() {
     this.click = true;
   }
 
   dotClicked(e) {
-    const {
-      onDotClicked,
-      checkFieldFull,
-      saveMatchResults,
-      calcCaptured,
-      fieldSize,
-      turn,
-      gameEnd,
-      results,
-    } = this.props;
+    const { fieldSize, turn, onDotClicked } = this.props;
     const index = e.target.id;
     const yAxe = index % fieldSize;
     const xAxe = (index - yAxe) / fieldSize;
 
     onDotClicked([yAxe, xAxe], turn);
-    checkFieldFull();
-    if (gameEnd) {
-      saveMatchResults(results);
-    }
-    calcCaptured();
   }
 
   gameEnd() {
@@ -87,26 +77,20 @@ class GameField extends Component {
 }
 
 GameField.propTypes = {
-  onDotClicked: PropTypes.func.isRequired,
-  checkFieldFull: PropTypes.func.isRequired,
-  saveMatchResults: PropTypes.func.isRequired,
-  calcCaptured: PropTypes.func.isRequired,
+  roomId: PropTypes.string.isRequired,
+  field: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.bool.isRequired,
-  gameEnd: PropTypes.bool.isRequired,
-  players: PropTypes.objectOf(PropTypes.object).isRequired,
-  field: PropTypes.objectOf(PropTypes.object).isRequired,
-  results: PropTypes.objectOf(PropTypes.object).isRequired,
+
+  onDotClicked: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const data = {
-    fieldSize: state.field_size,
-    turn: state.turn,
-    gameEnd: state.game_end,
-    players: state.players,
-    field: state.field,
-    results: state.results,
+    roomId: state.socket.roomId,
+    field: state.socket.field,
+    fieldSize: state.socket.field_size,
+    turn: state.socket.turn,
   };
   return data;
 };
@@ -115,19 +99,7 @@ export default connect(
   mapStateToProps,
   (dispatch) => ({
     onDotClicked: (position) => {
-      dispatch({ type: DRAW_DOT, payload: position });
-    },
-
-    checkFieldFull: () => {
-      dispatch({ type: CHECK_FIELD_FULL });
-    },
-
-    saveMatchResults: () => {
-      dispatch({ type: STOP_GAME });
-    },
-
-    calcCaptured: () => {
-      dispatch({ type: CALC_CAPTURED });
+      dispatch({ type: TYPES.DRAW_DOT, payload: position });
     },
   }
   ),

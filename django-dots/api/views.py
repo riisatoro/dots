@@ -128,7 +128,13 @@ class GameRoomView(APIView):
         user_game.save()
         room.save()
 
-        return Response({"error": False, "message": "Room was created!", "room_id": room.id})
+        return Response({
+            "error": False, 
+            "message": "Room was created!", 
+            "room_id": room.id, 
+            "field": room.field, 
+            "field_size": room.size,
+        })
 
 
 class GameRoomJoin(APIView):

@@ -15,7 +15,7 @@ function ComponentContainer(props) {
     <section className="ComponentContainer">
       { thisProps.store.components.auth && <Auth /> }
       { thisProps.store.components.showSettings && <Settings /> }
-      { thisProps.store.components.showField && <GameField /> }
+      { thisProps.store.components.gameField && <GameField /> }
       { thisProps.store.game_end && <Results /> }
       { thisProps.store.components.showLeaders && <Leaderboard /> }
     </section>
