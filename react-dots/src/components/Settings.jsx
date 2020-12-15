@@ -18,6 +18,11 @@ class Settings extends Component {
     createNewRoom(token, 10, 'R');
   }
 
+  onPlayerJoinGame(e) {
+    const { onJoinGameRoom, token } = this.props;
+    onJoinGameRoom(token, e.target.id, 'G');
+  }
+
   onColorClicked(e) {
     const { setPlayerColor } = this.props;
     setPlayerColor(e.target.id);
@@ -43,6 +48,7 @@ class Settings extends Component {
 
   render() {
     const { rooms, colors, colorTable } = this.props;
+    console.log(rooms)
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
@@ -104,7 +110,7 @@ class Settings extends Component {
                     </p>
                     <p>Color:</p>
                     <div className={colorTable[element.color]}> </div>
-                    <button type="button" className="btn btn-primary">Join</button>
+                    <button type="button" id={element.game_room.id} className="btn btn-primary" onClick={this.onPlayerJoinGame.bind(this)}>Join</button>
                     <hr />
                   </div>
                 ))
@@ -130,6 +136,7 @@ Settings.propTypes = {
   colors: PropTypes.objectOf(PropTypes.string).isRequired,
   colorTable: PropTypes.objectOf(PropTypes.object).isRequired,
   rooms: PropTypes.objectOf(PropTypes.object),
+  onJoinGameRoom: PropTypes.func.isRequired,
 };
 
 Settings.defaultProps = {
@@ -192,6 +199,20 @@ export default connect(
       };
       newRoomRequest();
     },
-  }
-  ),
+
+    onJoinGameRoom: (token, roomId, playerColor) => {
+      const joinGameRoom = () => {
+        const data = { room_id: roomId, color: playerColor };
+        axios({
+          method: 'post',
+          headers: { Authorization: `Token ${token}` },
+          url: '/api/v2/join/',
+          data,
+        }).then((response) => {
+          dispatch({ type: TYPES.PLAYER_JOIN_ROOM, payload: response });
+        });
+      };
+      joinGameRoom();
+    },
+  }),
 )(Settings);

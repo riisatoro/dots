@@ -1,5 +1,4 @@
 from django.urls import re_path
-from channels.routing import ProtocolTypeRouter, URLRouter
 from .consumers import GameRoomConsumer
 
 websocket_urlpatterns = [

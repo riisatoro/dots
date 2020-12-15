@@ -187,18 +187,39 @@ export default function updateState(state = initialState, action) {
         const socketData = {
           connect: true,
           roomId: reply.room_id,
-          field: reply.field,
-          fieldSize: reply.fieldSize,
+          fieldSize: reply.field_size,
           turn: false,
           isGameStarted: false,
         };
-        return { ...state, socket: socketData, components: { gameField: true } };
+        return {
+          ...state, socket: socketData, components: { gameField: true }, field: reply.field,
+        };
       }
       return { ...state };
     }
 
+    case TYPES.PLAYER_JOIN_ROOM: {
+      if (action.payload.status === 200) {
+        const reply = action.payload.data;
+        const socketData = {
+          connect: true,
+          roomId: reply.room_id,
+          fieldSize: reply.field_size,
+          turn: false,
+          isGameStarted: false,
+        };
+        return {
+          ...state, socket: socketData, components: { gameField: true }, field: reply.field,
+        };
+      }
+      return { ...state };
+    }
+
+    case TYPES.PLAYER_SET_DOT: {
+      return { ...state, field: action.payload.data.field };
+    }
+
     case TYPES.WS_MESSAGE_UPDATE: {
-      console.log(action.payload);
       return { ...state, wsMessage: action.payload };
     }
 

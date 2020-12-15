@@ -8,8 +8,11 @@ import '../../public/css/game_field.css';
 class GameField extends Component {
   constructor(props) {
     super(props);
-    const { roomId } = this.props;
+    const { roomId, receiveReply } = this.props;
     this.socket = new WebSocket(`ws://127.0.0.1:8000/ws/room/${roomId}/`);
+    this.socket.onmessage = (msg) => {
+      receiveReply(JSON.parse(msg.data));
+    };
   }
 
   handleKeyPress() {
@@ -17,22 +20,16 @@ class GameField extends Component {
   }
 
   dotClicked(e) {
-    const { fieldSize, turn, onDotClicked } = this.props;
+    const { fieldSize, token, onDotClicked } = this.props;
     const index = e.target.id;
     const yAxe = index % fieldSize;
     const xAxe = (index - yAxe) / fieldSize;
 
-    onDotClicked([yAxe, xAxe], turn);
-  }
-
-  gameEnd() {
-    const { saveMatchResults, results } = this.props;
-    saveMatchResults(results);
+    onDotClicked([xAxe, yAxe], token, this.socket);
   }
 
   render() {
-    const { field, fieldSize, players } = this.props;
-
+    const { field, fieldSize } = this.props;
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
@@ -52,23 +49,10 @@ class GameField extends Component {
 
     return (
       <section className="field">
-        <div className="align-center">
-          <p className="">
-            {players[0].name}
-            captured
-            {players[0].captured}
-          </p>
-          <p className="">
-            {players[1].name}
-            captured
-            {players[1].captured}
-          </p>
-        </div>
-
         <div className="field__wrapper">{item}</div>
 
         <div className="align-center">
-          <button type="button" className="btn btn-danger space-around" onClick={this.gameEnd.bind(this)}>End game</button>
+          <button type="button" className="btn btn-danger space-around">End game</button>
         </div>
 
       </section>
@@ -80,17 +64,18 @@ GameField.propTypes = {
   roomId: PropTypes.string.isRequired,
   field: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
   fieldSize: PropTypes.number.isRequired,
-  turn: PropTypes.bool.isRequired,
+  token: PropTypes.string.isRequired,
 
   onDotClicked: PropTypes.func.isRequired,
+  receiveReply: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const data = {
+    token: state.user.token,
     roomId: state.socket.roomId,
-    field: state.socket.field,
-    fieldSize: state.socket.field_size,
-    turn: state.socket.turn,
+    field: state.field,
+    fieldSize: state.socket.fieldSize,
   };
   return data;
 };
@@ -98,8 +83,13 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    onDotClicked: (position) => {
-      dispatch({ type: TYPES.DRAW_DOT, payload: position });
+    onDotClicked: (position, token, socket) => {
+      socket.send(JSON.stringify(
+        { fieldPoint: position, TYPE: TYPES.PLAYER_SET_DOT },
+      ));
+    },
+    receiveReply: (data) => {
+      dispatch({ type: data.TYPE, payload: data });
     },
   }
   ),

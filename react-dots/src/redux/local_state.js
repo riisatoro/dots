@@ -16,12 +16,11 @@ const setInitial = () => {
     O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
   };
   const socket = {
-    connect: false, roomId: '-1', data: {}, isGameStarted: false, turn: false,
+    connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
   };
 
   return {
     socket,
-    field: [[]],
     user,
     playerColor,
     playerScore,

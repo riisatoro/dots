@@ -4,6 +4,10 @@ doc-warnings: false
 inherits:
   - full_pep8
 
+ignore-paths:
+  - dots
+  - django-dots/manage.py
+
 uses:
   - django
 
@@ -15,6 +19,8 @@ pyflakes:
 
 pylint:
   run: true
+  disable: 
+    - W0221
 
 pyflakes:
   run: true

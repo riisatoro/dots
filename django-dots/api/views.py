@@ -1,4 +1,3 @@
-from django.shortcuts import redirect
 from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
@@ -12,7 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from . import models
-from .game import main as game_logic
 
 
 class Main(APIView):
@@ -165,64 +163,14 @@ class GameRoomJoin(APIView):
                 owner.turn = True
                 room.save()
                 owner.save()
-                return Response({"error": False, "start_game": True})
+                # field, field_size, room_id turn
+                return Response({"error": False, "field": room.field, "field_size": room.size, "room_id": room_id, "turn": False})
 
             return Response({"error": True, "message": "Room does not exists."},
                             status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         return Response({"error": True, "message": "User already playing or created a room."},
                         status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-
-class SetPoint(APIView):
-    """ Update game field and change the player turn """
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        return Response()
-
-    def post(self, request):
-        game = models.UserGame.objects.filter(
-            user=request.user, turn=True,
-            game_room__is_started=True, game_room__is_ended=False)
-        if game.exists():
-            game = game.get()
-            room_id = game.game_room.id
-
-            field = game.game_room.field
-            point = request.data["point"]
-
-            if field[point[0]][point[1]] == "E":
-                field[point[0]][point[1]] = game.color
-                new_field = models.GameRoom.objects.get(id=room_id)
-
-                colors = models.UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
-                colors = [colors[0][0], colors[1][0]]
-
-                data = game_logic.process(field, colors)
-                data = game_logic.process(data["field"], colors[::-1])
-                if data["is_full"]:
-                    return redirect("endgame")
-
-                new_field.field = data["field"]
-                new_field.save()
-
-            else:
-                return Response({"error": True, "message": "This point is not available."},
-                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-            this_player = models.UserGame.objects.filter(game_room__id=room_id, turn=True).get()
-            next_player = models.UserGame.objects.filter(game_room__id=room_id, turn=False).get()
-
-            this_player.turn = False
-            next_player.turn = True
-            this_player.save()
-            next_player.save()
-            return Response(data)
-
-        return Response(
-            {"error": True, "message": "Now is not your turn."},
-            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class GameRoomLeave(APIView):
