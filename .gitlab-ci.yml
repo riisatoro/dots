@@ -20,7 +20,7 @@ test-linter-django:
   stage: test
   script:
     - pip install django djangorestframework prospector[with_everything]
-    - prospector django-dots/api --profile django-dots/profile.yaml
+    - prospector --profile django-dots/profile.yaml
 
     
 test-backend:
