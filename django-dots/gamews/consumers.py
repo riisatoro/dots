@@ -58,7 +58,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             if self.field:
                 game_data = process(self.field, data["fieldPoint"], self.user_color, self.colors)
                 await self.update_field(game_data["field"], self.room_id)
-                await self.change_player_turn(self.user_id, self.room_id)
+                turn = await self.change_player_turn(self.room_id)
 
             self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
 
@@ -109,8 +109,15 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         db_field.save()
 
     @database_sync_to_async
-    def change_player_turn(self, user_id, room_id):
-        pass
+    def change_player_turn(self, room_id):
+        user1, user2 = UserGame.objects.filter(game_room=room_id).all()
+        user1.turn = not user1.turn
+        user2.turn = not user2.turn
+        user1.save()
+        user2.save()
+        if user1.turn:
+            return user1.user.username
+        return user2.user.username
 
     @database_sync_to_async
     def close_current_game(self, room_id):

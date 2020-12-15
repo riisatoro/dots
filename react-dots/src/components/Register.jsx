@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { connect } from 'react-redux';
-import { RECEIVE_AUTH_REPLY } from '../redux/types';
+import { TYPES } from '../redux/types';
 
 function Register(props) {
   const { register, handleSubmit, errors } = useForm();
@@ -97,7 +97,7 @@ export default connect(
           data,
         ).then(
           (response) => {
-            dispatch({ type: RECEIVE_AUTH_REPLY, payload: response });
+            dispatch({ type: TYPES.RECEIVE_AUTH_REPLY, payload: response });
           },
         );
       };

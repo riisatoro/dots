@@ -47,7 +47,7 @@ class Settings extends Component {
   newFieldSize(e) {
     const { changeFieldSize } = this.props;
     const size = e.target.value;
-    if (size > 5 && size < 16) {
+    if (size > 5 && size < 15) {
       changeFieldSize(size);
     }
   }
@@ -165,6 +165,7 @@ Settings.propTypes = {
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
   colors: PropTypes.array.isRequired,
   colorTable: PropTypes.object.isRequired,
   rooms: PropTypes.array,
@@ -181,6 +182,7 @@ const mapStateToProps = (state) => {
     fieldSize: state.field_size,
     playerColor: state.playerColor,
     token: state.user.token,
+    username: state.user.username,
     players: state.players,
     rooms: state.rooms,
     colors: state.colors,
