@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -22,10 +23,17 @@ class Settings extends Component {
 
   onPlayerJoinGame(e) {
     const {
-      onJoinGameRoom, token, playerColor, rooms 
+      onJoinGameRoom, token, playerColor, rooms,
     } = this.props;
+    const roomID = e.target.id;
     if (playerColor !== 'Black') {
-      onJoinGameRoom(token, e.target.id, 'G');
+      rooms.forEach((element) => {
+        if (element.game_room.id.toString() === e.target.id) {
+          if (element.color !== playerColor) {
+            onJoinGameRoom(token, roomID, playerColor);
+          }
+        }
+      });
     }
   }
 
@@ -44,7 +52,6 @@ class Settings extends Component {
 
   render() {
     const { rooms, colors, colorTable } = this.props;
-    console.log(rooms);
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
@@ -93,8 +100,8 @@ class Settings extends Component {
         <div className="container">
           <div className="join-room room_grid">
             {
-                rooms.map((element) => (
-                  <div className="">
+                rooms.map((element, index) => (
+                  <div key={`${index.toString()}`} className="">
                     <p>
                       Player:
                       {element.user.username}
@@ -115,7 +122,6 @@ class Settings extends Component {
                     >
                       Join
                     </button>
-                    <hr />
                   </div>
                 ))
             }
@@ -132,10 +138,10 @@ Settings.propTypes = {
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
-  token: PropTypes.func.isRequired,
-  colors: PropTypes.objectOf(PropTypes.string).isRequired,
-  colorTable: PropTypes.objectOf(PropTypes.object).isRequired,
-  rooms: PropTypes.objectOf(PropTypes.object),
+  token: PropTypes.string.isRequired,
+  colors: PropTypes.array.isRequired,
+  colorTable: PropTypes.object.isRequired,
+  rooms: PropTypes.array,
   onJoinGameRoom: PropTypes.func.isRequired,
 };
 
@@ -151,7 +157,6 @@ const mapStateToProps = (state) => {
     rooms: state.rooms,
     colors: state.colors,
     colorTable: state.colorTable,
-    socket: state.webSocket,
   };
   return data;
 };

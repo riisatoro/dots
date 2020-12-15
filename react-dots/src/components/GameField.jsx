@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -62,7 +63,7 @@ class GameField extends Component {
 
 GameField.propTypes = {
   roomId: PropTypes.string.isRequired,
-  field: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
+  field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
 
