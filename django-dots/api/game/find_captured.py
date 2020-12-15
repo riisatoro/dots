@@ -45,7 +45,7 @@ def is_neighbour(point_1, point_2):
                     if (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <= 2:
                         return True
     except IndexError:
-        print("in_neighbour", IndexError)
+        pass
     return False
 
 
@@ -57,7 +57,6 @@ def find_loop(path):
                 try:
                     return path[p:q+1]
                 except IndexError:
-                    print("IN find_loop", IndexError)
                     return path[p:q]
     return []
 

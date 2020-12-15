@@ -41,7 +41,7 @@ class Register(APIView):
 
         user = User.objects.create_user(username, email, password)
         token = Token.objects.get_or_create(user=user)[0]
-        return Response({"error": False, "token": str(token)})
+        return Response({"error": False, "username": username, "token": str(token)})
 
 
 class Logout(APIView):
@@ -66,7 +66,7 @@ class Login(APIView):
         if user:
             login(request, user)
             token = Token.objects.get_or_create(user=user)[0]
-            return Response({"error": False, "token": str(token)})
+            return Response({"error": False, "username": body["username"], "token": str(token)})
         return Response({"error": True, "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -99,7 +99,6 @@ class GameRoomView(APIView):
 
     def get(self, request):
         free_rooms = models.UserGame.objects.filter(game_room__is_started=False)
-        print(len(free_rooms))
         return Response(
             {"free_room": serializers.UserGameSerializer(free_rooms, many=True).data})
 

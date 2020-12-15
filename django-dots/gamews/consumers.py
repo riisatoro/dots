@@ -45,7 +45,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         except ValueError:
             data = {"TYPE": "UNKNOWN"}
 
-        print(data["TYPE"])
         if data["TYPE"] == types.PLAYER_CREATE_ROOM:
             pass
 

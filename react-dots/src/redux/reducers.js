@@ -16,7 +16,7 @@ export default function updateState(state = initialState, action) {
         return {
           ...state,
           reply: { error: false, message: '' },
-          user: { auth: true, token: data.token },
+          user: { auth: true, username: data.username, token: data.token },
           components: { },
         };
       }
@@ -64,17 +64,6 @@ export default function updateState(state = initialState, action) {
     case TYPES.FIELD_SIZE_CHANGED: {
       const newSize = action.payload.size;
       return { ...state, field_size: parseInt(newSize, 10) };
-    }
-
-    case TYPES.SEND_REGISTER_REQUEST: {
-      return { ...state };
-    }
-
-    case TYPES.SEND_LOGIN_REQUEST: {
-      if (action.payload.status === 200) {
-        return { ...state, components: { auth: false }, user: { auth: true } };
-      }
-      return { ...state };
     }
 
     case TYPES.SEND_LOGOUT_REQUEST: {
