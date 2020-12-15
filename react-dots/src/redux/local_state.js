@@ -7,7 +7,7 @@ const setInitial = () => {
   const components = { auth: false, showSettings: false, showField: false };
   const user = { auth: false, token: '' };
   const reply = { error: false, message: '' };
-  const playerColor = 'B';
+  const playerColor = 'Black';
   const playerScore = 0;
   const leaders = [];
   const fieldSize = 10;

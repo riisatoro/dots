@@ -14,13 +14,19 @@ class Settings extends Component {
   }
 
   onCreateNewRoom() {
-    const { createNewRoom, token } = this.props;
-    createNewRoom(token, 10, 'R');
+    const { createNewRoom, token, playerColor } = this.props;
+    if (playerColor !== 'Black') {
+      createNewRoom(token, 10, playerColor);
+    }
   }
 
   onPlayerJoinGame(e) {
-    const { onJoinGameRoom, token } = this.props;
-    onJoinGameRoom(token, e.target.id, 'G');
+    const {
+      onJoinGameRoom, token, playerColor, rooms 
+    } = this.props;
+    if (playerColor !== 'Black') {
+      onJoinGameRoom(token, e.target.id, 'G');
+    }
   }
 
   onColorClicked(e) {
@@ -36,24 +42,15 @@ class Settings extends Component {
     }
   }
 
-  submitForm(e) {
-    const { players, setPlayersName, startNewGame } = this.props;
-    if (players[0].index !== players[1].index
-            && players[0].index !== -1
-            && players[1].index !== -1) {
-      setPlayersName(e.player1, e.player2);
-      startNewGame();
-    }
-  }
-
   render() {
     const { rooms, colors, colorTable } = this.props;
+    console.log(rooms);
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
         <div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can&apos;t be the same</div>
 
-        <form onSubmit={this.submitForm}>
+        <form>
           <div className="row justify-content-center width-90">
             {colors.map((color, index) => (
               <div className="col-2" key={index.toString()}>
@@ -110,29 +107,32 @@ class Settings extends Component {
                     </p>
                     <p>Color:</p>
                     <div className={colorTable[element.color]}> </div>
-                    <button type="button" id={element.game_room.id} className="btn btn-primary" onClick={this.onPlayerJoinGame.bind(this)}>Join</button>
+                    <button
+                      type="button"
+                      id={element.game_room.id}
+                      className="btn btn-primary"
+                      onClick={this.onPlayerJoinGame.bind(this)}
+                    >
+                      Join
+                    </button>
                     <hr />
                   </div>
                 ))
             }
           </div>
-
         </div>
-
       </section>
     );
   }
 }
 
 Settings.propTypes = {
+  playerColor: PropTypes.string.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
-  startNewGame: PropTypes.func.isRequired,
-  setPlayersName: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.func.isRequired,
-  players: PropTypes.objectOf(PropTypes.object).isRequired,
   colors: PropTypes.objectOf(PropTypes.string).isRequired,
   colorTable: PropTypes.objectOf(PropTypes.object).isRequired,
   rooms: PropTypes.objectOf(PropTypes.object),
@@ -145,6 +145,7 @@ Settings.defaultProps = {
 
 const mapStateToProps = (state) => {
   const data = {
+    playerColor: state.playerColor,
     token: state.user.token,
     players: state.players,
     rooms: state.rooms,
@@ -164,14 +165,6 @@ export default connect(
 
     changeFieldSize: (size) => {
       dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
-    },
-
-    startNewGame: () => {
-      dispatch({ type: TYPES.START_NEW_GAME, payload: {} });
-    },
-
-    setPlayersName: (p1, p2) => {
-      dispatch({ type: TYPES.UPDATE_PLAYERS_NAME, payload: { p1, p2 } });
     },
 
     getGameRooms: (token) => {
