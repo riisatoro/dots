@@ -18,11 +18,16 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code=404):
+        response = {
+            "close_code": close_code,
+            "TYPE": types.PLAYER_GIVE_UP,
+        }
+        await self.close_current_game(self.room_id)
         await self.channel_layer.group_send(
             'game_room_' + self.room_id,
             {
                 "type": "reply",
-                "data": close_code
+                "data": response
             }
         )
         await self.channel_layer.group_discard(
@@ -107,3 +112,10 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def change_player_turn(self, user_id, room_id):
         pass
+
+    @database_sync_to_async
+    def close_current_game(self, room_id):
+        room = GameRoom.objects.get(id=room_id)
+        room.is_started = True
+        room.is_ended = True
+        room.save()

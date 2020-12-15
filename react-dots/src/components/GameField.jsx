@@ -16,6 +16,11 @@ class GameField extends Component {
     };
   }
 
+  componentWillUnmount() {
+    const {  } = this.props;
+    this.socket.close();
+  }
+
   handleKeyPress() {
     this.click = true;
   }

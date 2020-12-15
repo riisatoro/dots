@@ -15,7 +15,9 @@ class Settings extends Component {
   }
 
   onCreateNewRoom() {
-    const { createNewRoom, token, playerColor, fieldSize } = this.props;
+    const {
+      createNewRoom, token, playerColor, fieldSize,
+    } = this.props;
     if (playerColor !== 'Black') {
       createNewRoom(token, fieldSize, playerColor);
     }
@@ -37,7 +39,7 @@ class Settings extends Component {
     }
   }
 
-  onColorClicked(e) {
+  onColorChanged(e) {
     const { setPlayerColor } = this.props;
     setPlayerColor(e.target.id);
   }
@@ -52,7 +54,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, colors, colorTable, fieldSize, playerColor
+      rooms, colors, colorTable, fieldSize, playerColor,
     } = this.props;
 
     return (
@@ -70,8 +72,8 @@ class Settings extends Component {
                   key={index.toString()}
                   id={index}
                   checked={playerColor === color[0].toUpperCase()}
+                  onChange={this.onColorChanged.bind(this)}
                   name="color1"
-                  onClick={this.onColorClicked.bind(this)}
                 />
                 <div className={color}> </div>
               </div>
@@ -102,6 +104,24 @@ class Settings extends Component {
         <hr />
 
         <h2 className="">Join the room</h2>
+        <p>Pick up a color</p>
+        <div className="row justify-content-center width-90">
+          {colors.map((color, index) => (
+            <div className="col-2" key={index.toString()}>
+              <input
+                className="block-margin"
+                type="radio"
+                key={index.toString()}
+                id={index}
+                checked={playerColor === color[0].toUpperCase()}
+                onChange={this.onColorChanged.bind(this)}
+                name="color1"
+              />
+              <div className={color}> </div>
+            </div>
+          ))}
+        </div>
+        <hr />
         <div className="container">
           <div className="join-room room_grid">
             {

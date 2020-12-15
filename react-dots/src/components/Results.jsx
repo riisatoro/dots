@@ -74,8 +74,8 @@ const mapStateToProps = (state) => {
     isEqual: state.results.equal,
     winner: state.results.winner,
     looser: state.results.looser,
-    winScore: state.results.loose_score,
-    looseScore: state.results.win_score,
+    winScore: state.results.looseScore,
+    looseScore: state.results.winScore,
   };
   return data;
 };

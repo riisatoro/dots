@@ -223,6 +223,34 @@ export default function updateState(state = initialState, action) {
       return { ...state, wsMessage: action.payload };
     }
 
+    case TYPES.PLAYER_GIVE_UP: {
+      const results = {
+        message: 'Player give up!',
+        winner: 'YOU',
+        looser: 'NOT YOU',
+        winScore: 100500,
+        looseScore: -0,
+        isEqual: false,
+      };
+      return {
+        ...state, components: { showField: false }, results, game_end: true,
+      };
+    }
+
+    case TYPES.THIS_PLAYER_GIVE_UP: {
+      const results = {
+        message: 'You give up!',
+        winner: 'NOT YOU',
+        looser: 'YOU',
+        winScore: 100500,
+        looseScore: -0,
+        isEqual: false,
+      };
+      return {
+        ...state, components: { showField: false }, results, game_end: true,
+      };
+    }
+
     default:
       return { ...state };
   }
