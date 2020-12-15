@@ -99,6 +99,7 @@ class GameRoomView(APIView):
 
     def get(self, request):
         free_rooms = models.UserGame.objects.filter(game_room__is_started=False)
+        print(len(free_rooms))
         return Response(
             {"free_room": serializers.UserGameSerializer(free_rooms, many=True).data})
 

@@ -62,7 +62,7 @@ class GameField extends Component {
 }
 
 GameField.propTypes = {
-  roomId: PropTypes.string.isRequired,
+  roomId: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,

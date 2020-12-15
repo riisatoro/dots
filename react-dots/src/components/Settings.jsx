@@ -15,9 +15,9 @@ class Settings extends Component {
   }
 
   onCreateNewRoom() {
-    const { createNewRoom, token, playerColor } = this.props;
+    const { createNewRoom, token, playerColor, fieldSize } = this.props;
     if (playerColor !== 'Black') {
-      createNewRoom(token, 10, playerColor);
+      createNewRoom(token, fieldSize, playerColor);
     }
   }
 
@@ -51,7 +51,10 @@ class Settings extends Component {
   }
 
   render() {
-    const { rooms, colors, colorTable } = this.props;
+    const {
+      rooms, colors, colorTable, fieldSize, playerColor
+    } = this.props;
+
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
@@ -66,6 +69,7 @@ class Settings extends Component {
                   type="radio"
                   key={index.toString()}
                   id={index}
+                  checked={playerColor === color[0].toUpperCase()}
                   name="color1"
                   onClick={this.onColorClicked.bind(this)}
                 />
@@ -82,6 +86,7 @@ class Settings extends Component {
                 key="field_size"
                 name="size"
                 placeholder="Field size"
+                value={fieldSize}
                 onChange={(number) => this.newFieldSize(number)}
               />
             </div>
@@ -133,6 +138,7 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
+  fieldSize: PropTypes.number,
   playerColor: PropTypes.string.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
@@ -146,11 +152,13 @@ Settings.propTypes = {
 };
 
 Settings.defaultProps = {
+  fieldSize: 10,
   rooms: [],
 };
 
 const mapStateToProps = (state) => {
   const data = {
+    fieldSize: state.field_size,
     playerColor: state.playerColor,
     token: state.user.token,
     players: state.players,

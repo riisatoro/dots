@@ -63,7 +63,7 @@ export default function updateState(state = initialState, action) {
 
     case TYPES.FIELD_SIZE_CHANGED: {
       const newSize = action.payload.size;
-      return { ...state, field_size: newSize };
+      return { ...state, field_size: parseInt(newSize, 10) };
     }
 
     case TYPES.SEND_REGISTER_REQUEST: {
