@@ -129,10 +129,10 @@ class GameRoomView(APIView):
         room.save()
 
         return Response({
-            "error": False, 
-            "message": "Room was created!", 
-            "room_id": room.id, 
-            "field": room.field, 
+            "error": False,
+            "message": "Room was created!",
+            "room_id": room.id,
+            "field": room.field,
             "field_size": room.size,
         })
 
