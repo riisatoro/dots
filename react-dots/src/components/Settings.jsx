@@ -48,7 +48,6 @@ class Settings extends Component {
 
   render() {
     const { rooms, colors, colorTable } = this.props;
-    console.log(rooms)
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
@@ -79,7 +78,8 @@ class Settings extends Component {
                 key="field_size"
                 name="size"
                 placeholder="Field size"
-                onChange={(number) => this.newFieldSize(number)}/>
+                onChange={(number) => this.newFieldSize(number)}
+              />
             </div>
           </div>
 
