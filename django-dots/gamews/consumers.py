@@ -52,15 +52,15 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             pass
 
         elif data["TYPE"] == types.PLAYER_SET_DOT:
-            self.field = await self.get_game_field(self.room_id, self.user_id)
-            self.user_color = await self.get_this_user_color(self.user_id, self.room_id)
-            self.colors = await self.get_user_colors(self.room_id)
-            if self.field:
-                game_data = process(self.field, data["fieldPoint"], self.user_color, self.colors)
-                await self.update_field(game_data["field"], self.room_id)
-                turn = await self.change_player_turn(self.room_id)
-
-            self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
+            if await self.is_allowed_to_set_point(self.user_id, self.room_id):
+                self.field = await self.get_game_field(self.room_id, self.user_id)
+                self.user_color = await self.get_this_user_color(self.user_id, self.room_id)
+                self.colors = await self.get_user_colors(self.room_id)
+                if self.field:
+                    game_data = process(self.field, data["fieldPoint"], self.user_color, self.colors)
+                    await self.update_field(game_data["field"], self.room_id)
+                    await self.change_player_turn(self.room_id)
+                    self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
             pass
@@ -115,9 +115,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         user2.turn = not user2.turn
         user1.save()
         user2.save()
-        if user1.turn:
-            return user1.user.username
-        return user2.user.username
 
     @database_sync_to_async
     def close_current_game(self, room_id):
@@ -125,3 +122,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         room.is_started = True
         room.is_ended = True
         room.save()
+
+    @database_sync_to_async
+    def is_allowed_to_set_point(self, user_id, room_id):
+        data = UserGame.objects.filter(user=user_id, game_room=room_id).values_list('game_room__is_started', 'turn').get()
+        return data[0] and data[1]
