@@ -146,9 +146,17 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         players = UserGame.objects.filter(game_room=room_id).all()
         user1, user2 = players[0].user.username, players[1].user.username
         color1, color2 = players[0].color, players[1].color
-
+        captured1, captured2 = find_points(field, color2), find_points(field, color1)
         data ={
-            user1: find_points(field, color2),
-            user2: find_points(field, color1)
+            user1: captured2,
+            user2: captured1
         }
+
+        player1 = UserGame.objects.filter(game_room=room_id, user__username=user1).get()
+        player1.score = captured2
+        player1.save()
+        player2 = UserGame.objects.filter(game_room=room_id, user__username=user2).get()
+        player2.score = captured1
+        player2.save()
+
         return data
