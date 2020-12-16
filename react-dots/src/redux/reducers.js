@@ -218,7 +218,6 @@ export default function updateState(state = initialState, action) {
         field: action.payload.data.field,
         captured: action.payload.data.captured,
         turn: action.payload.data.turn,
-        captured: action.payload.data.captured,
       };
     }
 

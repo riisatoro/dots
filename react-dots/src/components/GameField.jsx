@@ -30,8 +30,10 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn } = this.props;
+    const { field, fieldSize, turn, captured } = this.props;
     const userTurn = ` ${turn} `;
+    let playersCaptured = '';
+
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
@@ -55,6 +57,14 @@ class GameField extends Component {
           <p>
             Now is
             {userTurn}
+            turn
+          </p>
+        </div>
+
+        <div>
+          <p>
+            Now is
+            {playersCaptured}
             turn
           </p>
         </div>
