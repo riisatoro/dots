@@ -175,13 +175,17 @@ export default function updateState(state = initialState, action) {
         const reply = action.payload.data;
         const socketData = {
           connect: true,
-          roomId: reply.room_id,
+          roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
           isGameStarted: false,
         };
         return {
-          ...state, socket: socketData, components: { gameField: true }, field: reply.field,
+          ...state,
+          socket: socketData,
+          components: { gameField: true },
+          field: reply.field,
+          turn: state.user.username,
         };
       }
       return { ...state };
@@ -192,20 +196,29 @@ export default function updateState(state = initialState, action) {
         const reply = action.payload.data;
         const socketData = {
           connect: true,
-          roomId: reply.room_id,
+          roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
           isGameStarted: false,
         };
         return {
-          ...state, socket: socketData, components: { gameField: true }, field: reply.field,
+          ...state,
+          socket: socketData,
+          components: { gameField: true },
+          field: reply.field,
+          turn: 'NaN',
         };
       }
       return { ...state };
     }
 
     case TYPES.PLAYER_SET_DOT: {
-      return { ...state, field: action.payload.data.field };
+      return {
+        ...state,
+        field: action.payload.data.field,
+        captured: action.payload.data.captured,
+        turn: action.payload.data.turn,
+      };
     }
 
     case TYPES.WS_MESSAGE_UPDATE: {

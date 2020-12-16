@@ -7,8 +7,6 @@ import connectSocket from '../socket/socket';
 
 import '../../public/css/game_field.css';
 
-// 
-
 class GameField extends Component {
   componentDidMount() {
     const { roomID, receiveReply } = this.props;
@@ -32,7 +30,14 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize } = this.props;
+    const { field, fieldSize, turn, username, playerColor, captured } = this.props;
+
+    const userTurn = turn === username ? ' your ' : ' not your ';
+    let score = '';
+    if (captured) {
+      score = 'a';
+    }
+
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
@@ -52,6 +57,20 @@ class GameField extends Component {
 
     return (
       <section className="field">
+        <div>
+          <p>
+            Now is
+            {userTurn}
+            turn
+          </p>
+        </div>
+
+        <div>
+          <p>
+            {score}
+          </p>
+        </div>
+
         <div className="field__wrapper">{item}</div>
 
         <div className="align-center">
@@ -67,9 +86,14 @@ GameField.propTypes = {
   roomID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
+  turn: PropTypes.string,
+  username: PropTypes.string.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
-  interruptGame: PropTypes.func.isRequired,
+};
+
+GameField.defaultProps = {
+  turn: '',
 };
 
 const mapStateToProps = (state) => {
@@ -77,6 +101,8 @@ const mapStateToProps = (state) => {
     roomID: state.socket.roomId,
     field: state.field,
     fieldSize: state.socket.fieldSize,
+    username: state.user.username,
+    turn: state.turn,
   };
   return data;
 };
