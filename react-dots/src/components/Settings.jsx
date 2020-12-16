@@ -54,12 +54,13 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, colors, colorTable, fieldSize, playerColor,
+      rooms, colors, colorTable, fieldSize, playerColor, gameInterrupted
     } = this.props;
 
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
+        { gameInterrupted && <p>Your game was interrupted and closed</p> }
         <div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can&apos;t be the same</div>
 
         <form>
@@ -159,6 +160,7 @@ class Settings extends Component {
 
 Settings.propTypes = {
   fieldSize: PropTypes.number,
+  gameInterrupted: PropTypes.bool,
   playerColor: PropTypes.string.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
@@ -175,6 +177,7 @@ Settings.propTypes = {
 Settings.defaultProps = {
   fieldSize: 10,
   rooms: [],
+  gameInterrupted: false,
 };
 
 const mapStateToProps = (state) => {
@@ -187,6 +190,7 @@ const mapStateToProps = (state) => {
     rooms: state.rooms,
     colors: state.colors,
     colorTable: state.colorTable,
+    gameInterrupted: state.gameInterrupted,
   };
   return data;
 };

@@ -10,6 +10,7 @@ const setInitial = () => {
   const playerColor = 'Black';
   const playerScore = 0;
   const leaders = [];
+  const gameInterrupted = false;
   const fieldSize = 10;
   const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
   const colorTable = {
@@ -33,6 +34,7 @@ const setInitial = () => {
     leaders,
     colors,
     colorTable,
+    gameInterrupted,
   };
 };
 

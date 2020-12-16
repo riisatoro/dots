@@ -10,17 +10,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
+
+        allow_join = await self.allow_join_room(self.room_id)
+
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
         await self.accept()
 
     async def disconnect(self, close_code=404):
         response = {
             "close_code": close_code,
-            "TYPE": types.PLAYER_GIVE_UP,
+            "TYPE": types.SOCKET_DISCONNECT,
         }
         await self.close_current_game(self.room_id)
         await self.channel_layer.group_send(
@@ -59,11 +61,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 if self.field:
                     game_data = process(self.field, data["fieldPoint"], self.user_color, self.colors)
                     await self.update_field(game_data["field"], self.room_id)
-                    await self.change_player_turn(self.room_id)
+                    if game_data["changed"]:
+                        await self.change_player_turn(self.room_id)
                     self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
-            pass
+            self.disconnect()
 
         elif data["TYPE"] == types.GAME_OVER:
             pass
@@ -127,3 +130,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def is_allowed_to_set_point(self, user_id, room_id):
         data = UserGame.objects.filter(user=user_id, game_room=room_id).values_list('game_room__is_started', 'turn').get()
         return data[0] and data[1]
+
+    @database_sync_to_async
+    def allow_join_room(self, room_id):
+        return GameRoom.objects.filter(id=room_id, is_started=False).exists()

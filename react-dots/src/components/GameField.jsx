@@ -9,15 +9,16 @@ import '../../public/css/game_field.css';
 class GameField extends Component {
   constructor(props) {
     super(props);
-    const { roomId, receiveReply } = this.props;
+    const { roomId, receiveReply, interruptGame } = this.props;
     this.socket = new WebSocket(`ws://127.0.0.1:8000/ws/room/${roomId}/`);
     this.socket.onmessage = (msg) => {
       receiveReply(JSON.parse(msg.data));
     };
+    this.socket.onclose = () => { interruptGame(); };
   }
 
   componentWillUnmount() {
-    const {  } = this.props;
+    this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
     this.socket.close();
   }
 
@@ -71,9 +72,11 @@ GameField.propTypes = {
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
+  gameInterrupted: PropTypes.bool,
 
   onDotClicked: PropTypes.func.isRequired,
   receiveReply: PropTypes.func.isRequired,
+  interruptGame: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -82,8 +85,13 @@ const mapStateToProps = (state) => {
     roomId: state.socket.roomId,
     field: state.field,
     fieldSize: state.socket.fieldSize,
+    gameInterrupted: state.gameInterrupted,
   };
   return data;
+};
+
+GameField.defaultProps = {
+  gameInterrupted: false,
 };
 
 export default connect(
@@ -96,6 +104,12 @@ export default connect(
     },
     receiveReply: (data) => {
       dispatch({ type: data.TYPE, payload: data });
+    },
+    clearGameField: () => {
+      dispatch({ type: TYPES.CLEAR_GAME_FIELD, payload: { } });
+    },
+    interruptGame: () => {
+      dispatch({ type: TYPES.INTERRUPT_GAME_COMPONENT, payload: { } });
     },
   }
   ),

@@ -14,7 +14,9 @@ from . import calc_square as square
 
 def process(field, point, user_color, colors):
     x, y = point
+    changed = False
     if field[x][y] == "E":
+        changed = True
         field[x][y] = user_color
         field = capture.process(field, colors)
         field = capture.process(field, colors[::-1])
@@ -22,4 +24,4 @@ def process(field, point, user_color, colors):
     is_full = full.process(field)
     captured = square.process(field, colors)
 
-    return {"field": field, "is_full": is_full, "captured": captured}
+    return {"field": field, "is_full": is_full, "captured": captured, "changed": changed }

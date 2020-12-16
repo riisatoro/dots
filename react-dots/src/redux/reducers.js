@@ -212,6 +212,10 @@ export default function updateState(state = initialState, action) {
       return { ...state, wsMessage: action.payload };
     }
 
+    case TYPES.SOCKET_DISCONNECT: {
+      return { ...state, components: { showField: false, showSettings: true } };
+    }
+
     case TYPES.PLAYER_GIVE_UP: {
       const results = {
         message: 'Player give up!',
@@ -237,6 +241,23 @@ export default function updateState(state = initialState, action) {
       };
       return {
         ...state, components: { showField: false }, results, game_end: true,
+      };
+    }
+
+    case TYPES.INTERRUPT_GAME_COMPONENT: {
+      return {
+        ...state,
+        components: { showField: false, showSettings: true },
+        gameInterrupted: true,
+      };
+    }
+
+    case TYPES.CLEAR_GAME_FIELD: {
+      return {
+        ...state,
+        components: { showField: false, showSettings: true },
+        gameInterrupted: false,
+        field: [[]],
       };
     }
 
