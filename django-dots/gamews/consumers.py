@@ -6,6 +6,7 @@ from api.models import GameRoom, UserGame
 from api.game.main import process
 from api.game.calc_square import process as find_points
 
+
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
@@ -147,7 +148,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         user1, user2 = players[0].user.username, players[1].user.username
         color1, color2 = players[0].color, players[1].color
         captured1, captured2 = find_points(field, color2), find_points(field, color1)
-        data ={
+        data = {
             user1: captured2,
             user2: captured1
         }
