@@ -91,13 +91,13 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.HIDE_SETTINGS: {
-      return { ...state, components: { showSettings: false, showField: true } };
+      return { ...state, components: { showSettings: false } };
     }
 
     case TYPES.START_NEW_GAME: {
       return {
         ...state,
-        components: { showSettings: false, showField: true },
+        components: { showSettings: false },
       };
     }
 
@@ -213,51 +213,14 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.SOCKET_DISCONNECT: {
-      return { ...state, components: { showField: false, showSettings: true } };
-    }
-
-    case TYPES.PLAYER_GIVE_UP: {
-      const results = {
-        message: 'Player give up!',
-        winner: 'YOU',
-        looser: 'NOT YOU',
-        winScore: 100500,
-        looseScore: -0,
-        isEqual: false,
-      };
-      return {
-        ...state, components: { showField: false }, results, game_end: true,
-      };
-    }
-
-    case TYPES.THIS_PLAYER_GIVE_UP: {
-      const results = {
-        message: 'You give up!',
-        winner: 'NOT YOU',
-        looser: 'YOU',
-        winScore: 100500,
-        looseScore: -0,
-        isEqual: false,
-      };
-      return {
-        ...state, components: { showField: false }, results, game_end: true,
-      };
+      return { ...state, components: { showSettings: true } };
     }
 
     case TYPES.INTERRUPT_GAME_COMPONENT: {
       return {
         ...state,
-        components: { showField: false, showSettings: true },
+        components: { gameField: false, showSettings: true },
         gameInterrupted: true,
-      };
-    }
-
-    case TYPES.CLEAR_GAME_FIELD: {
-      return {
-        ...state,
-        components: { showField: false, showSettings: true },
-        gameInterrupted: false,
-        field: [[]],
       };
     }
 

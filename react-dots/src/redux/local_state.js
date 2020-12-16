@@ -4,7 +4,7 @@ const setInitial = () => {
   const results = {
     winner: '', looser: '', win_score: 0, loose_score: 0,
   };
-  const components = { auth: false, showSettings: false, showField: false };
+  const components = { auth: false, showSettings: false };
   const user = { auth: false, userName: '', token: '' };
   const reply = { error: false, message: '' };
   const playerColor = 'Black';
