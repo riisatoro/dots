@@ -8,4 +8,6 @@ def process(field, colors):
         for point in row:
             if point != "E" and point in captured_colors:
                 captured[colors.index(point[0])] = captured[colors.index(point[0])] + 1
-    return captured
+
+    captured_dict = dict(zip(colors, captured[::-1]))
+    return captured_dict

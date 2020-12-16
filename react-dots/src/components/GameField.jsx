@@ -7,19 +7,20 @@ import connectSocket from '../socket/socket';
 
 import '../../public/css/game_field.css';
 
-// socket.onmessage = (msg) => {receiveReply(JSON.parse(msg.data));};
-// socket.onerror = () => { interruptGame(); };
-// socket.onclose = () => { interruptGame(); };
+// 
 
 class GameField extends Component {
   componentDidMount() {
-    const { roomID } = this.props;
+    const { roomID, receiveReply } = this.props;
     this.socket = connectSocket(roomID);
+    this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
+    this.socket.onerror = () => { };
+    this.socket.onclose = () => { };
   }
 
   componentWillUnmount() {
-    //socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
-    //socket.close();
+    this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
+    this.socket.close();
   }
 
   dotClicked(e) {

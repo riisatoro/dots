@@ -55,11 +55,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         elif data["TYPE"] == types.PLAYER_SET_DOT:
             if await self.is_allowed_to_set_point(self.user_id, self.room_id):
-                self.field = await self.get_game_field(self.room_id, self.user_id)
-                self.user_color = await self.get_this_user_color(self.user_id, self.room_id)
-                self.colors = await self.get_user_colors(self.room_id)
-                if self.field:
-                    game_data = process(self.field, data["fieldPoint"], self.user_color, self.colors)
+                field = await self.get_game_field(self.room_id, self.user_id)
+                if field:
+                    user_color = await self.get_this_user_color(self.user_id, self.room_id)
+                    colors = await self.get_user_colors(self.room_id)
+                    game_data = process(field, data["fieldPoint"], user_color, colors)
                     await self.update_field(game_data["field"], self.room_id)
                     if game_data["changed"]:
                         await self.change_player_turn(self.room_id)
