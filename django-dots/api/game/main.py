@@ -22,6 +22,4 @@ def process(field, point, user_color, colors):
         field = capture.process(field, colors[::-1])
 
     is_full = full.process(field)
-    captured = square.process(field, colors)
-
-    return {"field": field, "is_full": is_full, "captured": captured, "changed": changed }
+    return {"field": field, "is_full": is_full, "changed": changed }

@@ -30,10 +30,8 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn, username, playerColor, captured } = this.props;
-
-    const userTurn = turn === username ? ' your ' : ' not your ';
-
+    const { field, fieldSize, turn } = this.props;
+    const userTurn = ` ${turn} `;
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (

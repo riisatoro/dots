@@ -4,14 +4,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from api.models import GameRoom, UserGame
 from api.game.main import process
-
+from api.game.calc_square import process as find_points
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
 
-        allow_join = await self.allow_join_room(self.room_id)
+        # allow_join = await self.allow_join_room(self.room_id)
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -38,8 +38,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data=None, bytes_data=None):
-        self.room_id = self.scope['url_route']['kwargs']['room_id']
-        self.user_id = self.scope['user'].id
+        room_id = self.scope['url_route']['kwargs']['room_id']
+        user_id = self.scope['user'].id
         self.response = {"TYPE": "UNKNOWN", "error": True, "message": "This action is not allowed!"}
 
         try:
@@ -54,16 +54,18 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             pass
 
         elif data["TYPE"] == types.PLAYER_SET_DOT:
-            if await self.is_allowed_to_set_point(self.user_id, self.room_id):
-                field = await self.get_game_field(self.room_id, self.user_id)
+            if await self.is_allowed_to_set_point(user_id, room_id):
+                field = await self.get_game_field(room_id, user_id)
                 if field:
-                    user_color = await self.get_this_user_color(self.user_id, self.room_id)
-                    colors = await self.get_user_colors(self.room_id)
+                    user_color = await self.get_this_user_color(user_id, room_id)
+                    colors = await self.get_user_colors(room_id)
                     game_data = process(field, data["fieldPoint"], user_color, colors)
-                    await self.update_field(game_data["field"], self.room_id)
+                    await self.update_field(game_data["field"], room_id)
                     if game_data["changed"]:
-                        turn = await self.change_player_turn(self.room_id)
+                        turn = await self.change_player_turn(room_id)
+                        captured = await self.get_captured_points(game_data["field"], room_id)
                         game_data["turn"] = turn
+                        game_data["captured"] = captured
                     self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
@@ -76,7 +78,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             self.response = {"TYPE": "UNKNOWN", "error": True, "message": "This action is not allowed!"}
 
         await self.channel_layer.group_send(
-            'game_room_' + self.room_id,
+            'game_room_' + room_id,
             {
                 "type": "reply",
                 "data": self.response
@@ -138,3 +140,15 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def allow_join_room(self, room_id):
         return GameRoom.objects.filter(id=room_id, is_started=False).exists()
+
+    @database_sync_to_async
+    def get_captured_points(self, field, room_id):
+        players = UserGame.objects.filter(game_room=room_id).all()
+        user1, user2 = players[0].user.username, players[1].user.username
+        color1, color2 = players[0].color, players[1].color
+
+        data ={
+            user1: find_points(field, color2),
+            user2: find_points(field, color1)
+        }
+        return data
