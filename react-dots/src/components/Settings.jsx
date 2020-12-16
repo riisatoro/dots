@@ -60,7 +60,6 @@ class Settings extends Component {
     return (
       <section className="field">
         <h2 className="">Create the room</h2>
-        { gameInterrupted && <p>Your game was interrupted and closed</p> }
         <div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can&apos;t be the same</div>
 
         <form>

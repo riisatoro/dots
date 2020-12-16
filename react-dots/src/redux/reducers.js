@@ -186,9 +186,10 @@ export default function updateState(state = initialState, action) {
           components: { gameField: true },
           field: reply.field,
           turn: state.user.username,
+          gameEnd: false,
         };
       }
-      return { ...state };
+      return { ...state, gameEnd: false };
     }
 
     case TYPES.PLAYER_JOIN_ROOM: {
@@ -207,6 +208,7 @@ export default function updateState(state = initialState, action) {
           components: { gameField: true },
           field: reply.field,
           turn: 'NaN',
+          gameEnd: false,
         };
       }
       return { ...state };
@@ -218,6 +220,7 @@ export default function updateState(state = initialState, action) {
         field: action.payload.data.field,
         captured: action.payload.data.captured,
         turn: action.payload.data.turn,
+        gameEnd: action.payload.data.is_full,
       };
     }
 
@@ -232,8 +235,7 @@ export default function updateState(state = initialState, action) {
     case TYPES.INTERRUPT_GAME_COMPONENT: {
       return {
         ...state,
-        components: { gameField: false, showSettings: true },
-        gameInterrupted: true,
+        components: { gameField: false, game_end: true, showSettings: true },
       };
     }
 

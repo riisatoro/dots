@@ -30,9 +30,13 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn, captured } = this.props;
+    const { field, fieldSize, turn, gameEnd, interruptGame } = this.props;
     const userTurn = ` ${turn} `;
-    let playersCaptured = '';
+
+    if (gameEnd) {
+      this.socket.close();
+      interruptGame();
+    }
 
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
@@ -61,14 +65,6 @@ class GameField extends Component {
           </p>
         </div>
 
-        <div>
-          <p>
-            Now is
-            {playersCaptured}
-            turn
-          </p>
-        </div>
-
         <div className="field__wrapper">{item}</div>
 
         <div className="align-center">
@@ -88,6 +84,7 @@ GameField.propTypes = {
   username: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
   captured: PropTypes.object,
+  gameEnd: PropTypes.bool,
 
   receiveReply: PropTypes.func.isRequired,
 };
@@ -95,6 +92,7 @@ GameField.propTypes = {
 GameField.defaultProps = {
   turn: '',
   captured: {},
+  gameEnd: false,
 };
 
 const mapStateToProps = (state) => {
@@ -106,6 +104,7 @@ const mapStateToProps = (state) => {
     turn: state.turn,
     playerColor: state.playerColor,
     captured: state.captured,
+    gameEnd: state.gameEnd,
   };
   return data;
 };
