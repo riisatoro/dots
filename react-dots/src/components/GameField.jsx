@@ -9,11 +9,11 @@ import '../../public/css/game_field.css';
 
 class GameField extends Component {
   componentDidMount() {
-    const { roomID, receiveReply } = this.props;
+    const { roomID, receiveReply, interruptGame } = this.props;
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
     this.socket.onerror = () => { };
-    this.socket.onclose = () => { };
+    this.socket.onclose = () => { interruptGame(); };
   }
 
   componentWillUnmount() {
@@ -32,11 +32,6 @@ class GameField extends Component {
   render() {
     const { field, fieldSize, turn, gameEnd, interruptGame } = this.props;
     const userTurn = ` ${turn} `;
-
-    if (gameEnd) {
-      this.socket.close();
-      interruptGame();
-    }
 
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
@@ -85,6 +80,7 @@ GameField.propTypes = {
   playerColor: PropTypes.string.isRequired,
   captured: PropTypes.object,
   gameEnd: PropTypes.bool,
+  interruptGame: PropTypes.func.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
 };

@@ -1,14 +1,42 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 function Results(props) {
-  const {
-    isEqual, winner, looser, winScore, looseScore,
-  } = props;
+  const { captured } = props;
+  let results = [];
 
-  let resultBoard = '';
-  if (isEqual) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [key, value] of Object.entries(captured)) {
+    results.push(`${key} captured ${value} points`);
+  }
+
+  return (
+    <section className="results">
+      <p className="header align-center h3 space-around">Results</p>
+      <div>
+        {results.map((item) => <p>{item}</p>)}
+      </div>
+    </section>
+  );
+}
+
+Results.propTypes = {
+  captured: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    captured: state.captured,
+  };
+  return data;
+};
+
+export default connect(mapStateToProps, null)(Results);
+
+/*
+if (isEqual) {
     resultBoard = (
       <div className="container">
         <div className="space-around">
@@ -52,32 +80,4 @@ function Results(props) {
       </div>
     );
   }
-
-  return (
-    <section className="results">
-      <p className="header align-center h3 space-around">Results</p>
-      {resultBoard}
-    </section>
-  );
-}
-
-Results.propTypes = {
-  isEqual: PropTypes.bool.isRequired,
-  winner: PropTypes.string.isRequired,
-  looser: PropTypes.string.isRequired,
-  winScore: PropTypes.number.isRequired,
-  looseScore: PropTypes.number.isRequired,
-};
-
-const mapStateToProps = (state) => {
-  const data = {
-    isEqual: state.results.equal,
-    winner: state.results.winner,
-    looser: state.results.looser,
-    winScore: state.results.looseScore,
-    looseScore: state.results.winScore,
-  };
-  return data;
-};
-
-export default connect(mapStateToProps)(Results);
+  */

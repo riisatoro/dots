@@ -91,6 +91,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             event["data"]
         ))
 
+        try:
+            if event["data"]["turn"]:
+                self.close()
+        except KeyError:
+            pass
+
     @database_sync_to_async
     def get_game_field(self, room_id, user_id):
         game = UserGame.objects.filter(user=user_id, game_room=room_id)

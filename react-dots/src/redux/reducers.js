@@ -152,10 +152,6 @@ export default function updateState(state = initialState, action) {
       return { ...state, players };
     }
 
-    case TYPES.CHECK_FIELD_FULL: {
-      return { ...state };
-    }
-
     case TYPES.UPDATE_PLAYERS_NAME: {
       const NewPlayers = state.players;
       NewPlayers[0].name = action.payload.p1;
@@ -229,13 +225,18 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.SOCKET_DISCONNECT: {
-      return { ...state, components: { showSettings: true } };
+      return {
+        ...state,
+        components: { gameField: false },
+        game_end: true,
+      };
     }
 
     case TYPES.INTERRUPT_GAME_COMPONENT: {
       return {
         ...state,
-        components: { gameField: false, game_end: true, showSettings: true },
+        components: { gameField: false },
+        game_end: true,
       };
     }
 
