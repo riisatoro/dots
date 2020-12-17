@@ -77,20 +77,18 @@ class MatchViewSet(APIView):
     serializer_class = serializers.MatchSerializer
 
     def get(self, request):
-        data = serializers.MatchSerializer(
-            models.Match.objects.filter(user=request.user), many=True)
-        return Response(data.data)
+        rooms = models.GameRoom.objects.filter(players=request.user).values_list("id", flat=True)
+        games = models.UserGame.objects.filter(game_room__id__in=rooms)
+
+        data = serializers.UserGameSerializer(games, many=True).data
+        grouped_data = []
+        for i in range(0, len(data), 2):
+            grouped_data.append([data[i], data[i+1]])
+
+        return Response({"error": False, "data": grouped_data})
 
     def post(self, request):
-        data = request.data
-        data["user"] = request.user.id
-
-        series = serializers.MatchSerializer(data=data)
-        if series.is_valid():
-            data = series.save()
-            data = serializers.MatchSerializer(data)
-            return Response({"error": False})
-        return Response({"error": True, "message": series.errors})
+        return Response({"error": True, "message": "Deprecated"})
 
 
 class GameRoomView(APIView):

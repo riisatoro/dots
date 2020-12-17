@@ -8,7 +8,7 @@ import {
   SEND_LOGOUT_REQUEST,
   SHOW_SETTINGS,
   HIDE_RESULTS,
-  RECEIVE_LEADERS,
+  TYPES,
 } from '../redux/types';
 
 class Header extends Component {
@@ -126,9 +126,9 @@ export default connect(
       const getLeaderboardRequest = () => {
         axios({
           method: 'GET',
-          url: 'api/match/',
+          url: 'api/v2/match/',
           headers: { Authorization: `Token ${token}` },
-        }).then((response) => { dispatch({ type: RECEIVE_LEADERS, payload: response }); });
+        }).then((response) => { dispatch({ type: TYPES.RECEIVE_LEADERS, payload: response }); });
       };
       getLeaderboardRequest();
     },

@@ -30,5 +30,5 @@ class UserGameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserGame
-        fields = ('color', 'turn', 'game_room', 'user')
+        fields = ('color', 'turn', 'game_room', 'user', 'score')
         depth = 1

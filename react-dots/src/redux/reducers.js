@@ -29,7 +29,7 @@ export default function updateState(state = initialState, action) {
       if (action.payload.status === 200) {
         return {
           ...state,
-          leaders: action.payload.data,
+          leaders: action.payload.data.data,
           components: { showLeaders: true },
           game_end: false,
         };

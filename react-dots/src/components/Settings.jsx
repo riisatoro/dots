@@ -54,7 +54,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, colors, colorTable, fieldSize, playerColor, gameInterrupted
+      rooms, colors, colorTable, fieldSize, playerColor
     } = this.props;
 
     return (
