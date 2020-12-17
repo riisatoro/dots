@@ -7,8 +7,6 @@ import Settings from './Settings';
 import Results from './Results';
 import Leaderboard from './Leaderboard';
 
-import '../../public/css/default.css';
-
 function ComponentContainer(props) {
   const thisProps = props;
   return (

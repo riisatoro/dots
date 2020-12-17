@@ -166,6 +166,7 @@ export default function updateState(state = initialState, action) {
       return { ...state, rooms: [] };
     }
 
+    /* OK */
     case TYPES.NEW_ROOM_CREATED: {
       if (action.payload.status === 200) {
         const reply = action.payload.data;
@@ -174,7 +175,6 @@ export default function updateState(state = initialState, action) {
           roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
-          isGameStarted: false,
         };
         return {
           ...state,
@@ -183,11 +183,14 @@ export default function updateState(state = initialState, action) {
           field: reply.field,
           turn: state.user.username,
           gameEnd: false,
+          gameStarted: true,
+          gameResults: false,
         };
       }
-      return { ...state, gameEnd: false };
+      return { ...state, gameEnd: false, gameStarted: false };
     }
 
+    /* OK */
     case TYPES.PLAYER_JOIN_ROOM: {
       if (action.payload.status === 200) {
         const reply = action.payload.data;
@@ -196,7 +199,6 @@ export default function updateState(state = initialState, action) {
           roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
-          isGameStarted: false,
         };
         return {
           ...state,
@@ -204,7 +206,7 @@ export default function updateState(state = initialState, action) {
           components: { gameField: true },
           field: reply.field,
           turn: 'NaN',
-          gameEnd: false,
+          gameStarted: true,
         };
       }
       return { ...state };
@@ -219,7 +221,7 @@ export default function updateState(state = initialState, action) {
           turn: action.payload.data.turn,
           gameEnd: action.payload.data.is_full,
           components: { gameField: false },
-          game_end: true,
+          gameResults: true,
         };
       }
       return {
@@ -240,6 +242,7 @@ export default function updateState(state = initialState, action) {
         ...state,
         components: { gameField: false },
         game_end: true,
+        gameResults: true,
       };
     }
 
@@ -248,7 +251,12 @@ export default function updateState(state = initialState, action) {
         ...state,
         components: { gameField: false },
         game_end: true,
+        gameResults: true,
       };
+    }
+
+    case TYPES.CLOSE_RESULTS: {
+      return { ...state, gameResults: false, gameField: false };
     }
 
     default:

@@ -32,7 +32,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         await self.close_current_game(self.room_id)
 
         await self.channel_layer.group_send(
-            'game_room_' + self.room_id,
+            "game_room_" + self.scope['url_route']['kwargs']['room_id'],
             {
                 "type": "reply",
                 "data": response
@@ -75,7 +75,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
-            self.disconnect()
+            room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
+            self.channel_layer.group_discard(room_group_name, self.channel_name)
 
         elif data["TYPE"] == types.GAME_OVER:
             pass

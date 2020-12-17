@@ -9,20 +9,23 @@ import '../../public/css/game_field.css';
 
 class GameField extends Component {
   componentDidMount() {
-    const { roomID, receiveReply, interruptGame } = this.props;
+    const { roomID, receiveReply, interruptGame, closeResults } = this.props;
+    closeResults();
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
-    this.socket.onerror = () => { };
+    this.socket.onerror = () => { interruptGame(); };
     this.socket.onclose = () => { interruptGame(); };
   }
 
   componentWillUnmount() {
+    const { closeResults } = this.props;
+    closeResults();
     this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
     this.socket.close();
   }
 
   onPlayerGiveUp() {
-    this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
+    this.socket.send(JSON.stringify({ TYPE: TYPES.PLAYER_GIVE_UP, data: {} }));
     this.socket.close();
   }
 
@@ -35,7 +38,7 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn } = this.props;
+    const { field, fieldSize, turn, gameResults, captured } = this.props;
     let userTurn = '';
     if (turn === 'NaN') {
       userTurn = ' not your ';
@@ -60,6 +63,12 @@ class GameField extends Component {
       </div>
     ));
 
+    const results = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, value] of Object.entries(captured)) {
+      results.push(`${key} captured ${value} points`);
+    }
+
     return (
       <section className="field">
         <div>
@@ -75,6 +84,11 @@ class GameField extends Component {
         <div className="align-center">
           <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
         </div>
+
+        <div>
+          { gameResults && results.map((itemR) => <p className="align-center">{itemR}</p>)}
+        </div>
+
       </section>
     );
   }
@@ -90,6 +104,8 @@ GameField.propTypes = {
   captured: PropTypes.object,
   gameEnd: PropTypes.bool,
   interruptGame: PropTypes.func.isRequired,
+  closeResults: PropTypes.func.isRequired,
+  gameResults: PropTypes.bool.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
 };
@@ -110,6 +126,7 @@ const mapStateToProps = (state) => {
     playerColor: state.playerColor,
     captured: state.captured,
     gameEnd: state.gameEnd,
+    gameResults: state.gameResults,
   };
   return data;
 };
@@ -122,6 +139,9 @@ export default connect(
     },
     interruptGame: () => {
       dispatch({ type: TYPES.INTERRUPT_GAME_COMPONENT, payload: { } });
+    },
+    closeResults: () => {
+      dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
     },
   }
   ),

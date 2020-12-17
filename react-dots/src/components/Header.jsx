@@ -5,7 +5,6 @@ import axios from 'axios';
 
 import {
   SHOW_AUTH_FORM,
-  SEND_LOGOUT_REQUEST,
   SHOW_SETTINGS,
   HIDE_RESULTS,
   TYPES,
@@ -33,6 +32,11 @@ class Header extends Component {
     openSettings();
   }
 
+  sendLogoutRequest() {
+    const { logoutUser } = this.props;
+    this.logoutUser();
+  }
+
   render() {
     const { isAuth } = this.props;
 
@@ -40,19 +44,19 @@ class Header extends Component {
     if (isAuth) {
       navigation = [
         <div className="col-sm-8 col-md-3 new-ga me" key="new-game">
-          <button type="button" key="0" className="container header-btn" onClick={this.openSettings.bind(this)}>New game</button>
+          <a href="/new_game">New game</a>
         </div>,
         <div className="col-sm-8 col-md-3" key="leaders">
-          <button type="button" key="1" className="container header-btn" onClick={this.onOpenLeaders.bind(this)}>Leaderboard</button>
+          <a href="/leaderboards" >Leaderboards</a>
         </div>,
         <div className="col-sm-8 col-md-3" key="logout">
-          <button type="button" key="2" className="container header-btn" onClick={this.logoutUser.bind(this)}>Logout</button>
+          <a href="/logout" onClick={this.sendLogoutRequest.bind(this)}>Logout</a>
         </div>,
       ];
     } else {
       navigation = [
         <div className="col-6 align-center" key="login">
-          <button type="button" key="0" className="header-btn" onClick={this.openAuthForm()}>Login or Register</button>
+          <a href="/auth">Login or Register</a>
         </div>,
       ];
     }
@@ -77,7 +81,6 @@ class Header extends Component {
 
 Header.propTypes = {
   onClickOpenAuth: PropTypes.func.isRequired,
-  logoutUser: PropTypes.func.isRequired,
   openSettings: PropTypes.func.isRequired,
   hideResults: PropTypes.func.isRequired,
   getLeaderboard: PropTypes.func.isRequired,
@@ -100,20 +103,6 @@ export default connect(
       dispatch({ type: SHOW_AUTH_FORM, payload: true });
     },
 
-    logoutUser: () => {
-      const asyncLogout = () => {
-        axios({
-          method: 'get',
-          url: '/api/auth/logout/',
-        }).then(() => {
-          dispatch({ type: SEND_LOGOUT_REQUEST, payload: {} });
-        });
-
-        return { type: '', payload: {} };
-      };
-      dispatch(asyncLogout());
-    },
-
     openSettings: () => {
       dispatch({ type: SHOW_SETTINGS, payload: {} });
     },
@@ -131,6 +120,17 @@ export default connect(
         }).then((response) => { dispatch({ type: TYPES.RECEIVE_LEADERS, payload: response }); });
       };
       getLeaderboardRequest();
+    },
+    logoutUser: () => {
+      const asyncLogout = () => {
+        axios({
+          method: 'get',
+          url: '/api/auth/logout/',
+        }).then(() => {
+          dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
+        });
+      };
+      dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
     },
   }),
 )(Header);

@@ -4,14 +4,16 @@ const setInitial = () => {
   const results = {
     winner: '', looser: '', win_score: 0, loose_score: 0,
   };
-  const components = { auth: false, showSettings: false };
+  const components = { auth: false, showSettings: false, gameField: false };
   const user = { auth: false, userName: '', token: '' };
   const reply = { error: false, message: '' };
+  const gameResults = false;
   const playerColor = 'Black';
   const playerScore = 0;
   const leaders = [];
   const gameInterrupted = false;
   const fieldSize = 10;
+  const gameStarted = false;
   const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
   const colorTable = {
     O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
@@ -21,6 +23,7 @@ const setInitial = () => {
   };
 
   return {
+    gameResults,
     socket,
     user,
     playerColor,
@@ -35,6 +38,7 @@ const setInitial = () => {
     colors,
     colorTable,
     gameInterrupted,
+    gameStarted,
   };
 };
 
