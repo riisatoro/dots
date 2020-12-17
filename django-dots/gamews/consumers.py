@@ -12,20 +12,25 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
 
-        # allow_join = await self.allow_join_room(self.room_id)
-
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
+        if not self.scope["user"].is_authenticated:
+            await self.close()
+        else:
+            # allow_join = await self.allow_join_room(self.room_id)
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            await self.accept()
 
     async def disconnect(self, close_code=404):
+
         response = {
             "close_code": close_code,
             "TYPE": types.SOCKET_DISCONNECT,
         }
+
         await self.close_current_game(self.room_id)
+
         await self.channel_layer.group_send(
             'game_room_' + self.room_id,
             {
@@ -128,10 +133,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def close_current_game(self, room_id):
-        room = GameRoom.objects.get(id=room_id)
-        room.is_started = True
-        room.is_ended = True
-        room.save()
+        is_room = GameRoom.objects.filter(id=room_id)
+        if is_room.exists():
+            room = GameRoom.objects.get(id=room_id)
+            room.is_started = True
+            room.is_ended = True
+            room.save()
 
     @database_sync_to_async
     def is_allowed_to_set_point(self, user_id, room_id):
