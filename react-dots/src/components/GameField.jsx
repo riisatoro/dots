@@ -31,7 +31,12 @@ class GameField extends Component {
 
   render() {
     const { field, fieldSize, turn, gameEnd, interruptGame } = this.props;
-    const userTurn = ` ${turn} `;
+    let userTurn = '';
+    if (turn === 'NaN') {
+      userTurn = ' not your ';
+    } else {
+      userTurn = ` ${turn} `;
+    }
 
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
@@ -65,7 +70,6 @@ class GameField extends Component {
         <div className="align-center">
           <button type="button" className="btn btn-danger space-around">End game</button>
         </div>
-
       </section>
     );
   }

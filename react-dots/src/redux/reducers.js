@@ -211,6 +211,17 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.PLAYER_SET_DOT: {
+      if (action.payload.data.is_full) {
+        return {
+          ...state,
+          field: action.payload.data.field,
+          captured: action.payload.data.captured,
+          turn: action.payload.data.turn,
+          gameEnd: action.payload.data.is_full,
+          components: { gameField: false },
+          game_end: true,
+        };
+      }
       return {
         ...state,
         field: action.payload.data.field,
