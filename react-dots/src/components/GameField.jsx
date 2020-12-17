@@ -21,6 +21,11 @@ class GameField extends Component {
     this.socket.close();
   }
 
+  onPlayerGiveUp() {
+    this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
+    this.socket.close();
+  }
+
   dotClicked(e) {
     const { fieldSize } = this.props;
     const index = e.target.id;
@@ -30,7 +35,7 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn, gameEnd, interruptGame } = this.props;
+    const { field, fieldSize, turn } = this.props;
     let userTurn = '';
     if (turn === 'NaN') {
       userTurn = ' not your ';
@@ -68,7 +73,7 @@ class GameField extends Component {
         <div className="field__wrapper">{item}</div>
 
         <div className="align-center">
-          <button type="button" className="btn btn-danger space-around">End game</button>
+          <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
         </div>
       </section>
     );
