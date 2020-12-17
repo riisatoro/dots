@@ -17,6 +17,8 @@ class Leaderboard extends Component {
     const { matches } = this.props;
     const results = matches.map((item, index) => (
       <div key={index.toString()}>
+        { item[0].score === item[1].score ? <p>No winners here!</p> : ''}
+        { item[0].score > item[1].score ? <p>{`${item[0].user.username} wins!`}</p> : <p>{`${item[1].user.username} wins!`}</p>}
         <p>{`Players ${item[0].user.username} and ${item[1].user.username}`}</p>
         <p>{`${item[0].user.username} captured ${item[0].score} points`}</p>
         <p>{`${item[1].user.username} captured ${item[1].score} points`}</p>
