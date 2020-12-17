@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 function Results(props) {
-  const { captured, field, fieldSize } = props;
-  
+  const { captured, field } = props;
+
   const gameField = field.map((i, pIndex) => (
     <div className="input__row" key={pIndex.toString()}>
       {i.map((j, qIndex) => (
@@ -41,14 +41,12 @@ function Results(props) {
 Results.propTypes = {
   captured: PropTypes.object.isRequired,
   field: PropTypes.array.isRequired,
-  fieldSize: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const data = {
     captured: state.captured,
     field: state.field,
-    fieldSize: state.fieldSize,
   };
   return data;
 };
