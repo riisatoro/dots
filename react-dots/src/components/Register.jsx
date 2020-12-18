@@ -2,9 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-
 import { connect } from 'react-redux';
-import { TYPES } from '../redux/types';
+import TYPES from '../redux/types';
 
 function Register(props) {
   const { register, handleSubmit, errors } = useForm();

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
-import { TYPES } from '../redux/types';
+import TYPES from '../redux/types';
 import connectSocket from '../socket/socket';
 
 import '../../public/css/game_field.css';

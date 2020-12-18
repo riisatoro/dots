@@ -1,5 +1,5 @@
 import { createStore } from 'redux';
-import { TYPES } from './types';
+import TYPES from './types';
 import updateState from './reducers';
 
 const store = createStore(updateState);

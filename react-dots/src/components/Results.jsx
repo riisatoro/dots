@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { TYPES } from '../redux/types';
+import TYPES from '../redux/types';
 
 function Results(props) {
   const { captured, field, closeResults } = props;

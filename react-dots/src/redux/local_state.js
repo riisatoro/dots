@@ -1,4 +1,4 @@
-import { TYPES } from './types';
+import TYPES from './types';
 
 const setInitial = () => {
   const results = {

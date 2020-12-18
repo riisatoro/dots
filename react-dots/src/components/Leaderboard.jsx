@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
-import { TYPES } from '../redux/types';
+import TYPES from '../redux/types';
 
 import '../../public/css/leaderboard.css';
 
