@@ -4,22 +4,26 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { TYPES } from '../redux/types';
 import connectSocket from '../socket/socket';
+import { Redirect } from 'react-router'
 
 import '../../public/css/game_field.css';
 
 class GameField extends Component {
   componentDidMount() {
-    const { roomID, receiveReply, interruptGame, closeResults } = this.props;
+    const {
+      roomID,
+      receiveReply,
+      interruptGame,
+      closeResults
+    } = this.props;
     closeResults();
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
-    this.socket.onerror = () => { interruptGame(); };
-    this.socket.onclose = () => { interruptGame(); };
+    this.socket.onerror = () => { };
+    this.socket.onclose = () => { };
   }
 
   componentWillUnmount() {
-    const { closeResults } = this.props;
-    closeResults();
     this.socket.send(JSON.stringify({ TYPE: TYPES.SOCKET_DISCONNECT, data: {} }));
     this.socket.close();
   }
@@ -38,7 +42,7 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn, gameResults, captured } = this.props;
+    const { field, fieldSize, turn, gameResults } = this.props;
     let userTurn = '';
     if (turn === 'NaN') {
       userTurn = ' not your ';
@@ -63,14 +67,9 @@ class GameField extends Component {
       </div>
     ));
 
-    const results = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [key, value] of Object.entries(captured)) {
-      results.push(`${key} captured ${value} points`);
-    }
-
     return (
       <section className="field">
+        { gameResults && <Redirect to="/game_result" /> }
         <div>
           <p>
             Now is
@@ -82,13 +81,10 @@ class GameField extends Component {
         <div className="field__wrapper">{item}</div>
 
         <div className="align-center">
-          <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
+          <a href="/game_result">
+            <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
+          </a>
         </div>
-
-        <div>
-          { gameResults && results.map((itemR) => <p className="align-center">{itemR}</p>)}
-        </div>
-
       </section>
     );
   }
@@ -99,6 +95,7 @@ GameField.propTypes = {
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.string,
+  closeResults: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
   captured: PropTypes.object,
@@ -135,10 +132,14 @@ export default connect(
   mapStateToProps,
   (dispatch) => ({
     receiveReply: (data) => {
+      // SOCKET_DISCONNECT
       dispatch({ type: data.TYPE, payload: data });
     },
     interruptGame: () => {
       dispatch({ type: TYPES.INTERRUPT_GAME_COMPONENT, payload: { } });
+    },
+    closeResults: () => {
+      dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
     },
     closeResults: () => {
       dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });

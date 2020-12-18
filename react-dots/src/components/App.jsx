@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 import Header from './Header';
 import Leaderboard from './Leaderboard';
@@ -12,16 +11,14 @@ import Auth from './Auth';
 import Results from './Results';
 import GameField from './GameField';
 import '../../public/css/default.css';
-import { TYPES } from '../redux/types';
 
 function App(props) {
   const { authorized, gameStarted } = props;
 
   return (
     <section className="App">
-      <Header />
-
       <Router>
+        <Header />
         <Switch>
 
           <Route path="/auth">
@@ -38,7 +35,7 @@ function App(props) {
           </Route>
 
           <Route path="/game">
-            { authorized && gameStarted ? <GameField /> : <Redirect to="/" /> }
+            <GameField />
           </Route>
 
           <Route path="/game_result">

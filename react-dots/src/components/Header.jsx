@@ -2,13 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
-import {
-  SHOW_AUTH_FORM,
-  SHOW_SETTINGS,
-  HIDE_RESULTS,
-  TYPES,
-} from '../redux/types';
+import { TYPES } from '../redux/types';
+import { Redirect } from 'react-router-dom';
 
 class Header extends Component {
   onOpenLeaders() {
@@ -16,25 +11,9 @@ class Header extends Component {
     getLeaderboard(token);
   }
 
-  openAuthForm() {
-    const { onClickOpenAuth, token } = this.props;
-    onClickOpenAuth(token);
-  }
-
   logoutUser() {
-    const { logoutUser } = this.props;
-    logoutUser();
-  }
-
-  openSettings() {
-    const { hideResults, openSettings } = this.props;
-    hideResults();
-    openSettings();
-  }
-
-  sendLogoutRequest() {
-    const { logoutUser } = this.props;
-    this.logoutUser();
+    const { logoutUser, token } = this.props;
+    logoutUser(token);
   }
 
   render() {
@@ -47,10 +26,10 @@ class Header extends Component {
           <a href="/new_game">New game</a>
         </div>,
         <div className="col-sm-8 col-md-3" key="leaders">
-          <a href="/leaderboards" >Leaderboards</a>
+          <a href="/leaderboards">Leaderboards</a>
         </div>,
         <div className="col-sm-8 col-md-3" key="logout">
-          <a href="/logout" onClick={this.sendLogoutRequest.bind(this)}>Logout</a>
+          <button type="button" onClick={this.logoutUser.bind(this)}>Logout</button>
         </div>,
       ];
     } else {
@@ -70,6 +49,7 @@ class Header extends Component {
           </div>
 
           <div className="row justify-content-center">
+            { !isAuth && <Redirect to="/logout" /> }
             {navigation}
           </div>
 
@@ -80,9 +60,7 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  onClickOpenAuth: PropTypes.func.isRequired,
-  openSettings: PropTypes.func.isRequired,
-  hideResults: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
   getLeaderboard: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
   isAuth: PropTypes.bool.isRequired,
@@ -99,18 +77,6 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    onClickOpenAuth: () => {
-      dispatch({ type: SHOW_AUTH_FORM, payload: true });
-    },
-
-    openSettings: () => {
-      dispatch({ type: SHOW_SETTINGS, payload: {} });
-    },
-
-    hideResults: () => {
-      dispatch({ type: HIDE_RESULTS, payload: {} });
-    },
-
     getLeaderboard: (token) => {
       const getLeaderboardRequest = () => {
         axios({
@@ -121,16 +87,17 @@ export default connect(
       };
       getLeaderboardRequest();
     },
-    logoutUser: () => {
+    logoutUser: (token) => {
       const asyncLogout = () => {
         axios({
           method: 'get',
           url: '/api/auth/logout/',
+          headers: { Authorization: `Token ${token}` },
         }).then(() => {
           dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
         });
       };
-      dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
+      asyncLogout();
     },
   }),
 )(Header);

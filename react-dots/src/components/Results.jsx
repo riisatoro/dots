@@ -2,9 +2,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { TYPES } from '../redux/types';
 
 function Results(props) {
-  const { captured, field } = props;
+  const { captured, field, closeResults } = props;
+  closeResults();
 
   const gameField = field.map((i, pIndex) => (
     <div className="input__row" key={pIndex.toString()}>
@@ -41,6 +43,7 @@ function Results(props) {
 Results.propTypes = {
   captured: PropTypes.object.isRequired,
   field: PropTypes.array.isRequired,
+  closeResults: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -51,4 +54,10 @@ const mapStateToProps = (state) => {
   return data;
 };
 
-export default connect(mapStateToProps, null)(Results);
+export default connect(
+  mapStateToProps, 
+  (dispatch) => ({
+    closeResults: () => {
+      dispatch({ type: TYPES.CLOSE_RESULTS, payload: {} });
+    }
+  }))(Results);

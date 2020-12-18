@@ -76,7 +76,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
-            self.channel_layer.group_discard(room_group_name, self.channel_name)
+            await self.channel_layer.group_discard(room_group_name, self.channel_name)
 
         elif data["TYPE"] == types.GAME_OVER:
             pass
