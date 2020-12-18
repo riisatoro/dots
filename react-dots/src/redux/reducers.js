@@ -117,6 +117,7 @@ export default function updateState(state = initialState, action) {
           gameEnd: action.payload.data.is_full,
           components: { gameField: false },
           gameStarted: false,
+          gameResults: true,
         };
       }
       return {

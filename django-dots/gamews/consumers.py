@@ -23,7 +23,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
     async def disconnect(self, close_code=404):
-
         response = {
             "close_code": close_code,
             "TYPE": types.SOCKET_DISCONNECT,
@@ -137,9 +136,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         is_room = GameRoom.objects.filter(id=room_id)
         if is_room.exists():
             room = GameRoom.objects.get(id=room_id)
-            room.is_started = True
-            room.is_ended = True
-            room.save()
+            if room.is_started:
+                room.is_ended = True
+                room.save()
+            else:
+                room.delete()
 
     @database_sync_to_async
     def is_allowed_to_set_point(self, user_id, room_id):

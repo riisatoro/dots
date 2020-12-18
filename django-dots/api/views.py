@@ -82,8 +82,8 @@ class MatchViewSet(APIView):
 
         data = serializers.UserGameSerializer(games, many=True).data
         grouped_data = []
-        for i in range(0, len(data), 2):
-            grouped_data.append([data[i], data[i+1]])
+        for i in range(1, len(data), 2):
+            grouped_data.append([data[i-1], data[i]])
 
         return Response({"error": False, "data": grouped_data})
 
