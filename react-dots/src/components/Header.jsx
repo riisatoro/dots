@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { TYPES } from '../redux/types';
-import { Redirect } from 'react-router-dom';
 
 class Header extends Component {
   onOpenLeaders() {

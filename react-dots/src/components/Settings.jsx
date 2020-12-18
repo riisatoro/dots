@@ -159,14 +159,12 @@ class Settings extends Component {
 
 Settings.propTypes = {
   fieldSize: PropTypes.number,
-  gameInterrupted: PropTypes.bool,
   playerColor: PropTypes.string.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
   colors: PropTypes.array.isRequired,
   colorTable: PropTypes.object.isRequired,
   rooms: PropTypes.array,
@@ -176,7 +174,6 @@ Settings.propTypes = {
 Settings.defaultProps = {
   fieldSize: 10,
   rooms: [],
-  gameInterrupted: false,
 };
 
 const mapStateToProps = (state) => {

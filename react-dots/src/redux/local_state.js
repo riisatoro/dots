@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE } from './types';
+import { TYPES } from './types';
 
 const setInitial = () => {
   const results = {
@@ -43,7 +43,7 @@ const setInitial = () => {
 };
 
 const loadState = () => {
-  let state = localStorage[LOCAL_STORAGE];
+  let state = localStorage[TYPES.LOCAL_STORAGE];
   try {
     state = JSON.parse(state);
   } catch (error) {

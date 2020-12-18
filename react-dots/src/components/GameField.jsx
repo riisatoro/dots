@@ -1,10 +1,10 @@
 /* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
 import { TYPES } from '../redux/types';
 import connectSocket from '../socket/socket';
-import { Redirect } from 'react-router'
 
 import '../../public/css/game_field.css';
 
@@ -13,10 +13,7 @@ class GameField extends Component {
     const {
       roomID,
       receiveReply,
-      interruptGame,
-      closeResults
     } = this.props;
-    closeResults();
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
     this.socket.onerror = () => { };
@@ -42,7 +39,12 @@ class GameField extends Component {
   }
 
   render() {
-    const { field, fieldSize, turn, gameResults } = this.props;
+    const {
+      field,
+      fieldSize,
+      turn,
+      gameResults,
+    } = this.props;
     let userTurn = '';
     if (turn === 'NaN') {
       userTurn = ' not your ';
@@ -95,13 +97,6 @@ GameField.propTypes = {
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.string,
-  closeResults: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  playerColor: PropTypes.string.isRequired,
-  captured: PropTypes.object,
-  gameEnd: PropTypes.bool,
-  interruptGame: PropTypes.func.isRequired,
-  closeResults: PropTypes.func.isRequired,
   gameResults: PropTypes.bool.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
@@ -109,8 +104,6 @@ GameField.propTypes = {
 
 GameField.defaultProps = {
   turn: '',
-  captured: {},
-  gameEnd: false,
 };
 
 const mapStateToProps = (state) => {
@@ -132,14 +125,10 @@ export default connect(
   mapStateToProps,
   (dispatch) => ({
     receiveReply: (data) => {
-      // SOCKET_DISCONNECT
       dispatch({ type: data.TYPE, payload: data });
     },
     interruptGame: () => {
       dispatch({ type: TYPES.INTERRUPT_GAME_COMPONENT, payload: { } });
-    },
-    closeResults: () => {
-      dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
     },
     closeResults: () => {
       dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
