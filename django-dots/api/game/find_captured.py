@@ -104,6 +104,7 @@ def process(field, colors):
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
     player_loops = []
+    loops = []
 
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
@@ -111,5 +112,6 @@ def process(field, colors):
     for loop in player_loops:
         if has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
+            loops.append(loop)
 
-    return field
+    return field, loops

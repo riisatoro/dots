@@ -18,6 +18,7 @@ const setInitial = () => {
   const colorTable = {
     O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
   };
+  const loops = [];
   const socket = {
     connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
   };
@@ -39,6 +40,7 @@ const setInitial = () => {
     colorTable,
     gameInterrupted,
     gameStarted,
+    loops,
   };
 };
 

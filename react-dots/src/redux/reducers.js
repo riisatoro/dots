@@ -118,6 +118,7 @@ export default function updateState(state = initialState, action) {
           components: { gameField: false },
           gameStarted: false,
           gameResults: true,
+          loops: action.payload.data.loops,
         };
       }
       return {
@@ -126,6 +127,7 @@ export default function updateState(state = initialState, action) {
         captured: action.payload.data.captured,
         turn: action.payload.data.turn,
         gameEnd: action.payload.data.is_full,
+        loops: action.payload.data.loops,
       };
     }
 

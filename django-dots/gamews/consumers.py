@@ -7,14 +7,14 @@ from api.game.main import process
 from api.game.calc_square import process as find_points
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser
 
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
-
-        if await self.user_is_auth(self.scope):
+        if self.scope["user"].is_authenticated:
             await self.channel_layer.group_add(
                 self.room_group_name,
                 self.channel_name
@@ -98,14 +98,10 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         ))
 
     @database_sync_to_async
-    def user_is_auth(self, tmp_scope):
-        try:
-            session = tmp_scope['session'].session_key
-            user_id = Session.objects.get(pk=session).get_decoded()["_auth_user_id"]
-            return User.objects.get(id=user_id)
-        except Exception as e:
-            print("Error in user_is_auth:", e)
-        return False
+    def user_is_auth(self, user):
+        if user == AnonymousUser:
+            return False
+        return True
 
     @database_sync_to_async
     def get_game_field(self, room_id, user_id):
@@ -169,8 +165,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         color1, color2 = players[0].color, players[1].color
         captured1, captured2 = find_points(field, color2), find_points(field, color1)
         data = {
-            user1: captured2,
-            user2: captured1
+            user1: captured1,
+            user2: captured2
         }
 
         player1 = UserGame.objects.filter(game_room=room_id, user__username=user1).get()

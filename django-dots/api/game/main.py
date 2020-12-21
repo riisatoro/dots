@@ -16,8 +16,19 @@ def process(field, point, user_color, colors):
     if field[x][y] == "E":
         changed = True
         field[x][y] = user_color
-        field = capture.process(field, colors)
-        field = capture.process(field, colors[::-1])
+        field, loop1 = capture.process(field, colors)
+        field, loop2 = capture.process(field, colors[::-1])
+
+    loops = [
+        {
+            "color": colors[0],
+            "loops": loop1
+        },
+        {
+            "colors": colors[1],
+            "loops": loop2
+        }
+    ]
 
     is_full = full.process(field)
-    return {"field": field, "is_full": is_full, "changed": changed}
+    return {"field": field, "is_full": is_full, "changed": changed, "loops": loops}

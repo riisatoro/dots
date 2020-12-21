@@ -3,10 +3,64 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
-import TYPES from '../redux/types';
-import connectSocket from '../socket/socket';
+import { Stage, Layer, Line, Circle } from 'react-konva';
 
+import connectSocket from '../socket/socket';
+import TYPES from '../redux/types';
 import '../../public/css/game_field.css';
+
+function getCanvasGrid(amount, size) {
+  const grid = [];
+  for (let i = 0; i < amount; i += 1) {
+    grid.push(<Line
+      points={[i * size, 0, i * size, size * amount - size]}
+      stroke="gray"
+      strokeWidth={2}
+    />);
+    grid.push( <Line
+      points={[0, i * size, amount * size - size, size * i]}
+      stroke="gray"
+      strokeWidth={2}
+    />);
+  }
+
+  return grid;
+}
+
+const colorTable = {
+  O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
+};
+
+function getCircleCoords(field, size) {
+  const circle = [];
+  for (let i = 0; i < field.length; i += 1) {
+    for (let j = 0; j < field.length; j += 1) {
+      circle.push(<Circle
+        x={j * size}
+        y={i * size}
+        radius={5}
+        fill={colorTable[field[i][j][0]]}
+      />,
+      )
+    }
+  }
+  return circle;
+}
+
+function createLoopFigure(data) {
+  const loops = data.loops;
+  const color = colorTable[data.color];
+  let coordinates = [];
+
+  loops.forEach((elem) =>
+    elem.forEach((item) => {
+      coordinates.push((item[0]) * 20);
+      coordinates.push((item[1]) * 20);
+    }));
+
+  const figure = [<Line x={0} y={0} points={coordinates} fill={color} stroke={color} strokeWidth={3} />];
+  return figure;
+}
 
 class GameField extends Component {
   componentDidMount() {
@@ -38,20 +92,34 @@ class GameField extends Component {
     this.socket.send(JSON.stringify({ fieldPoint: [xAxis, yAxis], TYPE: TYPES.PLAYER_SET_DOT }));
   }
 
+  gridClicked(e) {
+    const xAxis = e.evt.layerX - 10;
+    const yAxis = e.evt.layerY - 10;
+    const xPoint = Math.floor(xAxis/20);
+    const yPoint = Math.floor(yAxis/20);
+  }
+
   render() {
     const {
       field,
       fieldSize,
       turn,
       gameResults,
+      loops
     } = this.props;
+
+    const cellSize = 20;
+    const canvasGrid = getCanvasGrid(fieldSize, cellSize);
+    const circle = getCircleCoords(field, cellSize);
+    const loop1 = createLoopFigure(loops[0]);
+    const loop2 = createLoopFigure(loops[1]);
+
     let userTurn = '';
     if (turn === 'NaN') {
       userTurn = ' not your ';
     } else {
       userTurn = ` ${turn} `;
     }
-
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
@@ -87,6 +155,21 @@ class GameField extends Component {
             <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
           </a>
         </div>
+
+        <hr />
+        <div className="gameCanvas">
+          <Stage
+            width={fieldSize * cellSize + cellSize * 2}
+            height={fieldSize * cellSize + cellSize * 2}
+            onClick={this.gridClicked}
+          >
+            <Layer x={cellSize} y={cellSize}>
+              {canvasGrid.map((line) => line)}
+              {circle.map((circ) => circ)}
+              {loop1.map((loop) => loop)}
+            </Layer>
+          </Stage>
+        </div>
       </section>
     );
   }
@@ -97,6 +180,7 @@ GameField.propTypes = {
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.string,
+  loops: PropTypes.array.isRequired,
   gameResults: PropTypes.bool.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
@@ -117,6 +201,7 @@ const mapStateToProps = (state) => {
     captured: state.captured,
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
+    loops: state.loops,
   };
   return data;
 };
