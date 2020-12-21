@@ -15,12 +15,12 @@ function getCanvasGrid(amount, size) {
     grid.push(<Line
       points={[i * size, 0, i * size, size * amount - size]}
       stroke="gray"
-      strokeWidth={2}
+      strokeWidth={1}
     />);
     grid.push( <Line
       points={[0, i * size, amount * size - size, size * i]}
       stroke="gray"
-      strokeWidth={2}
+      strokeWidth={1}
     />);
   }
 
@@ -47,19 +47,34 @@ function getCircleCoords(field, size) {
   return circle;
 }
 
-function createLoopFigure(data) {
-  const loops = data.loops;
-  const color = colorTable[data.color];
-  let coordinates = [];
+function createLoopFigure(loops) {
+  if (loops === undefined) {
+    return [];
+  }
+  const coord = [];
+  const color = loops.color;
+  // eslint-disable-next-line max-len
+  loops.loops.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * 20)),
+  )
+  )
 
-  loops.forEach((elem) =>
-    elem.forEach((item) => {
-      coordinates.push((item[0]) * 20);
-      coordinates.push((item[1]) * 20);
-    }));
-
-  const figure = [<Line x={0} y={0} points={coordinates} fill={color} stroke={color} strokeWidth={3} />];
-  return figure;
+  return [<Line
+    x={0}
+    y={0}
+    opacity={0.4}
+    fill={colorTable[color]}
+    points={coord}
+    closed={true}
+  />,
+    <Line
+      x={0}
+      y={0}
+      points={coord}
+      stroke={colorTable[color]}
+      strokeWidth={3}
+      closed={true}
+    />,
+  ];
 }
 
 class GameField extends Component {
@@ -167,6 +182,7 @@ class GameField extends Component {
               {canvasGrid.map((line) => line)}
               {circle.map((circ) => circ)}
               {loop1.map((loop) => loop)}
+              {loop2.map((loop) => loop)}
             </Layer>
           </Stage>
         </div>

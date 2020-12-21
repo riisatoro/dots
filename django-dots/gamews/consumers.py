@@ -5,8 +5,6 @@ from channels.db import database_sync_to_async
 from api.models import GameRoom, UserGame
 from api.game.main import process
 from api.game.calc_square import process as find_points
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 
 
