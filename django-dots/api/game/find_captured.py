@@ -107,6 +107,84 @@ def has_any_point(loop, points):
     return False
 
 
+def has_common(loop1, loop2):
+    common = 0
+    for point in loop1:
+        if point in loop2:
+            common += 1
+
+        if common > 1:
+            return True
+    return False
+
+
+def join_loop_points(loop1, loop2):
+    for index in range(len(loop1)):
+        if loop1[index] not in loop2:
+            loop2.append(loop1[index])
+        loop1[index] = []
+    return
+
+
+def drop_empty(loops):
+    indexes = []
+    for index, loop in enumerate(loops):
+        if loop[0] == []:
+            indexes.append(index-len(indexes))
+    for index in indexes:
+        loops.pop(index)
+
+
+def build_solid_line(loop):
+    solid_loop = []
+    solid_loop.append(loop[0])
+    for _ in range(1, len(loop)):
+        for index in range(1, len(loop)):
+            if loop[index] not in solid_loop:
+                if is_neighbour(solid_loop[-1], loop[index]):
+                    solid_loop.append(loop[index])
+    # print("SOLID", solid_loop)
+    return solid_loop
+
+
+def drop_common_points(loop):
+    indexes = []
+    for index, point in enumerate(loop):
+        if is_in_loop(loop, point):
+            indexes.append(index-len(indexes))
+    for index in indexes:
+        loop.pop(index)
+
+# OK
+def join_loops(loops):
+    if len(loops) < 2:
+        return loops
+
+    for i in range(len(loops)):
+        for j in range(i+1, len(loops)):
+            if has_common(loops[i], loops[j]):
+                print("COMMON IN ", loops[i], loops[j])
+                join_loop_points(loops[i], loops[j])
+
+    drop_empty(loops)
+    for index in range(len(loops)):
+        drop_common_points(loops[index])
+        loops[index] = build_solid_line(loops[index])
+        #loops[index] = build_solid_line(loops[index])
+        #loops[index] = build_solid_line(loops[index])
+        print(loops[index])
+    return loops
+
+
+def has_no_points(field, loop):
+    for i in range(len(field)):
+        for j in range(len(field)):
+            if [i, j] not in loop and is_in_loop(loop, [i, j]):
+                # print("IN", loop, "EXISTED", [i, j])
+                return False
+    return True
+
+
 def process(field, colors):
     print("PLAYER ", colors[0])
     player_points = get_all_points(field, colors[0])
@@ -117,18 +195,16 @@ def process(field, colors):
 
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
-
-    # print(colors[1]+"l")
-    # captured_points = get_all_points(field, colors[1]+"l")
     
     for loop in player_loops:
         if len(loop) > 3 and  has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
             loops.append(loop)
         
-        # if has_any_point(loop, captured_points):
-        #    frontend_loops.append(loop)
-        if len(loop) > 3:
+        if len(loop) > 3 and not has_no_points(field, loop):
             frontend_loops.append(loop)
+    
+    frontend_loops = join_loops(frontend_loops)
     # print(frontend_loops)
+    
     return field, frontend_loops
