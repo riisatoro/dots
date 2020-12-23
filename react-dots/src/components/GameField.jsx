@@ -9,6 +9,10 @@ import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
 import '../../public/css/game_field.css';
 
+const colorTable = {
+  O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
+};
+
 function getCanvasGrid(amount, size) {
   const grid = [];
   for (let i = 0; i < amount; i += 1) {
@@ -27,10 +31,6 @@ function getCanvasGrid(amount, size) {
   return grid;
 }
 
-const colorTable = {
-  O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
-};
-
 function getCircleCoords(field, size) {
   const circle = [];
   for (let i = 0; i < field.length; i += 1) {
@@ -47,16 +47,17 @@ function getCircleCoords(field, size) {
   return circle;
 }
 
-function createLoopFigure(loops) {
+function createLoopFigure(loops, cellSize) {
   if (loops === undefined) {
     return [];
   }
+
   const coord = [];
-  const color = loops.color;
+  const color = colorTable[loops.color];
+  console.log(loops.color);
+  console.log(color);
   // eslint-disable-next-line max-len
-  loops.loops.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * 20)),
-  )
-  )
+  loops.loops.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * cellSize))));
 
   return [<Line
     x={0}
@@ -64,7 +65,7 @@ function createLoopFigure(loops) {
     opacity={0.4}
     fill={colorTable[color]}
     points={coord}
-    closed={true}
+    closed
   />,
     <Line
       x={0}
@@ -72,7 +73,7 @@ function createLoopFigure(loops) {
       points={coord}
       stroke={colorTable[color]}
       strokeWidth={3}
-      closed={true}
+      closed
     />,
   ];
 }
@@ -108,10 +109,12 @@ class GameField extends Component {
   }
 
   gridClicked(e) {
-    const xAxis = e.evt.layerX - 10;
-    const yAxis = e.evt.layerY - 10;
-    const xPoint = Math.floor(xAxis/20);
-    const yPoint = Math.floor(yAxis/20);
+    const { cellSize } = this.props;
+    const xAxis = e.evt.layerX - cellSize / 2;
+    const yAxis = e.evt.layerY - cellSize / 2;
+    const xPoint = Math.floor(xAxis / cellSize);
+    const yPoint = Math.floor(yAxis / cellSize);
+    console.log(xPoint, yPoint);
   }
 
   render() {
@@ -120,14 +123,13 @@ class GameField extends Component {
       fieldSize,
       turn,
       gameResults,
-      loops
+      loops,
+      cellSize,
     } = this.props;
 
-    const cellSize = 20;
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
     const circle = getCircleCoords(field, cellSize);
-    const loop1 = createLoopFigure(loops[0]);
-    const loop2 = createLoopFigure(loops[1]);
+    const loop1 = createLoopFigure(loops[0], cellSize);
 
     let userTurn = '';
     if (turn === 'NaN') {
@@ -176,13 +178,13 @@ class GameField extends Component {
           <Stage
             width={fieldSize * cellSize + cellSize * 2}
             height={fieldSize * cellSize + cellSize * 2}
-            onClick={this.gridClicked}
+            // eslint-disable-next-line react/jsx-no-bind
+            onClick={this.gridClicked.bind(this)}
           >
             <Layer x={cellSize} y={cellSize}>
               {canvasGrid.map((line) => line)}
               {circle.map((circ) => circ)}
               {loop1.map((loop) => loop)}
-              {loop2.map((loop) => loop)}
             </Layer>
           </Stage>
         </div>
@@ -198,6 +200,7 @@ GameField.propTypes = {
   turn: PropTypes.string,
   loops: PropTypes.array.isRequired,
   gameResults: PropTypes.bool.isRequired,
+  cellSize: PropTypes.number.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
 };
@@ -218,6 +221,7 @@ const mapStateToProps = (state) => {
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
     loops: state.loops,
+    cellSize: 30,
   };
   return data;
 };

@@ -36,6 +36,9 @@ def get_graph_loop(player_loop, loops, visited):
             dfs(i)
             path.pop()
 
+    for i in player_loop:
+      print(i)
+
 
 def is_neighbour(point_1, point_2):
     try:
@@ -109,7 +112,9 @@ def process(field, colors):
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
 
+
     for loop in player_loops:
+        # print(loop)
         if has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
             loops.append(loop)
