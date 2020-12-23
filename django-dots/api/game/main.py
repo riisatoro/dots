@@ -22,11 +22,11 @@ def process(field, point, user_color, colors):
     loops = [
         {
             "color": colors[0],
-            "loops": loop1
+            "playerLoop": loop1
         },
         {
             "color": colors[1],
-            "loops": loop2
+            "playerLoop": loop2
         }
     ]
 

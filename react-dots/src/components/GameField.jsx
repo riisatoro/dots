@@ -49,35 +49,58 @@ function getCircleCoords(field, size) {
 
 function createLoopFigure(loops, cellSize) {
   try {
-    const color = loops.color;
-    const loop = loops.loops;
+    const loop = loops["playerLoop"];
 
-    if (loop.length > 0) {
-      const coord = [];
-      const color = colorTable[loops.color];
-      // eslint-disable-next-line max-len
-      loop.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * cellSize))));
-      console.log(color);
-      return [<Line
+    console.log(loop);
+    
+    const linePoints = []
+    const jsxLoop = []
+    const color = colorTable[loops.color];
+    
+    loop.forEach((loop) => {
+      const coords = []
+      loop.forEach((point) => point.forEach((coord) => coords.unshift(coord * cellSize) ))
+      linePoints.push(coords);
+    })
+
+    for (let i = 0; i < linePoints.length; i += 1) {
+      jsxLoop.push(<Line
+        x={0}
+        y={0}
+        points={linePoints[i]}
+        stroke={color}
+        strokeWidth={3}
+        closed
+      />)
+      jsxLoop.push(<Line
         x={0}
         y={0}
         opacity={0.4}
         fill={color}
-        points={coord}
+        points={linePoints[i]}
         closed
-      />,
-        <Line
-          x={0}
-          y={0}
-          points={coord}
-          stroke={color}
-          strokeWidth={3}
-          closed
-        />,
-      ];
-
+      />)
     }
-    return [];
+      /*
+      jsxLoop.push(<Line
+        x={0}
+        y={0}
+        opacity={0.4}
+        fill={color}
+        points={points}
+        closed
+      />)
+      
+      jsxLoop.push(<Line
+        x={0}
+        y={0}
+        points={points}
+        stroke={color}
+        strokeWidth={3}
+        closed
+      />)
+      */
+      return jsxLoop;
   } catch {
     return [];
   }
@@ -136,7 +159,6 @@ class GameField extends Component {
     const circle = getCircleCoords(field, cellSize);
     const loop1 = createLoopFigure(loops[0], cellSize);
     const loop2 = createLoopFigure(loops[1], cellSize);
-    console.log(loop1, loop2)
 
     let userTurn = '';
     if (turn === 'NaN') {

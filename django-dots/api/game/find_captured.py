@@ -170,9 +170,8 @@ def join_loops(loops):
     for index in range(len(loops)):
         drop_common_points(loops[index])
         loops[index] = build_solid_line(loops[index])
-        #loops[index] = build_solid_line(loops[index])
-        #loops[index] = build_solid_line(loops[index])
-        print(loops[index])
+        loops[index] = build_solid_line(loops[index])
+        loops[index] = build_solid_line(loops[index])
     return loops
 
 
