@@ -50,9 +50,6 @@ function getCircleCoords(field, size) {
 function createLoopFigure(loops, cellSize) {
   try {
     const loop = loops["playerLoop"];
-
-    console.log(loop);
-    
     const linePoints = []
     const jsxLoop = []
     const color = colorTable[loops.color];
@@ -142,7 +139,7 @@ class GameField extends Component {
     const yAxis = e.evt.layerY - cellSize / 2;
     const xPoint = Math.floor(xAxis / cellSize);
     const yPoint = Math.floor(yAxis / cellSize);
-    console.log(xPoint, yPoint);
+    // console.log(xPoint, yPoint);
   }
 
   render() {

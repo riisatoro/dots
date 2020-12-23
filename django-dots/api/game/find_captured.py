@@ -143,7 +143,6 @@ def build_solid_line(loop):
             if loop[index] not in solid_loop:
                 if is_neighbour(solid_loop[-1], loop[index]):
                     solid_loop.append(loop[index])
-    # print("SOLID", solid_loop)
     return solid_loop
 
 
@@ -163,7 +162,6 @@ def join_loops(loops):
     for i in range(len(loops)):
         for j in range(i+1, len(loops)):
             if has_common(loops[i], loops[j]):
-                print("COMMON IN ", loops[i], loops[j])
                 join_loop_points(loops[i], loops[j])
 
     drop_empty(loops)
@@ -179,13 +177,11 @@ def has_no_points(field, loop):
     for i in range(len(field)):
         for j in range(len(field)):
             if [i, j] not in loop and is_in_loop(loop, [i, j]):
-                # print("IN", loop, "EXISTED", [i, j])
                 return False
     return True
 
 
 def process(field, colors):
-    print("PLAYER ", colors[0])
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
     player_loops = []
@@ -204,6 +200,5 @@ def process(field, colors):
             frontend_loops.append(loop)
     
     frontend_loops = join_loops(frontend_loops)
-    # print(frontend_loops)
     
     return field, frontend_loops
