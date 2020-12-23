@@ -25,7 +25,7 @@ def process(field, point, user_color, colors):
             "loops": loop1
         },
         {
-            "colors": colors[1],
+            "color": colors[1],
             "loops": loop2
         }
     ]

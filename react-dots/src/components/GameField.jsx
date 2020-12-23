@@ -48,34 +48,39 @@ function getCircleCoords(field, size) {
 }
 
 function createLoopFigure(loops, cellSize) {
-  if (loops === undefined) {
+  try {
+    const color = loops.color;
+    const loop = loops.loops;
+
+    if (loop.length > 0) {
+      const coord = [];
+      const color = colorTable[loops.color];
+      // eslint-disable-next-line max-len
+      loop.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * cellSize))));
+      console.log(color);
+      return [<Line
+        x={0}
+        y={0}
+        opacity={0.4}
+        fill={color}
+        points={coord}
+        closed
+      />,
+        <Line
+          x={0}
+          y={0}
+          points={coord}
+          stroke={color}
+          strokeWidth={3}
+          closed
+        />,
+      ];
+
+    }
+    return [];
+  } catch {
     return [];
   }
-
-  const coord = [];
-  const color = colorTable[loops.color];
-  console.log(loops.color);
-  console.log(color);
-  // eslint-disable-next-line max-len
-  loops.loops.forEach((points) => points.forEach((point) => point.forEach((dot) => coord.unshift(dot * cellSize))));
-
-  return [<Line
-    x={0}
-    y={0}
-    opacity={0.4}
-    fill={colorTable[color]}
-    points={coord}
-    closed
-  />,
-    <Line
-      x={0}
-      y={0}
-      points={coord}
-      stroke={colorTable[color]}
-      strokeWidth={3}
-      closed
-    />,
-  ];
 }
 
 class GameField extends Component {
@@ -130,6 +135,8 @@ class GameField extends Component {
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
     const circle = getCircleCoords(field, cellSize);
     const loop1 = createLoopFigure(loops[0], cellSize);
+    const loop2 = createLoopFigure(loops[1], cellSize);
+    console.log(loop1, loop2)
 
     let userTurn = '';
     if (turn === 'NaN') {
@@ -137,6 +144,7 @@ class GameField extends Component {
     } else {
       userTurn = ` ${turn} `;
     }
+
     const item = field.map((i, pIndex) => (
       <div className="input__row" key={pIndex.toString()}>
         {i.map((j, qIndex) => (
@@ -184,7 +192,8 @@ class GameField extends Component {
             <Layer x={cellSize} y={cellSize}>
               {canvasGrid.map((line) => line)}
               {circle.map((circ) => circ)}
-              {loop1.map((loop) => loop)}
+              {loop1.map((l1) => l1)}
+              {loop2.map((l2) => l2)}
             </Layer>
           </Stage>
         </div>
@@ -241,3 +250,8 @@ export default connect(
   }
   ),
 )(GameField);
+
+/*
+{loop1.map((loop) => loop)}
+              {loop2.map((loop) => loop)}
+*/
