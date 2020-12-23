@@ -36,9 +36,6 @@ def get_graph_loop(player_loop, loops, visited):
             dfs(i)
             path.pop()
 
-    for i in player_loop:
-      print(i)
-
 
 def is_neighbour(point_1, point_2):
     try:
@@ -64,7 +61,7 @@ def find_loop(path):
     return []
 
 
-def has_captured_point(loop, enemy_points):
+def has_captured_point(loop, enemy_points, any=False):
     for point in enemy_points:
         if is_in_loop(loop, point):
             return True
@@ -103,20 +100,35 @@ def fill_circle_square(field, loop, player):
     return field
 
 
+def has_any_point(loop, points):
+    for point in points:
+        if is_in_loop(loop, point):
+            return True
+    return False
+
+
 def process(field, colors):
+    print("PLAYER ", colors[0])
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
     player_loops = []
     loops = []
+    frontend_loops = []
 
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
 
-
+    # print(colors[1]+"l")
+    # captured_points = get_all_points(field, colors[1]+"l")
+    
     for loop in player_loops:
-        # print(loop)
-        if has_captured_point(loop, enemy_points):
+        if len(loop) > 3 and  has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
             loops.append(loop)
-
-    return field, loops
+        
+        # if has_any_point(loop, captured_points):
+        #    frontend_loops.append(loop)
+        if len(loop) > 3:
+            frontend_loops.append(loop)
+    # print(frontend_loops)
+    return field, frontend_loops
