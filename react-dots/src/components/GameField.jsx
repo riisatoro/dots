@@ -3,105 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
-import { Stage, Layer, Line, Circle } from 'react-konva';
+import { Stage, Layer } from 'react-konva';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
+import { getCanvasGrid, getCircleCoords, createLoopFigure } from '../actions/gameFieldDrawable';
 import '../../public/css/game_field.css';
-
-const colorTable = {
-  O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
-};
-
-function getCanvasGrid(amount, size) {
-  const grid = [];
-  for (let i = 0; i < amount; i += 1) {
-    grid.push(<Line
-      points={[i * size, 0, i * size, size * amount - size]}
-      stroke="gray"
-      strokeWidth={1}
-    />);
-    grid.push( <Line
-      points={[0, i * size, amount * size - size, size * i]}
-      stroke="gray"
-      strokeWidth={1}
-    />);
-  }
-
-  return grid;
-}
-
-function getCircleCoords(field, size) {
-  const circle = [];
-  for (let i = 0; i < field.length; i += 1) {
-    for (let j = 0; j < field.length; j += 1) {
-      circle.push(<Circle
-        x={j * size}
-        y={i * size}
-        radius={5}
-        fill={colorTable[field[i][j][0]]}
-      />,
-      )
-    }
-  }
-  return circle;
-}
-
-function createLoopFigure(loops, cellSize) {
-  try {
-    const loop = loops["playerLoop"];
-    const linePoints = []
-    const jsxLoop = []
-    const color = colorTable[loops.color];
-    
-    loop.forEach((loop) => {
-      const coords = []
-      loop.forEach((point) => point.forEach((coord) => coords.unshift(coord * cellSize) ))
-      linePoints.push(coords);
-    })
-
-    for (let i = 0; i < linePoints.length; i += 1) {
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        points={linePoints[i]}
-        stroke={color}
-        strokeWidth={3}
-        closed
-      />)
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        opacity={0.4}
-        fill={color}
-        points={linePoints[i]}
-        closed
-      />)
-    }
-      /*
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        opacity={0.4}
-        fill={color}
-        points={points}
-        closed
-      />)
-      
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        points={points}
-        stroke={color}
-        strokeWidth={3}
-        closed
-      />)
-      */
-      return jsxLoop;
-  } catch {
-    return [];
-  }
-}
 
 class GameField extends Component {
   componentDidMount() {
@@ -249,7 +156,7 @@ const mapStateToProps = (state) => {
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
     loops: state.loops,
-    cellSize: 30,
+    cellSize: state.cellSize,
   };
   return data;
 };
@@ -269,8 +176,3 @@ export default connect(
   }
   ),
 )(GameField);
-
-/*
-{loop1.map((loop) => loop)}
-              {loop2.map((loop) => loop)}
-*/

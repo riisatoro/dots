@@ -14,6 +14,7 @@ const setInitial = () => {
   const gameInterrupted = false;
   const fieldSize = 10;
   const gameStarted = false;
+  const cellSize = 30;
   const colors = ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'];
   const colorTable = {
     O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
@@ -24,6 +25,7 @@ const setInitial = () => {
   };
 
   return {
+    cellSize,
     gameResults,
     socket,
     user,

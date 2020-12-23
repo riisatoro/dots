@@ -161,7 +161,6 @@ export default function updateState(state = initialState, action) {
         gameResults: false,
         gameStarted: false,
         gameField: false,
-        loops: [],
       };
     }
 
