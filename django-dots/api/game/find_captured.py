@@ -61,7 +61,7 @@ def find_loop(path):
     return []
 
 
-def has_captured_point(loop, enemy_points, any=False):
+def has_captured_point(loop, enemy_points):
     for point in enemy_points:
         if is_in_loop(loop, point):
             return True
@@ -119,11 +119,10 @@ def has_common(loop1, loop2):
 
 
 def join_loop_points(loop1, loop2):
-    for index in range(len(loop1)):
+    for index, _ in enumerate(loop1):
         if loop1[index] not in loop2:
             loop2.append(loop1[index])
         loop1[index] = []
-    return
 
 
 def drop_empty(loops):
@@ -154,18 +153,18 @@ def drop_common_points(loop):
     for index in indexes:
         loop.pop(index)
 
-# OK
+
 def join_loops(loops):
     if len(loops) < 2:
         return loops
 
-    for i in range(len(loops)):
-        for j in range(i+1, len(loops)):
-            if has_common(loops[i], loops[j]):
+    for i, _ in enumerate(loops):
+        for j, _ in enumerate(loops):
+            if i != j and has_common(loops[i], loops[j]):
                 join_loop_points(loops[i], loops[j])
 
     drop_empty(loops)
-    for index in range(len(loops)):
+    for index, _ in enumerate(loops):
         drop_common_points(loops[index])
         loops[index] = build_solid_line(loops[index])
         loops[index] = build_solid_line(loops[index])
@@ -190,15 +189,15 @@ def process(field, colors):
 
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
-    
+
     for loop in player_loops:
-        if len(loop) > 3 and  has_captured_point(loop, enemy_points):
+        if len(loop) > 3 and has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
             loops.append(loop)
-        
+
         if len(loop) > 3 and not has_no_points(field, loop):
             frontend_loops.append(loop)
-    
+
     frontend_loops = join_loops(frontend_loops)
-    
+
     return field, frontend_loops
