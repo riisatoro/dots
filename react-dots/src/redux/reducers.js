@@ -72,6 +72,7 @@ export default function updateState(state = initialState, action) {
           roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
+          loops: [],
         };
         return {
           ...state,
@@ -80,9 +81,15 @@ export default function updateState(state = initialState, action) {
           field: reply.field,
           turn: state.user.username,
           gameStarted: true,
+          loops: [],
         };
       }
-      return { ...state, gameEnd: false, gameStarted: false };
+      return {
+        ...state,
+        gameEnd: false,
+        gameStarted: false,
+        loops: [],
+      };
     }
 
     /* OK */
@@ -94,6 +101,7 @@ export default function updateState(state = initialState, action) {
           roomId: parseInt(reply.room_id, 10),
           fieldSize: reply.field_size,
           turn: false,
+          loops: [],
         };
         return {
           ...state,
@@ -102,6 +110,7 @@ export default function updateState(state = initialState, action) {
           field: reply.field,
           turn: 'NaN',
           gameStarted: true,
+          loops: [],
         };
       }
       return { ...state };
