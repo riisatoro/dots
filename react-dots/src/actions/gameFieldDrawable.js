@@ -7,12 +7,12 @@ function getCanvasGrid(amount, size) {
   for (let i = 0; i < amount; i += 1) {
     grid.push(<Line
       points={[i * size, 0, i * size, size * amount - size]}
-      stroke="gray"
+      stroke="black"
       strokeWidth={1}
     />);
     grid.push(<Line
       points={[0, i * size, amount * size - size, size * i]}
-      stroke="gray"
+      stroke="black"
       strokeWidth={1}
     />);
   }

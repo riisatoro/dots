@@ -1,4 +1,3 @@
-
 WHITE = "white"
 GRAY = "gray"
 BLACK = "black"
@@ -100,78 +99,6 @@ def fill_circle_square(field, loop, player):
     return field
 
 
-def has_any_point(loop, points):
-    for point in points:
-        if is_in_loop(loop, point):
-            return True
-    return False
-
-
-def has_common(loop1, loop2):
-    common = 0
-    for point in loop1:
-        if point in loop2:
-            common += 1
-
-        if common > 1:
-            return True
-    return False
-
-
-def join_loop_points(loop1, loop2):
-    for index, _ in enumerate(loop1):
-        if loop1[index] not in loop2:
-            loop2.append(loop1[index])
-        loop1[index] = []
-
-
-def drop_empty(loops):
-    indexes = []
-    for index, loop in enumerate(loops):
-        if loop[0] == []:
-            indexes.append(index-len(indexes))
-    for index in indexes:
-        loops.pop(index)
-
-
-def build_solid_line(loop):
-    solid_loop = []
-    solid_loop.append(loop[0])
-    for _ in range(1, len(loop)):
-        for index in range(1, len(loop)):
-            if loop[index] not in solid_loop:
-                if is_neighbour(solid_loop[-1], loop[index]):
-                    solid_loop.append(loop[index])
-    return solid_loop
-
-
-def drop_common_points(loop):
-    indexes = []
-    for index, point in enumerate(loop):
-        if is_in_loop(loop, point):
-            indexes.append(index-len(indexes))
-    for index in indexes:
-        loop.pop(index)
-
-
-def join_loops(loops):
-    if len(loops) < 2:
-        return loops
-
-    for i, _ in enumerate(loops):
-        for j, _ in enumerate(loops):
-            if i != j and has_common(loops[i], loops[j]):
-                join_loop_points(loops[i], loops[j])
-
-    drop_empty(loops)
-    for index, _ in enumerate(loops):
-        drop_common_points(loops[index])
-        loops[index] = build_solid_line(loops[index])
-        loops[index] = build_solid_line(loops[index])
-        loops[index] = build_solid_line(loops[index])
-    return loops
-
-
 def has_no_points(field, loop):
     for i in range(len(field)):
         for j in range(len(field)):
@@ -197,7 +124,5 @@ def process(field, colors):
 
         if len(loop) > 3 and not has_no_points(field, loop):
             frontend_loops.append(loop)
-
-    frontend_loops = join_loops(frontend_loops)
-
+    
     return field, frontend_loops

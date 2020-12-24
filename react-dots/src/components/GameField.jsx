@@ -116,10 +116,10 @@ class GameField extends Component {
             onClick={this.gridClicked.bind(this)}
           >
             <Layer x={cellSize} y={cellSize}>
-              {canvasGrid.map((line) => line)}
-              {circle.map((circ) => circ)}
               {loop1.map((l1) => l1)}
               {loop2.map((l2) => l2)}
+              {canvasGrid.map((line) => line)}
+              {circle.map((circ) => circ)}
             </Layer>
           </Stage>
         </div>
