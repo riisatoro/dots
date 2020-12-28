@@ -28,6 +28,79 @@ def build_solid_loops(loop):
     return []
 
 
+def build_solid_loops(loop):
+    solid_loop = [min(loop)]
+    sequence = [
+        "UP",
+        "UP_RIGHT",
+        "RIGHT",
+        "BOTTOM_RIGHT",
+        "BOTTOM", 
+        "BOTTOM_LEFT", 
+        "LEFT", 
+        "UP_LEFT", 
+        ]
+    index_sequence = 0
+
+    for _ in range(len(loop)):
+        if len(solid_loop) > 2 and is_neighbour(solid_loop[0], solid_loop[-1]):
+            return solid_loop
+
+        x, y = solid_loop[-1]
+
+        for index in range(index_sequence, index_sequence+8):
+            direction = sequence[index%len(sequence)]
+            if direction == "UP_LEFT":
+                if [x-1, y-1] in loop and [x-1, y-1] not in solid_loop:
+                    solid_loop.append([x-1, y-1])
+                    index_sequence = sequence.index("UP_LEFT")+4
+                    break
+
+            elif direction == "LEFT":
+                if [x, y-1] in loop and [x, y-1] not in solid_loop:
+                    solid_loop.append([x, y-1])
+                    index_sequence = sequence.index("LEFT")+4
+                    break
+
+            elif direction == "BOTTOM_LEFT":
+                if [x+1, y-1] in loop and [x+1, y-1] not in solid_loop:
+                    solid_loop.append([x+1, y-1])
+                    index_sequence = sequence.index("BOTTOM_LEFT")+4
+                    break
+
+            elif direction == "BOTTOM":
+                if [x+1, y] in loop and [x+1, y] not in solid_loop:
+                    solid_loop.append([x+1, y])
+                    index_sequence = sequence.index("BOTTOM")+4
+                    break
+
+            elif direction == "BOTTOM_RIGHT":
+                if [x+1, y+1] in loop and [x+1, y+1] not in solid_loop:
+                    solid_loop.append([x+1, y+1])
+                    index_sequence = sequence.index("BOTTOM_RIGHT")+4
+                    break
+
+            elif direction == "RIGHT":
+                if [x, y+1] in loop and [x, y+1] not in solid_loop:
+                    solid_loop.append([x, y+1])
+                    index_sequence = sequence.index("RIGHT")+4
+                    break
+
+            elif direction == "UP_RIGHT":
+                if [x-1, y+1] in loop and [x-1, y+1] not in solid_loop:
+                    solid_loop.append([x-1, y+1])
+                    index_sequence = sequence.index("UP_RIGHT")+4
+                    break
+
+            else:
+                if [x-1, y] in loop and [x-1, y] not in solid_loop:
+                    solid_loop.append([x-1, y])
+                    index_sequence = sequence.index("UP")+4
+                    break
+
+    return solid_loop
+
+
 def get_graph_loop(points, loops, visited):
     path = []
 
@@ -36,18 +109,18 @@ def get_graph_loop(points, loops, visited):
         for j in range(0, len(visited)-1):
             if is_neighbour(points[index], points[j]):
                 if visited[j] == WHITE:
-                    path.append(points[j])
+                    x, y = points[j]
+                    path.append((x, y))
                     dfs(j)
                     path.pop()
-
+        
         if len(path) > 3:
-            loop = find_loop(path)
-            if loop:
-                loops.append(loop)
+            loops.append(path[:])
 
     for i in range(0, len(points)-1):
         if visited[i] == WHITE:
-            path.append(points[i])
+            x, y = points[i]
+            path.append((x, y))
             dfs(i)
             path.pop()
 
@@ -69,10 +142,14 @@ def find_loop(path):
         for p, _ in enumerate(path):
             if is_neighbour(path[p], path[q]):
                 try:
-                    return path[p:q+1]
+                    result = path[p:q+1]
+                    if len(result) > 3:
+                        return tuple(result)
                 except IndexError:
-                    return path[p:q]
-    return []
+                    result = path[p:q+1]
+                    if len(result) > 3:
+                        return tuple(result)
+    return ()
 
 
 def has_captured_point(loop, enemy_points):
@@ -165,38 +242,35 @@ def get_any_enemy_points(field, color):
 def process(field, colors):
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
+    player_path = []
     player_loops = []
     loops = []
 
     player_visited = [WHITE]*len(player_points)
-    get_graph_loop(player_points, player_loops, player_visited)
+    get_graph_loop(player_points, player_path, player_visited)
 
-    for loop in player_loops:
-        if len(loop) > 3 and has_captured_point(loop, enemy_points):
-            field = fill_circle_square(field, loop, colors[0])
+    for loop in player_path:
+        player_loops.append(find_loop(loop))
 
-    enemy_points = get_any_enemy_points(field, colors[1])
-    for loop in player_loops:
-        if len(loop) > 3 and has_captured_point(loop, enemy_points):
-            loops.append(loop)
+    player_loops = tuple(set(player_loops))
+
+    for item in player_loops:
+        print(item)
 
     return field, loops
-                
+
 
 if __name__ == '__main__':
 
     field = [
-        ["E", "E", "E", "E", "E", "E", "E",],
-        ["E", "R", "E", "R", "R", "R", "E",],
-        ["R", "G", "R", "E", "G", "R", "E",],
-        ["E", "R", "E", "R", "R", "R", "E",],
-        ["E", "R", "E", "R", "R", "E", "R",],
-        ["E", "R", "R", "R", "G", "G", "R",],
-        ["E", "E", "E", "E", "R", "R", "E",],
+        ["E", "E", "R", "R", "E", "E", "E", "E",],
+        ["E", "R", "G", "E", "R", "R", "R", "E",],
+        ["E", "E", "R", "R", "G", "E", "E", "R",],
+        ["E", "R", "E", "R", "E", "E", "R", "E",],
+        ["E", "R", "G", "E", "R", "R", "E", "E",],
+        ["E", "E", "R", "E", "R", "E", "E", "E",],
+        ["E", "E", "E", "R", "E", "E", "E", "E",],
+        ["E", "E", "E", "E", "E", "E", "E", "E",],
     ]
 
-    field, loop = process(field, ["R", "G"])
-    all_enemy_points = get_any_enemy_points(field, 'G')
-
-    for item in loop:
-        print(item)
+    field, loops = process(field, ["R", "G"])
