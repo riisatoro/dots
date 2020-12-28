@@ -57,17 +57,13 @@ App.propTypes = {
   gameStarted: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  const data = {
-    authorized: state.user.auth,
-    gameStarted: state.gameStarted,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  authorized: state.user.auth,
+  gameStarted: state.gameStarted,
+});
 
 export default hot(
   connect(
     mapStateToProps,
-    null,
   )(App),
 );

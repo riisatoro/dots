@@ -16,7 +16,6 @@ function getCanvasGrid(amount, size) {
       strokeWidth={1}
     />);
   }
-
   return grid;
 }
 

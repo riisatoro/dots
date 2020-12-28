@@ -80,7 +80,6 @@ class GameField extends Component {
           <Stage
             width={fieldSize * cellSize + cellSize * 2}
             height={fieldSize * cellSize + cellSize * 2}
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={this.gridClicked.bind(this)}
           >
             <Layer x={cellSize} y={cellSize}>
@@ -131,7 +130,7 @@ const mapStateToProps = (state) => {
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
     loops: state.loops,
-    cellSize: state.cellSize,
+    cellSize: 30,
   };
   return data;
 };

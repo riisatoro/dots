@@ -1,3 +1,5 @@
+import collections
+
 WHITE = "white"
 GRAY = "gray"
 BLACK = "black"
@@ -12,26 +14,40 @@ def get_all_points(field, color):
     return points
 
 
-def get_graph_loop(player_loop, loops, visited):
+def build_solid_loops(loop):
+    sequence = {
+        "UP_LEFT": [-1, -1],
+        "LEFT": [0, -1], 
+        "BOTTOM_LEFT": [1, -1], 
+        "BOTTOM": [1, 0], 
+        "BOTTOM_RIGHT": [1, 1],
+        "RIGHT": [0, 1],
+        "UP_RIGHT": [-1, 1],
+        "UP": [-1, 0],
+    }
+    return []
+
+
+def get_graph_loop(points, loops, visited):
     path = []
 
     def dfs(index):
         visited[index] = GRAY
-        for j in range(len(visited)-1, 0, -1):
-            if is_neighbour(player_loop[index], player_loop[j]):
+        for j in range(0, len(visited)-1):
+            if is_neighbour(points[index], points[j]):
                 if visited[j] == WHITE:
-                    path.append(player_loop[j])
+                    path.append(points[j])
                     dfs(j)
                     path.pop()
 
-        if len(path) > 2:
+        if len(path) > 3:
             loop = find_loop(path)
             if loop:
                 loops.append(loop)
 
-    for i in range(0, len(player_loop)-1):
+    for i in range(0, len(points)-1):
         if visited[i] == WHITE:
-            path.append(player_loop[i])
+            path.append(points[i])
             dfs(i)
             path.pop()
 
@@ -49,7 +65,6 @@ def is_neighbour(point_1, point_2):
 
 
 def find_loop(path):
-
     for q, _ in reversed(list(enumerate(path))):
         for p, _ in enumerate(path):
             if is_neighbour(path[p], path[q]):
@@ -61,10 +76,12 @@ def find_loop(path):
 
 
 def has_captured_point(loop, enemy_points):
+    has_captured = False
     for point in enemy_points:
         if is_in_loop(loop, point):
-            return True
-    return False
+            enemy_points.pop(enemy_points.index(point))
+            has_captured = True
+    return has_captured
 
 
 def is_in_loop(loop, point):
@@ -136,79 +153,6 @@ def join_loops(loops, loop):
     return loops
 
 
-def build_solid_loops(loop):
-    solid_loop = [min(loop)]
-    sequence = [
-        "UP_LEFT",
-        "LEFT",
-        "BOTTOM_LEFT",
-        "BOTTOM",
-        "BOTTOM_RIGHT",
-        "RIGHT",
-        "UP_RIGHT",
-        "UP"
-    ]
-    index_sequence = 0
-
-    for _ in range(len(loop)):
-        if len(solid_loop) > 2 and is_neighbour(solid_loop[0], solid_loop[-1]):
-            return solid_loop
-
-        x, y = solid_loop[-1]
-
-        for index in range(index_sequence, index_sequence+8):
-            direction = sequence[index % len(sequence)]
-            if direction == "UP_LEFT":
-                if [x-1, y-1] in loop and [x-1, y-1] not in solid_loop:
-                    solid_loop.append([x-1, y-1])
-                    index_sequence = sequence.index("UP_LEFT")+4
-                    break
-
-            elif direction == "LEFT":
-                if [x, y-1] in loop and [x, y-1] not in solid_loop:
-                    solid_loop.append([x, y-1])
-                    index_sequence = sequence.index("LEFT")+4
-                    break
-
-            elif direction == "BOTTOM_LEFT":
-                if [x+1, y-1] in loop and [x+1, y-1] not in solid_loop:
-                    solid_loop.append([x+1, y-1])
-                    index_sequence = sequence.index("BOTTOM_LEFT")+4
-                    break
-
-            elif direction == "BOTTOM":
-                if [x+1, y] in loop and [x+1, y] not in solid_loop:
-                    solid_loop.append([x+1, y])
-                    index_sequence = sequence.index("BOTTOM")+4
-                    break
-
-            elif direction == "BOTTOM_RIGHT":
-                if [x+1, y+1] in loop and [x+1, y+1] not in solid_loop:
-                    solid_loop.append([x+1, y+1])
-                    index_sequence = sequence.index("BOTTOM_RIGHT")+4
-                    break
-
-            elif direction == "RIGHT":
-                if [x, y+1] in loop and [x, y+1] not in solid_loop:
-                    solid_loop.append([x, y+1])
-                    index_sequence = sequence.index("RIGHT")+4
-                    break
-
-            elif direction == "UP_RIGHT":
-                if [x-1, y+1] in loop and [x-1, y+1] not in solid_loop:
-                    solid_loop.append([x-1, y+1])
-                    index_sequence = sequence.index("UP_RIGHT")+4
-                    break
-
-            else:
-                if [x-1, y] in loop and [x-1, y] not in solid_loop:
-                    solid_loop.append([x-1, y])
-                    index_sequence = sequence.index("UP")+4
-                    break
-
-    return solid_loop
-
-
 def get_any_enemy_points(field, color):
     points = []
     for i, _ in enumerate(field):
@@ -230,39 +174,29 @@ def process(field, colors):
     for loop in player_loops:
         if len(loop) > 3 and has_captured_point(loop, enemy_points):
             field = fill_circle_square(field, loop, colors[0])
-            loops.append(loop)
 
-    clear_loops = []
-    joined_array = []
     enemy_points = get_any_enemy_points(field, colors[1])
-
     for loop in player_loops:
         if len(loop) > 3 and has_captured_point(loop, enemy_points):
-            clear_loops.append(loop)
+            loops.append(loop)
 
-    for _ in range(len(clear_loops)):
-        if len(clear_loops) < 1:
-            break
+    return field, loops
+                
 
-        max_index = find_max_loop(clear_loops)
-        joined_array.append(clear_loops[max_index])
-        clear_loops.pop(max_index)
+if __name__ == '__main__':
 
-        pop_indexes = []
-        for index, loop in enumerate(clear_loops):
-            if loop != [] and max_index != index and has_common_points(joined_array[-1], loop):
-                pop_indexes.append(index - len(pop_indexes))
-                joined_array = join_loops(joined_array, loop)
+    field = [
+        ["E", "E", "E", "E", "E", "E", "E",],
+        ["E", "R", "E", "R", "R", "R", "E",],
+        ["R", "G", "R", "E", "G", "R", "E",],
+        ["E", "R", "E", "R", "R", "R", "E",],
+        ["E", "R", "E", "R", "R", "E", "R",],
+        ["E", "R", "R", "R", "G", "G", "R",],
+        ["E", "E", "E", "E", "R", "R", "E",],
+    ]
 
-        for index in pop_indexes:
-            clear_loops.pop(index)
+    field, loop = process(field, ["R", "G"])
+    all_enemy_points = get_any_enemy_points(field, 'G')
 
-    solid_loops = []
-    for loop in joined_array:
-        if len(loop) > 4:
-            solid_loops.append(build_solid_loops(loop))
-        else:
-            solid_loops.append(loop)
-    solid_loops = solid_loops + clear_loops
-
-    return field, solid_loops
+    for item in loop:
+        print(item)
