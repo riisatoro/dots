@@ -16,7 +16,7 @@ def process(field, point, user_color, colors):
     if field[x][y] == "E":
         changed = True
         field[x][y] = user_color
-    
+
     field, loop1 = capture.process(field, colors)
     field, loop2 = capture.process(field, colors[::-1])
 

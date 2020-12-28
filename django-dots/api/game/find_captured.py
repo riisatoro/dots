@@ -234,10 +234,10 @@ def process(field, colors):
 
     clear_loops = []
     joined_array = []
-    all_enemy_points = get_any_enemy_points(field, colors[1])
+    enemy_points = get_any_enemy_points(field, colors[1])
 
     for loop in player_loops:
-        if len(loop) > 3 and has_captured_point(loop, all_enemy_points):
+        if len(loop) > 3 and has_captured_point(loop, enemy_points):
             clear_loops.append(loop)
 
     for _ in range(len(clear_loops)):

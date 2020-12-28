@@ -17,7 +17,7 @@ class GameField extends Component {
       receiveReply,
     } = this.props;
     this.socket = connectSocket(roomID);
-    this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data));};
+    this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data)); };
     this.socket.onerror = () => { };
     this.socket.onclose = () => { };
   }
@@ -32,14 +32,6 @@ class GameField extends Component {
     this.socket.close();
   }
 
-  dotClicked(e) {
-    const { fieldSize } = this.props;
-    const index = e.target.id;
-    const yAxis = index % fieldSize;
-    const xAxis = (index - yAxis) / fieldSize;
-    this.socket.send(JSON.stringify({ fieldPoint: [xAxis, yAxis], TYPE: TYPES.PLAYER_SET_DOT }));
-  }
-
   gridClicked(e) {
     const { cellSize } = this.props;
     const xAxis = e.evt.layerX - cellSize / 2;
@@ -47,7 +39,6 @@ class GameField extends Component {
     const xPoint = Math.floor(xAxis / cellSize);
     const yPoint = Math.floor(yAxis / cellSize);
     this.socket.send(JSON.stringify({ fieldPoint: [yPoint, xPoint], TYPE: TYPES.PLAYER_SET_DOT }));
-    console.log(yPoint, xPoint);
   }
 
   render() {
@@ -73,23 +64,6 @@ class GameField extends Component {
       userTurn = ` ${turn} `;
     }
 
-    const item = field.map((i, pIndex) => (
-      <div className="input__row" key={pIndex.toString()}>
-        {i.map((j, qIndex) => (
-          <div
-            className={j}
-            key={(pIndex * fieldSize + qIndex).toString()}
-            id={pIndex * fieldSize + qIndex}
-            onClick={this.dotClicked.bind(this)}
-            aria-hidden="true"
-            role="button"
-            aria-label=" "
-            tabIndex={0}
-          />
-        ))}
-      </div>
-    ));
-
     return (
       <section className="field">
         { gameResults && <Redirect to="/game_result" /> }
@@ -99,14 +73,6 @@ class GameField extends Component {
             {userTurn}
             turn
           </p>
-        </div>
-
-        <div className="field__wrapper">{item}</div>
-
-        <div className="align-center">
-          <a href="/game_result">
-            <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
-          </a>
         </div>
 
         <hr />
@@ -125,6 +91,12 @@ class GameField extends Component {
               {emptyCircle.map((circl) => circl)}
             </Layer>
           </Stage>
+        </div>
+
+        <div className="align-center">
+          <a href="/game_result">
+            <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
+          </a>
         </div>
       </section>
     );
