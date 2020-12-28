@@ -107,12 +107,113 @@ def has_no_points(field, loop):
     return True
 
 
+def find_max_loop(array):
+    length = 0
+    max_index = 0
+    for index, loop in enumerate(array):
+        if len(loop) > length:
+            length = len(loop)
+            max_index = index
+    return max_index
+
+
+def has_common_points(parent_loop, child_loop):
+    count = 0
+    for point in child_loop:
+        if point in parent_loop:
+            count += 1
+
+        if count > 1:
+            return True
+    return False
+
+
+def join_loops(loops, loop):
+    for point in loop:
+        if point not in loops[-1]:
+            loops[-1].append(point)
+
+    return loops
+
+
+def build_solid_loops(loop):
+    solid_loop = [min(loop)]
+    sequence = [
+        "UP_LEFT",
+        "LEFT",
+        "BOTTOM_LEFT",
+        "BOTTOM",
+        "BOTTOM_RIGHT",
+        "RIGHT",
+        "UP_RIGHT",
+        "UP"
+    ]
+    index_sequence = 0
+
+    for _ in range(len(loop)):
+        if len(solid_loop) > 2 and is_neighbour(solid_loop[0], solid_loop[-1]):
+            return solid_loop
+
+        x, y = solid_loop[-1]
+
+        for index in range(index_sequence, index_sequence+8):
+            direction = sequence[index % len(sequence)]
+            if direction == "UP_LEFT":
+                if [x-1, y-1] in loop and [x-1, y-1] not in solid_loop:
+                    solid_loop.append([x-1, y-1])
+                    index_sequence = sequence.index("UP_LEFT")+4
+                    break
+
+            elif direction == "LEFT":
+                if [x, y-1] in loop and [x, y-1] not in solid_loop:
+                    solid_loop.append([x, y-1])
+                    index_sequence = sequence.index("LEFT")+4
+                    break
+
+            elif direction == "BOTTOM_LEFT":
+                if [x+1, y-1] in loop and [x+1, y-1] not in solid_loop:
+                    solid_loop.append([x+1, y-1])
+                    index_sequence = sequence.index("BOTTOM_LEFT")+4
+                    break
+
+            elif direction == "BOTTOM":
+                if [x+1, y] in loop and [x+1, y] not in solid_loop:
+                    solid_loop.append([x+1, y])
+                    index_sequence = sequence.index("BOTTOM")+4
+                    break
+
+            elif direction == "BOTTOM_RIGHT":
+                if [x+1, y+1] in loop and [x+1, y+1] not in solid_loop:
+                    solid_loop.append([x+1, y+1])
+                    index_sequence = sequence.index("BOTTOM_RIGHT")+4
+                    break
+
+            elif direction == "RIGHT":
+                if [x, y+1] in loop and [x, y+1] not in solid_loop:
+                    solid_loop.append([x, y+1])
+                    index_sequence = sequence.index("RIGHT")+4
+                    break
+
+            elif direction == "UP_RIGHT":
+                if [x-1, y+1] in loop and [x-1, y+1] not in solid_loop:
+                    solid_loop.append([x-1, y+1])
+                    index_sequence = sequence.index("UP_RIGHT")+4
+                    break
+
+            else:
+                if [x-1, y] in loop and [x-1, y] not in solid_loop:
+                    solid_loop.append([x-1, y])
+                    index_sequence = sequence.index("UP")+4
+                    break
+
+    return solid_loop
+
+
 def process(field, colors):
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
     player_loops = []
     loops = []
-    frontend_loops = []
 
     player_visited = [WHITE]*len(player_points)
     get_graph_loop(player_points, player_loops, player_visited)
@@ -122,7 +223,36 @@ def process(field, colors):
             field = fill_circle_square(field, loop, colors[0])
             loops.append(loop)
 
-        if len(loop) > 3 and not has_no_points(field, loop):
-            frontend_loops.append(loop)
+    clear_loops = []
+    joined_array = []
 
-    return field, frontend_loops
+    for loop in player_loops:
+        if len(loop) > 3:
+            clear_loops.append(loop)
+
+    for _ in range(len(clear_loops)):
+        if len(clear_loops) < 2:
+            break
+
+        max_index = find_max_loop(clear_loops)
+        joined_array.append(clear_loops[max_index])
+        clear_loops.pop(max_index)
+
+        pop_indexes = []
+        for index, loop in enumerate(clear_loops):
+            if loop != [] and max_index != index and has_common_points(joined_array[-1], loop):
+                pop_indexes.append(index - len(pop_indexes))
+                joined_array = join_loops(joined_array, loop)
+
+        for index in pop_indexes:
+            clear_loops.pop(index)
+
+    solid_loops = []
+    for loop in joined_array:
+        if len(loop) > 4:
+            solid_loops.append(build_solid_loops(loop))
+        else:
+            solid_loops.append(loop)
+    solid_loops = solid_loops + clear_loops
+
+    return field, solid_loops

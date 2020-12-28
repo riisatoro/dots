@@ -5,28 +5,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class Match(models.Model):
-    """Keeps result of matches between two players. Also handles equal score."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    winner = models.CharField(max_length=50)
-    looser = models.CharField(max_length=50)
-    win_score = models.IntegerField()
-    loose_score = models.IntegerField()
-    equal = models.BooleanField(default=False)
-
-    def create(self, validated_data):
-        """Save match results"""
-        return Match.objects.create(**validated_data)
-
-    def __str__(self):
-        if self.equal:
-            return f"No winners! {self.winner} vs"\
-                "{self.looser}with equal score of {self.win_score}"
-
-        return f"WIN: {self.winner} with {self.win_score}"\
-            "points LOOSE: {self.looser} with {self.loose_score} points"
-
-
 class GameRoom(models.Model):
     """Game room where field data saved"""
     field = models.JSONField()
@@ -46,9 +24,5 @@ class UserGame(models.Model):
     score = models.IntegerField(default=0)
     turn = models.BooleanField(default=False)
 
-    '''
-    class Meta:
-        unique_together = ('user', 'game_room',)
-    '''
     def __str__(self):
         return f"{self.game_room}"

@@ -21,12 +21,15 @@ pylint:
   run: true
   disable: 
     - W0221
+    - R0912
 
 pyflakes:
   run: true
 
 mccabe:
   run: true
+  disable:
+    - MC0001
 
 dodgy:
   run: true

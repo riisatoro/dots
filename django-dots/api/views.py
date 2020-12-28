@@ -73,8 +73,6 @@ class Login(APIView):
 class MatchViewSet(APIView):
     """Allow logged users get match results and save their own"""
     permission_classes = (IsAuthenticated, )
-    queryset = models.Match.objects.all()
-    serializer_class = serializers.MatchSerializer
 
     def get(self, request):
         rooms = models.GameRoom.objects.filter(players=request.user).values_list("id", flat=True)

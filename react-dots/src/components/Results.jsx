@@ -35,10 +35,10 @@ function Results(props) {
           height={fieldSize * cellSize + cellSize * 2}
         >
           <Layer x={cellSize} y={cellSize}>
-              {loop1.map((l1) => l1)}
-              {loop2.map((l2) => l2)}
-              {canvasGrid.map((line) => line)}
-              {circle.map((circ) => circ)}
+            {loop1.map((l1) => l1)}
+            {loop2.map((l2) => l2)}
+            {canvasGrid.map((line) => line)}
+            {circle.map((circ) => circ)}
           </Layer>
         </Stage>
       </div>
