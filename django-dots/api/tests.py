@@ -3,7 +3,6 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from .test_data.data import empty_field, captured_field
-
 from .game.find_captured import process
 
 

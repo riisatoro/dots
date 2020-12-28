@@ -241,7 +241,7 @@ def process(field, colors):
             clear_loops.append(loop)
 
     for _ in range(len(clear_loops)):
-        if len(clear_loops) < 2:
+        if len(clear_loops) < 1:
             break
 
         max_index = find_max_loop(clear_loops)
