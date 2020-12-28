@@ -78,4 +78,27 @@ function createLoopFigure(loops, cellSize) {
   }
 }
 
-export { createLoopFigure, getCanvasGrid, getCircleCoords };
+function createEmptyCircle(field, cellSize) {
+  const circle = [];
+  for (let i = 0; i < field.length; i += 1) {
+    for (let j = 0; j < field.length; j += 1) {
+      if (field[i][j] === 'E') {
+        circle.push(<Circle
+          x={j * cellSize}
+          y={i * cellSize}
+          radius={4}
+          stroke="gray"
+          fill="white"
+        />);
+      }
+    }
+  }
+  return circle;
+}
+
+export {
+  createLoopFigure,
+  getCanvasGrid,
+  getCircleCoords,
+  createEmptyCircle,
+};

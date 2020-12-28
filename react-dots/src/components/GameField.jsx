@@ -7,7 +7,7 @@ import { Stage, Layer } from 'react-konva';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
-import { getCanvasGrid, getCircleCoords, createLoopFigure } from '../actions/gameFieldDrawable';
+import { getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle } from '../actions/gameFieldDrawable';
 import '../../public/css/game_field.css';
 
 class GameField extends Component {
@@ -63,6 +63,7 @@ class GameField extends Component {
     const circle = getCircleCoords(field, cellSize);
     const loop1 = createLoopFigure(loops[0], cellSize);
     const loop2 = createLoopFigure(loops[1], cellSize);
+    const emptyCircle = createEmptyCircle(field, cellSize);
 
     let userTurn = '';
     if (turn === 'NaN') {
@@ -120,6 +121,7 @@ class GameField extends Component {
               {loop2.map((l2) => l2)}
               {canvasGrid.map((line) => line)}
               {circle.map((circ) => circ)}
+              {emptyCircle.map((circl) => circl)}
             </Layer>
           </Stage>
         </div>
