@@ -209,6 +209,15 @@ def build_solid_loops(loop):
     return solid_loop
 
 
+def get_any_enemy_points(field, color):
+    points = []
+    for i, _ in enumerate(field):
+        for j, _ in enumerate(field[i]):
+            if field[i][j] == color or field[i][j] == color+"l":
+                points.append([i, j])
+    return points
+
+
 def process(field, colors):
     player_points = get_all_points(field, colors[0])
     enemy_points = get_all_points(field, colors[1])
@@ -225,9 +234,10 @@ def process(field, colors):
 
     clear_loops = []
     joined_array = []
+    all_enemy_points = get_any_enemy_points(field, colors[1])
 
     for loop in player_loops:
-        if len(loop) > 3:
+        if len(loop) > 3 and has_captured_point(loop, all_enemy_points):
             clear_loops.append(loop)
 
     for _ in range(len(clear_loops)):
