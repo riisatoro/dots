@@ -40,7 +40,7 @@ function getCircleCoords(field, size) {
             x: 0,
             y: 0,
           }}
-          fillRadialGradientEndRadius={4}
+          fillRadialGradientEndRadius={5}
           fillRadialGradientColorStops={[0, 'white', 1, colorTable[field[i][j][0]]]}
         />);
       }
