@@ -52,3 +52,39 @@ class GameLogicTest(TestCase):
     def test_captured_empty(self):
         field, _ = process(self.captured_field, self.colors)
         self.assertEqual(field[2][3], "El")
+
+
+class GameLoopsTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_has_ho_loops(self):
+        # field without loops
+        pass
+
+    def test_has_one_minimal_loop(self):
+        # field has one loop with captured point
+        pass
+
+    def test_has_empty_loop(self):
+        # field has one loop but without points
+        pass
+
+    def test_both_players_has_loops(self):
+        # test if both players has loops with captured points
+        pass
+
+    def test_two_loops_with_common(self):
+        # if returns two loops but with common points
+        # both has captured point
+        # and no one big loop
+        pass
+
+    def test_two_common_empty_loops(self):
+        # test two common loops but without captured point
+        pass
+
+    def test_five_common_loops(self):
+        # test five common loops
+        # 3 of them has captured point
+        pass

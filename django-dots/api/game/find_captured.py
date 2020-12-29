@@ -124,5 +124,5 @@ def process(field, colors):
 
         if len(loop) > 3 and not has_no_points(field, loop):
             frontend_loops.append(loop)
-
+    
     return field, frontend_loops

@@ -1,0 +1,233 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$fjfxgKHBilgB$bn8+gQDBlYZQw+Uowfu+AS36Yydf40AzWL6NgB3WXpE=",
+            "last_login": "2020-12-29T10:52:00.925Z",
+            "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "email": "admin@admin.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2020-12-09T09:20:54.900Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$q3hfj82BTilr$qVUS3IGoB+exV+8YE9juiN1SX75DmYBYHQDnVp2EwB8=",
+            "last_login": "2020-12-28T11:17:39.752Z",
+            "is_superuser": false,
+            "username": "riisa",
+            "first_name": "",
+            "last_name": "",
+            "email": "riisa@riisa.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2020-12-09T10:49:53.449Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 6,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$1AGNQAdaH7S9$NLPqpMPNieG+DpFvLJLhZgfbb04hVCyCw9fu2Z+OBLg=",
+            "last_login": "2020-12-29T10:51:57.960Z",
+            "is_superuser": false,
+            "username": "helen",
+            "first_name": "",
+            "last_name": "",
+            "email": "helen@helen.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2020-12-09T15:30:07.937Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authtoken.token",
+        "pk": "3047545062a1d660d1d81c2aec5a252a957c8a2f",
+        "fields": {
+            "user": 6,
+            "created": "2020-12-09T15:30:08.003Z"
+        }
+    },
+    {
+        "model": "authtoken.token",
+        "pk": "5fc54899a7aaa7356f14f64c0152ace12f1fe184",
+        "fields": {
+            "user": 2,
+            "created": "2020-12-09T10:49:53.517Z"
+        }
+    },
+    {
+        "model": "authtoken.token",
+        "pk": "b32056cb5c7ab9cd5ca3852cc2e629c649ca400d",
+        "fields": {
+            "user": 1,
+            "created": "2020-12-09T10:43:40.538Z"
+        }
+    },
+    {
+        "model": "api.gameroom",
+        "pk": 438,
+        "fields": {
+            "field": [
+                [
+                    "E",
+                    "E",
+                    "R",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "B",
+                    "E"
+                ],
+                [
+                    "E",
+                    "R",
+                    "Bl",
+                    "R",
+                    "E",
+                    "E",
+                    "E",
+                    "B",
+                    "E",
+                    "B"
+                ],
+                [
+                    "R",
+                    "Bl",
+                    "R",
+                    "Bl",
+                    "R",
+                    "E",
+                    "E",
+                    "B",
+                    "E",
+                    "B"
+                ],
+                [
+                    "E",
+                    "R",
+                    "Bl",
+                    "R",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "B",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "R",
+                    "El",
+                    "R",
+                    "E",
+                    "E",
+                    "B",
+                    "R",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "E",
+                    "R",
+                    "Bl",
+                    "R",
+                    "E",
+                    "R",
+                    "B",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "R",
+                    "El",
+                    "R",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "E",
+                    "R",
+                    "E",
+                    "E",
+                    "E",
+                    "B",
+                    "B",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "B",
+                    "B",
+                    "E"
+                ],
+                [
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E",
+                    "E"
+                ]
+            ],
+            "size": 10,
+            "is_started": true,
+            "is_ended": true
+        }
+    },
+    {
+        "model": "api.usergame",
+        "pk": 759,
+        "fields": {
+            "user": 6,
+            "game_room": 438,
+            "color": "B",
+            "score": 5,
+            "turn": true
+        }
+    },
+    {
+        "model": "api.usergame",
+        "pk": 760,
+        "fields": {
+            "user": 1,
+            "game_room": 438,
+            "color": "R",
+            "score": 0,
+            "turn": false
+        }
+    }
+]
