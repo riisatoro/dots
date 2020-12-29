@@ -22,11 +22,11 @@ function getCanvasGrid(amount, size) {
 function getCircleCoords(field, size) {
   const circle = [];
   const colorTable = {
-    O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
+    O: 'orange', R: 'red', B: 'blue', Y: 'khaki', G: 'green',
   };
   for (let i = 0; i < field.length; i += 1) {
     for (let j = 0; j < field.length; j += 1) {
-      if (field[i][j] !== 'E') {
+      if (colorTable[field[i][j][0]] !== undefined) {
         circle.push(<Circle
           x={j * size}
           y={i * size}

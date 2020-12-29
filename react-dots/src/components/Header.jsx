@@ -29,7 +29,7 @@ class Header extends Component {
           <a href="/leaderboards">Leaderboards</a>
         </div>,
         <div className="col-sm-8 col-md-3" key="logout">
-          <button type="button" onClick={this.logoutUser.bind(this)}>Logout</button>
+          <button type="button" className="btn btn-primary" onClick={this.logoutUser.bind(this)}>Logout</button>
         </div>,
       ];
     } else {
