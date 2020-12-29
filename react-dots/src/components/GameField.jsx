@@ -130,7 +130,7 @@ const mapStateToProps = (state) => {
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
     loops: state.loops,
-    cellSize: 30,
+    cellSize: state.cellSize,
   };
   return data;
 };

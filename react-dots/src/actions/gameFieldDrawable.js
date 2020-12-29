@@ -7,12 +7,12 @@ function getCanvasGrid(amount, size) {
   for (let i = 0; i < amount; i += 1) {
     grid.push(<Line
       points={[i * size, 0, i * size, size * amount - size]}
-      stroke="black"
+      stroke="silver"
       strokeWidth={1}
     />);
     grid.push(<Line
       points={[0, i * size, amount * size - size, size * i]}
-      stroke="black"
+      stroke="silver"
       strokeWidth={1}
     />);
   }
@@ -26,12 +26,24 @@ function getCircleCoords(field, size) {
   };
   for (let i = 0; i < field.length; i += 1) {
     for (let j = 0; j < field.length; j += 1) {
-      circle.push(<Circle
-        x={j * size}
-        y={i * size}
-        radius={5}
-        fill={colorTable[field[i][j][0]]}
-      />);
+      if (field[i][j] !== 'E') {
+        circle.push(<Circle
+          x={j * size}
+          y={i * size}
+          radius={6}
+          fillRadialGradientStartPoint={{
+            x: -1.5,
+            y: -1.5,
+          }}
+          fillRadialGradientStartRadius={0.5}
+          fillRadialGradientEndPoint={{
+            x: 0,
+            y: 0,
+          }}
+          fillRadialGradientEndRadius={4}
+          fillRadialGradientColorStops={[0, 'white', 1, colorTable[field[i][j][0]]]}
+        />);
+      }
     }
   }
   return circle;
@@ -59,13 +71,13 @@ function createLoopFigure(loops, cellSize) {
         y={0}
         points={linePoints[i]}
         stroke={color}
-        strokeWidth={3}
+        strokeWidth={2}
         closed
       />);
       jsxLoop.push(<Line
         x={0}
         y={0}
-        opacity={0.4}
+        opacity={0.2}
         fill={color}
         points={linePoints[i]}
         closed
@@ -86,6 +98,7 @@ function createEmptyCircle(field, cellSize) {
           x={j * cellSize}
           y={i * cellSize}
           radius={4}
+          strokeWidth={0.5}
           stroke="gray"
           fill="white"
         />);
