@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 
 from .game.calc_square import process as calc_score
 from .game.find_captured import process as find_loops
+from .game.find_captured import \
+    get_graph_loop, is_neighbour, find_loop, has_captured_point, is_in_loop, has_no_points
 from .game.main import process as calculate_field
 
 # data2 - empty BLUE loops, one red loop between empty red loops
@@ -130,10 +132,10 @@ class GameLoopsTest(TestCase):
         # field has one loop but without points
         field, colors = self.get_data(5)
         _, loops = find_loops(field, colors)
-        self.assertEqual([], loops[0])
+        self.assertEqual([], loops)
 
     def test_rule_exception(self):
         field, colors = self.get_data(4)
         data = calculate_field(field, [2, 6], colors[0], colors)
         loop = data["loops"]
-        self.assertTrue(set(loop[0]) == set((1, 5), (2, 6), (3, 5), (2, 4)))
+        self.assertTrue(set(loop[0]) == set([(1, 5), (2, 6), (3, 5), (2, 4)]))
