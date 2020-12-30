@@ -1,9 +1,18 @@
-from django.test import Client
-from django.test import TestCase
+import json
+
+from django.test import Client, TestCase
 from django.contrib.auth.models import User
 
-from .test_data.data import empty_field, captured_field
-from .game.find_captured import process
+from .game.calc_square import process as calc_score
+from .game.find_captured import process as find_loops
+from .game.main import process as calculate_field
+
+# data2 - empty BLUE loops, one red loop between empty red loops
+# data3 - empty red, one BLUE
+# data4 - test rule exeption, RED should has one loop after placing point in (2, 6); RED turn
+# data5 - two empty field for both players
+# data6 - BLUE captured 12; RED captured 12
+# data7 - loop in loop; BLUE captured 7
 
 
 class LoginTest(TestCase):
@@ -31,27 +40,53 @@ class LoginTest(TestCase):
 
 class GameLogicTest(TestCase):
     def setUp(self):
-        self.empty_field = empty_field
-        self.captured_field = captured_field
-        self.colors = ["R", "G"]
+        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
+
+    def get_data(self, number):
+        data = self.data[f"data{number}"]
+        return data["field"], data["colors"]
 
     def test_empty_field(self):
-        _, loops = process(self.empty_field, self.colors)
+        # field has loops but none of them has captured points
+        field, colors = self.get_data(5)
+        _, loops = find_loops(field, colors)
         self.assertEqual(loops, [])
 
     def test_captured_field(self):
-        field, loops = process(self.captured_field, self.colors)
-        self.assertEqual(loops[0][0], [1, 2])
-        self.assertEqual(loops[0][-1], [1, 3])
-        self.assertEqual(field[4][1], "Gl")
+        # test if field changed and saved captured point
+        field, colors = self.get_data(3)
+        field, _ = find_loops(field, colors)
+        self.assertEqual(field[1][1], "Rl")
 
     def test_empty_points(self):
-        field, _ = process(self.empty_field, self.colors)
-        self.assertEqual(field[1][6], "E")
+        # test if field doesn't change empty points in loop without enemy points
+        field, colors = self.get_data(3)
+        field, _ = find_loops(field, colors)
+        self.assertEqual(field[1][5], "E")
+        self.assertEqual(field[2][5], "E")
 
     def test_captured_empty(self):
-        field, _ = process(self.captured_field, self.colors)
-        self.assertEqual(field[2][3], "El")
+        # test if loop made empty points unavailable, when loop has enemy points
+        field, colors = self.get_data(6)
+        result = calculate_field(field, [0, 0], colors[0], colors)
+        self.assertEqual(result["field"][7][8], "El")
+
+    def test_correct_score(self):
+        # test if field correctly calculated captured points
+        field, colors = self.get_data(6)
+        result = calculate_field(field, [0, 0], colors[0], colors)
+        captured_1 = calc_score(result["field"], colors[0])
+        captured_2 = calc_score(result["field"], colors[1])
+        self.assertEqual(captured_1, 12)
+        self.assertEqual(captured_2, 12)
+
+    def test_score_loop_in_loop(self):
+        field, colors = self.get_data(7)
+        result = calculate_field(field, [0, 0], colors[0], colors)
+        captured_1 = calc_score(result["field"], colors[1])  # R
+        captured_2 = calc_score(result["field"], colors[0])  # B
+        self.assertEqual(captured_1, 7)
+        self.assertEqual(captured_2, 0)
 
 
 class GameLoopsTest(TestCase):
