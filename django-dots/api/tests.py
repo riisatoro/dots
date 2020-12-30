@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 
 from .game.calc_square import process as calc_score
 from .game.find_captured import process as find_loops
-from .game.find_captured import \
-    get_graph_loop, is_neighbour, find_loop, has_captured_point, is_in_loop, has_no_points
 from .game.main import process as calculate_field
 
 # data2 - empty BLUE loops, one red loop between empty red loops

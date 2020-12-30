@@ -9,5 +9,6 @@ class Point():
         self.is_in_loop = False
         self.loop_id = []
 
+
 if __name__ == "__main__":
     pass
