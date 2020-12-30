@@ -15,6 +15,24 @@ from .game.main import process as calculate_field
 # data7 - loop in loop; BLUE captured 7
 
 
+def print_ascii_field(field, colors):
+    color_ascii = {
+        "E": "●",
+        colors[0]: "#",
+        colors[1]: "&",
+
+        "El": ".",
+        colors[0]+"l": ".#.",
+        colors[1]+"l": ".&.",
+    }
+
+    print("")
+    for row in field:
+        for point in row:
+            print(color_ascii[point[0]], end=" ")
+        print("")
+
+
 class LoginTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -94,35 +112,28 @@ class GameLogicTest(TestCase):
 
 class GameLoopsTest(TestCase):
     def setUp(self):
-        pass
+        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
 
-    def test_has_ho_loops(self):
-        # field without loops
-        pass
+    def get_data(self, number):
+        data = self.data[f"data{number}"]
+        return data["field"], data["colors"]
 
     def test_has_one_minimal_loop(self):
         # field has one loop with captured point
-        pass
+        field, colors = self.get_data(3)
+        loop = set([(0, 1), (1, 2), (2, 1), (1, 0)])
+        _, loops = find_loops(field, colors[::-1])
+        finded = set(tuple(loops[0]))
+        self.assertTrue(loop == finded)
 
     def test_has_empty_loop(self):
         # field has one loop but without points
-        pass
+        field, colors = self.get_data(5)
+        _, loops = find_loops(field, colors)
+        self.assertEqual([], loops[0])
 
-    def test_both_players_has_loops(self):
-        # test if both players has loops with captured points
-        pass
-
-    def test_two_loops_with_common(self):
-        # if returns two loops but with common points
-        # both has captured point
-        # and no one big loop
-        pass
-
-    def test_two_common_empty_loops(self):
-        # test two common loops but without captured point
-        pass
-
-    def test_five_common_loops(self):
-        # test five common loops
-        # 3 of them has captured point
-        pass
+    def test_rule_exception(self):
+        field, colors = self.get_data(4)
+        data = calculate_field(field, [2, 6], colors[0], colors)
+        loop = data["loops"]
+        self.assertTrue(set(loop[0]) == set((1, 5), (2, 6), (3, 5), (2, 4)))
