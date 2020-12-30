@@ -81,12 +81,15 @@ class GameLogicTest(TestCase):
         self.assertEqual(captured_2, 12)
 
     def test_score_loop_in_loop(self):
+        # test if captured point in double loop are free
+        # and check if score is calculated correctly
         field, colors = self.get_data(7)
         result = calculate_field(field, [0, 0], colors[0], colors)
         captured_1 = calc_score(result["field"], colors[1])  # R
         captured_2 = calc_score(result["field"], colors[0])  # B
         self.assertEqual(captured_1, 7)
         self.assertEqual(captured_2, 0)
+        self.assertEqual(result["field"][4][4], colors[0])
 
 
 class GameLoopsTest(TestCase):
