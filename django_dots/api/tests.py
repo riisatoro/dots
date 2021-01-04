@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from .game.calc_square import process as calc_score
 from .game.find_captured import process as find_loops
 from .game.main import process as calculate_field
+from .game import serializer
+from .game import point
 
 # data2 - empty BLUE loops, one red loop between empty red loops
 # data3 - empty red, one BLUE
@@ -13,24 +15,6 @@ from .game.main import process as calculate_field
 # data5 - two empty field for both players
 # data6 - BLUE captured 12; RED captured 12
 # data7 - loop in loop; BLUE captured 7
-
-
-def print_ascii_field(field, colors):
-    color_ascii = {
-        "E": "●",
-        colors[0]: "#",
-        colors[1]: "&",
-
-        "El": ".",
-        colors[0]+"l": ".#.",
-        colors[1]+"l": ".&.",
-    }
-
-    print("")
-    for row in field:
-        for point in row:
-            print(color_ascii[point[0]], end=" ")
-        print("")
 
 
 class LoginTest(TestCase):
@@ -58,7 +42,7 @@ class LoginTest(TestCase):
 
 class GameLogicTest(TestCase):
     def setUp(self):
-        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
+        self.data = json.load(open("django_dots/api/fixtures/game_logic.json", 'r'))
 
     def get_data(self, number):
         data = self.data[f"data{number}"]
@@ -112,7 +96,7 @@ class GameLogicTest(TestCase):
 
 class GameLoopsTest(TestCase):
     def setUp(self):
-        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
+        self.data = json.load(open("django_dots/api/fixtures/game_logic.json", 'r'))
 
     def get_data(self, number):
         data = self.data[f"data{number}"]
@@ -137,3 +121,26 @@ class GameLoopsTest(TestCase):
         data = calculate_field(field, [2, 6], colors[0], colors)
         loop = data["loops"]
         self.assertTrue(set(loop[0]) == set([(1, 5), (2, 6), (3, 5), (2, 4)]))
+
+
+class GameFieldSerializerTest(TestCase):
+    def setUp(self):
+        self.json_field = {}
+        with open("django_dots/api/fixtures/serialized.json", 'r') as file:
+            self.json_field = json.load(file)
+
+    def test_from_json(self):
+        field = serializer.GameFieldSerializer.from_json(self.json_field)
+        self.assertEqual(field[0][0].color, 'SYSTEM')
+        self.assertEqual(field[0][1].color, 'RED')
+
+        self.assertFalse(field[1][0].part_of_loop)
+        self.assertEqual(field[1][1].loop_id, [1, 2, 3])
+
+    def test_to_json(self):
+        p1 = point.Point("RED", part_of_loop=True, captured=False, loop_id=[1, 2 ,3])
+        p2 = point.Point("GREEN", part_of_loop=False, captured=True)
+        field = serializer.GameFieldSerializer.to_json([[p1, p2]])
+        self.assertEqual(field[0][0]["color"], "RED")
+        self.assertEqual(field[0][0]["loop_id"], [1, 2, 3])
+        self.assertTrue(field[0][1]["part_of_loop"])
