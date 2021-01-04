@@ -7,6 +7,9 @@ from api.game.main import process
 from api.game.calc_square import process as find_points
 from django.contrib.auth.models import AnonymousUser
 
+from api.game.to_old import ConvertField
+from api.game.serializer import GameFieldSerializer
+
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -51,13 +54,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         except ValueError:
             data = {"TYPE": "UNKNOWN"}
 
-        if data["TYPE"] == types.PLAYER_CREATE_ROOM:
-            pass
-
-        elif data["TYPE"] == types.PLAYER_JOIN_ROOM:
-            pass
-
-        elif data["TYPE"] == types.PLAYER_SET_DOT:
+        if data["TYPE"] == types.PLAYER_SET_DOT:
             if await self.is_allowed_to_set_point(user_id, room_id):
                 field = await self.get_game_field(room_id, user_id)
                 if field:
@@ -75,9 +72,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
             await self.channel_layer.group_discard(room_group_name, self.channel_name)
-
-        elif data["TYPE"] == types.GAME_OVER:
-            pass
 
         else:
             self.response = {"TYPE": "UNKNOWN", "error": True, "message": "This action is not allowed!"}
@@ -106,6 +100,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         game = UserGame.objects.filter(user=user_id, game_room=room_id)
         if game.exists():
             return game.get().game_room.field
+
 
     @database_sync_to_async
     def get_this_user_color(self, user_id, room_id):
