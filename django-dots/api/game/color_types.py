@@ -1,5 +1,5 @@
 EMPTY = "EMPTY"
-SYSTEM = "border"
+SYSTEM = "SYSTEM"
 
 RED = "RED"
 GREEN = "GREEN"

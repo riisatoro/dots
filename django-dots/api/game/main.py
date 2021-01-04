@@ -11,23 +11,21 @@ from . import full_field as full
 
 
 def process(field, point, user_color, colors):
-    x, y = point
+    x, y = point[0]+1, point[1]+1
     changed = False
-    if field[x][y] == "E":
+    if field[x-1][y-1] == "E":
         changed = True
-        field[x][y] = user_color
 
-    field, loop1 = capture.process(field, colors)
-    field, loop2 = capture.process(field, colors[::-1])
+    field = capture.process((x, y), field, user_color, colors)
 
     loops = [
         {
             "color": colors[0],
-            "playerLoop": loop1
+            "playerLoop": []
         },
         {
             "color": colors[1],
-            "playerLoop": loop2
+            "playerLoop": []
         }
     ]
 
