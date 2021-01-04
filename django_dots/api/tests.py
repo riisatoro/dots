@@ -8,6 +8,7 @@ from .game.find_captured import process as find_loops
 from .game.main import process as calculate_field
 from .game import serializer
 from .game import point
+from .game import to_old
 
 # data2 - empty BLUE loops, one red loop between empty red loops
 # data3 - empty red, one BLUE
@@ -144,3 +145,20 @@ class GameFieldSerializerTest(TestCase):
         self.assertEqual(field[0][0]["color"], "RED")
         self.assertEqual(field[0][0]["loop_id"], [1, 2, 3])
         self.assertTrue(field[0][1]["part_of_loop"])
+
+
+class ConvertGameFieldTest(TestCase):
+    def setUp(self):
+        p1 = point.Point("RED", part_of_loop=True, captured=False, loop_id=[1, 2 ,3])
+        p2 = point.Point("GREEN", part_of_loop=False, captured=True)
+        p3 = point.Point("SYSTEM")
+        self.field = [
+            [p3, p3, p3, p3],
+            [p3, p1, p2, p3],
+            [p3, p1, p2, p3],
+            [p3, p3, p3, p3],
+        ]
+
+    def test_to_old(self):
+        field = to_old.ConvertField.convert_to_old(self.field)
+        self.assertEqual(field, [['R', 'Gl'], ['R', 'Gl']])

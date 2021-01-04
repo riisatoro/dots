@@ -18,8 +18,9 @@ class ConvertField:
                     color = col.color[0]
                     if col.captured:
                         color += "l"
-                tmp_row.append(color)
-            old_field.append(tmp_row[:])
+                    tmp_row.append(color)
+            if tmp_row:
+                old_field.append(tmp_row[:])
 
         return old_field
 
