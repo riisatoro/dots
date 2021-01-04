@@ -35,7 +35,7 @@ class ConvertField:
             "B": "BLUE",
         }
         new_field = []
-        new_field.append([Point("SYSTEM")]*len(field))
+        new_field.append([Point("SYSTEM")]*(len(field)+2))
         for row in field:
             tmp_row = [Point("SYSTEM")]
             for point in row:
@@ -43,5 +43,5 @@ class ConvertField:
                 tmp_row.append(Point(colors[point[0]], captured=captured))
             tmp_row.append(Point("SYSTEM"))
             new_field.append(tmp_row[:])
-        new_field.append([Point("SYSTEM")]*len(field))
+        new_field.append([Point("SYSTEM")]*(len(field)+2))
         return new_field

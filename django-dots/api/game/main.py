@@ -8,6 +8,7 @@ Main logic of processing the game field, like, finding a loops and update captur
 
 from . import find_captured as capture
 from . import full_field as full
+from .to_old import ConvertField
 
 
 def process(field, point, user_color, colors):
@@ -16,6 +17,7 @@ def process(field, point, user_color, colors):
     if field[x-1][y-1] == "E":
         changed = True
 
+    field = ConvertField.convert_to_new(field)
     field = capture.process((x, y), field, user_color, colors)
 
     loops = [
@@ -29,5 +31,11 @@ def process(field, point, user_color, colors):
         }
     ]
 
+    field = ConvertField.convert_to_old(field)
     is_full = full.process(field)
-    return {"field": field, "is_full": is_full, "changed": changed, "loops": loops}
+    return {
+        "field": field,
+        "is_full": is_full,
+        "changed": changed,
+        "loops": loops
+    }

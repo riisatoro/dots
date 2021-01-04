@@ -1,6 +1,5 @@
 import json
 from .color_types import EMPTY, SYSTEM, RED, BLUE, DFS_WHITE, DFS_GRAY, DFS_BLACK
-from .to_old import ConvertField
 
 
 def find_loop(path):
@@ -165,7 +164,7 @@ def is_surrounded(point, field, colors):
 
 
 def process(point, field, player_color, colors):
-    field = ConvertField.convert_to_new(field)
+    
     x, y = point
     if field[x][y].color == EMPTY and not field[x][y].captured:
         field[x][y].color = player_color
@@ -186,6 +185,5 @@ def process(point, field, player_color, colors):
             # in this case we drop the continious searching for the loops
             field = is_surrounded((x, y), field, other_colors)
 
-    field = ConvertField.convert_to_old(field)
     return field
 
