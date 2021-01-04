@@ -152,13 +152,15 @@ class ConvertGameFieldTest(TestCase):
         p1 = point.Point("RED", part_of_loop=True, captured=False, loop_id=[1, 2 ,3])
         p2 = point.Point("GREEN", part_of_loop=False, captured=True)
         p3 = point.Point("SYSTEM")
+        p4 = point.Point("EMPTY")
+        p5 = point.Point("EMPTY", captured=True)
         self.field = [
             [p3, p3, p3, p3],
             [p3, p1, p2, p3],
-            [p3, p1, p2, p3],
+            [p3, p4, p5, p3],
             [p3, p3, p3, p3],
         ]
 
     def test_to_old(self):
         field = to_old.ConvertField.convert_to_old(self.field)
-        self.assertEqual(field, [['R', 'Gl'], ['R', 'Gl']])
+        self.assertEqual(field, [['R', 'Gl'], ['E', 'El']])
