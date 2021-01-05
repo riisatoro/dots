@@ -101,7 +101,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         if game.exists():
             return game.get().game_room.field
 
-
     @database_sync_to_async
     def get_this_user_color(self, user_id, room_id):
         color = UserGame.objects.filter(user=user_id, game_room=room_id).get().color

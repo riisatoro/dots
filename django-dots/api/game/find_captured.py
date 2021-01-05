@@ -1,5 +1,7 @@
 import json
 from .color_types import EMPTY, SYSTEM, RED, BLUE, DFS_WHITE, DFS_GRAY, DFS_BLACK
+from shapely.geometry import Point as geomPoint
+from shapely.geometry.polygon import Polygon
 
 
 def find_loop(path):
@@ -22,7 +24,7 @@ def is_neighbour(point_1, point_2):
         pass
     return False
 
-
+"""
 def is_in_loop(loop, point:tuple):
     x, y = point
     left, right, top, bottom = 0, 0, 0, 0
@@ -40,13 +42,22 @@ def is_in_loop(loop, point:tuple):
     if left+right+top+bottom == 4:
         return True
     return False
+"""
+
+
+def is_in_loop(loop, point):
+    x, y = point
+    point = geomPoint(x, y)
+    polygon = Polygon(loop)
+    return polygon.contains(point)
+
 
 
 def captured_enemy(field, loop, enemy_color):
     for i, row in enumerate(field):
         for j, col in enumerate(row):
-            if not col.captured and is_in_loop(loop, (i, j)):
-                if col == enemy_color:
+            if is_in_loop(loop, (i, j)):
+                if col == enemy_color and not col.captured:
                     return True
     return False
 
@@ -111,8 +122,6 @@ def find_loops_id(field):
 
 
 def set_point_as_loop(field, loop):
-    # save new loop in in [0][0] system point
-    # then just increment and use it
     new_loop_ID = 1
     loops_ID = find_loops_id(field)
     
@@ -142,15 +151,12 @@ def set_captured_points(field, loop, color):
 
 
 def is_surrounded(point, field, colors):
-    """
-    Go from point to the top
-    If enemy point, then try to build a loop and capture this point
-    This function check any point, wich is not capured and not a part og the loop
-    """
     x, y = point
-    
+    # go from point to the top
+    # if enemy point then try to build a loop and capture this point
+    # this function check any point, wich is not capured and not a part og the loop
     for color in colors:
-        for i in range(x+1, len(field)-1):
+        for i in range(x+1, len(field)):
             if field[i][y] == color:
                 loop = calc_loops((i, y), field, field[x][y].color)
                 if loop:
@@ -164,7 +170,6 @@ def is_surrounded(point, field, colors):
 
 
 def process(point, field, player_color, colors):
-    
     x, y = point
     if field[x][y].color == EMPTY and not field[x][y].captured:
         field[x][y].color = player_color

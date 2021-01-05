@@ -43,7 +43,7 @@ class LoginTest(TestCase):
 
 class GameLogicTest(TestCase):
     def setUp(self):
-        self.data = json.load(open("django_dots/api/fixtures/game_logic.json", 'r'))
+        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
 
     def get_data(self, number):
         data = self.data[f"data{number}"]
@@ -97,7 +97,7 @@ class GameLogicTest(TestCase):
 
 class GameLoopsTest(TestCase):
     def setUp(self):
-        self.data = json.load(open("django_dots/api/fixtures/game_logic.json", 'r'))
+        self.data = json.load(open("django-dots/api/fixtures/game_logic.json", 'r'))
 
     def get_data(self, number):
         data = self.data[f"data{number}"]
@@ -127,7 +127,7 @@ class GameLoopsTest(TestCase):
 class GameFieldSerializerTest(TestCase):
     def setUp(self):
         self.json_field = {}
-        with open("django_dots/api/fixtures/serialized.json", 'r') as file:
+        with open("django-dots/api/fixtures/serialized.json", 'r') as file:
             self.json_field = json.load(file)
 
     def test_from_json(self):
