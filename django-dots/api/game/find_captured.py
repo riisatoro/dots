@@ -32,16 +32,16 @@ def is_in_loop(loop, point):
     return polygon.contains(point)
 
 
-def captured_enemy(field, loop, enemy_color):
+def captured_enemy(field, loop, enemy_colors):
     for i, row in enumerate(field):
         for j, col in enumerate(row):
             if is_in_loop(loop, (i, j)):
-                if col == enemy_color and not col.captured:
+                if col in enemy_colors and not col.captured:
                     return True
     return False
 
 
-def calc_loops(point, field, enemy_color):
+def calc_loops(point, field, enemy_colors):
     # depends from the point with player placed on the field    
     path = []
     visited = {}
@@ -50,12 +50,10 @@ def calc_loops(point, field, enemy_color):
     def dfs(coords:tuple):
         x, y = coords
         visited[coords] = DFS_GRAY
-        
-        # find all neighbours for this point
-        # TODO check first 4 sides, then 4 diagonals
+
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
-                dot = field[x][y]  # Point obj
+                dot = field[x][y]
                 if (i, j) != (x, y) and not field[i][j].captured and field[i][j] == dot:
                     if (i, j) not in visited.keys() and is_neighbour(coords, (i, j)):
                         visited[(i, j)] = DFS_WHITE
@@ -64,11 +62,7 @@ def calc_loops(point, field, enemy_color):
                         if len(path) > 3:
                             loop = find_loop(path)
                             if loop:
-                                # write all new loops into a set
-                                # check existed loops is a subset of this loop
-                                # if True, break this reccursion
-                                if captured_enemy(field, path, enemy_color):
-                                    # find min loops
+                                if captured_enemy(field, path, enemy_colors):
                                     if loops:
                                         if len(loops[0]) > len(path):
                                             loops[0] = path[:]
@@ -150,23 +144,18 @@ def is_surrounded(point, field, colors):
 
 def process(point, field, player_color, colors):
     x, y = point
-    if field[x][y].color == EMPTY and not field[x][y].captured:
+    if field[x][y].color["color"] == EMPTY and not field[x][y].captured:
         field[x][y].color = player_color
         enemy_index = (colors.index(player_color) + 1) % len(colors)
-        # here is a speed trouble up to 3.5 seconds
         loop = calc_loops(point, field, colors[enemy_index])
-        # create a loop and update points that create this loop
+
         if loop:
             field = set_point_as_loop(field, loop)
-            # set captured points of the enemy
             field = set_captured_points(field, loop[0], colors[enemy_index])
 
         if field[x][y].is_free():
             other_colors = colors[:]
             other_colors.pop((enemy_index - 1) % len(colors) )
-            # set potential loops with minimum of 1 points in it
-            # then just check if point in one from potential loops
-            # in this case we drop the continious searching for the loops
             field = is_surrounded((x, y), field, other_colors)
 
     return field

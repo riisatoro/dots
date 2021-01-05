@@ -1,8 +1,8 @@
 from django.test import Client, TestCase
 
-from . import point
+from .point import Point
 from . import create
-from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy
+from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy, calc_loops
 
 class ApiCreateFieldTest(TestCase):
     def setUp(self):
@@ -120,5 +120,71 @@ class ApiCapturedEnemyTest(TestCase):
             (4,5), (5,4), (5,3), (6,2), (5,1), (4,0), (3,0)
         ]
         self.enemy_points = [(2,2), (2,3), (3,4)]
+        self.color_1 = {"player_id": 2, "color": "RED"}
+        self.color_2 = {"player_id": 4, "color": "BLUE"}
+        self.color_3 = {"player_id": 8, "color": "GREEN"}
 
         self.field = create.get_new_field(self.size, self.size)
+        for point in self.loop:
+            x, y = point
+            self.field[x+1][y+1] = Point(self.color_1)
+
+    def test_has_no_points(self):
+        result = captured_enemy(self.field, self.loop, [self.color_2, self.color_3])
+        self.assertFalse(result)
+
+    def test_has_enemies_points(self):
+        self.field[2][2] = Point(self.color_3)
+        self.field[3][3] = Point(self.color_2)
+        result = captured_enemy(self.field, self.loop, [self.color_2, self.color_3])
+        self.assertTrue(result)
+
+    def test_out_of_loop(self):
+        self.field[0][4] = Point(self.color_3)
+        self.field[6][4] = Point(self.color_3)
+        result = captured_enemy(self.field, self.loop, [self.color_2, self.color_3])
+        self.assertFalse(result)
+
+    def test_own_point_in_loop(self):
+        self.field[3][3] = Point(self.color_1)
+        result = captured_enemy(self.field, self.loop, [self.color_2, self.color_3])
+        self.assertFalse(result)
+
+class ApiFindLoopTest(TestCase):
+    def setUp(self):
+        self.loop_1 = [[2, 1], [1, 1], [1, 2], [1, 3], [2, 3], [3, 3]]
+        self.close_loop_1 = [3, 2]
+
+        self.loop_color = {"player_id": 1, "color": "GREEN"}
+        self.enemy_color = {"player_id": 6, "color": "BLACK"}
+        self.field = create.get_new_field(5, 5)
+
+
+    def fill_field(self, points, color):
+        for point in points:
+            x, y = point
+            self.field[x+1][y+1] = Point(color)
+
+    def test_field_without_loop(self):
+        self.fill_field(self.loop_1, self.loop_color)
+        loop = calc_loops([3, 3], self.field, [self.enemy_color])
+        self.assertEqual(loop, [])
+
+    def test_loop_without_point(self):
+        self.fill_field(self.loop_1, self.loop_color)
+        self.fill_field([self.close_loop_1], self.loop_color)
+        loop = calc_loops(self.close_loop_1, self.field, [self.enemy_color])
+        self.assertEqual(loop, [])
+
+    def test_loop_with_point(self):
+        self.fill_field(self.loop_1, self.loop_color)
+        self.fill_field([[2, 2]], self.enemy_color)
+
+        self.fill_field([self.close_loop_1], self.loop_color)
+
+        loop = calc_loops(self.close_loop_1, self.field, [self.enemy_color])
+        print(loop)
+        #self.assertEqual(loop, [])
+        
+
+

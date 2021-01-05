@@ -6,7 +6,7 @@ class Point():
     """
     Point: represents a point in the game field
     """
-    def __init__(self, color, part_of_loop=False, captured=False, loop_id=None):
+    def __init__(self, color, part_of_loop=False, captured=None, loop_id=None):
         self.color = color
         self.part_of_loop = part_of_loop
         self.captured = captured
