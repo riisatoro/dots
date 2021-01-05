@@ -101,7 +101,9 @@ def set_point_as_loop(field, loop):
     if loops_ID:
         new_loop_ID = max(loops_ID) + 1
 
-    for point in loop[0]:
+    if len(loop) == 1:
+        loop = loop[0]
+    for point in loop:
         x, y = point
         field[x][y].part_of_loop = True
         field[x][y].loop_id.append(new_loop_ID)
@@ -110,7 +112,6 @@ def set_point_as_loop(field, loop):
 
 
 def set_captured_points(field, loop, color):
-    # ! fix capturing own points
     for i, row in enumerate(field):
         for j, point in enumerate(row):
             if is_in_loop(loop, (i, j)):
