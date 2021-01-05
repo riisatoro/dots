@@ -152,22 +152,24 @@ class ApiCapturedEnemyTest(TestCase):
 
 class ApiFindLoopTest(TestCase):
     def setUp(self):
-        self.loop_1 = [[2, 1], [1, 1], [1, 2], [1, 3], [2, 3], [3, 3]]
-        self.close_loop_1 = [3, 2]
+        self.loop_1 = [[3, 2], [2, 2], [2, 3], [2, 4], [3, 4], [4, 4]]
+        self.close_loop_1 = [4, 3]
 
         self.loop_color = {"player_id": 1, "color": "GREEN"}
         self.enemy_color = {"player_id": 6, "color": "BLACK"}
         self.field = create.get_new_field(5, 5)
 
+        self.required_loop = [(4, 3), (3, 4), (2, 3), (3, 2)]
+
 
     def fill_field(self, points, color):
         for point in points:
             x, y = point
-            self.field[x+1][y+1] = Point(color)
+            self.field[x][y] = Point(color)
 
     def test_field_without_loop(self):
         self.fill_field(self.loop_1, self.loop_color)
-        loop = calc_loops([3, 3], self.field, [self.enemy_color])
+        loop = calc_loops([4, 4], self.field, [self.enemy_color])
         self.assertEqual(loop, [])
 
     def test_loop_without_point(self):
@@ -178,13 +180,10 @@ class ApiFindLoopTest(TestCase):
 
     def test_loop_with_point(self):
         self.fill_field(self.loop_1, self.loop_color)
-        self.fill_field([[2, 2]], self.enemy_color)
+        self.fill_field([[3, 3]], self.enemy_color)
 
         self.fill_field([self.close_loop_1], self.loop_color)
 
         loop = calc_loops(self.close_loop_1, self.field, [self.enemy_color])
-        print(loop)
-        #self.assertEqual(loop, [])
-        
-
+        self.assertEqual(set(loop[0]), set(self.required_loop))
 
