@@ -98,7 +98,7 @@ For ***Node*** see ***package.json***
 - arguments
   - field - an array of arrays of Point objects
   - loop - an array of tuples; coordinates of points in the loop
-  - enemy_color - string; the name of the player color
+  - enemy_color - array of dicts {"player_id": int, "color": str}
 - return True if one or more enemy points in the loop; either False
 
 **calc_loops()**
@@ -106,7 +106,7 @@ For ***Node*** see ***package.json***
 - arguments
   - point - tuple; coordinates of the latest placed point
   - field - game field; an array of arrays of Point objects
-  - enemy_color - name(str) of the enemy color
+  - enemy_color - array of dicts {"player_id": int, "color": str} with only enemy colors
 - return always ONE array with a minimal amount of points, which creates a loop figure and has one or more captured points or empty array  
     
 **find_loops_id()**
@@ -127,7 +127,7 @@ For ***Node*** see ***package.json***
 - arguments
   - field - array of array of Point objects
   - loop - array of tuple coordinates of loop figure
-  - color - string, name of enemy color
+  - color - dicts {"player_id": int, "color": str}
 - return new field
 
 **is_surrounded()**
@@ -135,7 +135,7 @@ For ***Node*** see ***package.json***
 - arguments
   - point - latest coordinates of the created point
   - field - the game field with Point objects
-  - colors - an array of all enemy colors
+  - colors - array of dicts {"player_id": int, "color": str}
 - return updated field
 
 **process()**
@@ -144,5 +144,5 @@ For ***Node*** see ***package.json***
   - point - new point, clicked by the player
   - field - old game field
   - player_color - the color of the player, who set this point
-  - colors - all colors of the players
+  - colors - array of dicts {"player_id": int, "color": str}
 - return updated field

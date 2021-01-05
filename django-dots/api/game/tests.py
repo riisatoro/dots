@@ -114,9 +114,11 @@ class ApiInLoop(TestCase):
 
 class ApiCapturedEnemyTest(TestCase):
     def setUp(self):
-        self.size = [6, 6]
+        self.size = 6
         self.loop = [
             (2,0), (1,1), (0,2), (1,3), (1,4), (2,4), (3,5),
             (4,5), (5,4), (5,3), (6,2), (5,1), (4,0), (3,0)
         ]
         self.enemy_points = [(2,2), (2,3), (3,4)]
+
+        self.field = create.get_new_field(self.size, self.size)

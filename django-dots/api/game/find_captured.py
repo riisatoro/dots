@@ -24,33 +24,12 @@ def is_neighbour(point_1, point_2):
         pass
     return False
 
-"""
-def is_in_loop(loop, point:tuple):
-    x, y = point
-    left, right, top, bottom = 0, 0, 0, 0
-
-    for item in loop:
-        if item[0] == x and item[1] < y and left == 0:
-            left += 1
-        elif item[0] == x and item[1] > y and right == 0:
-            right += 1
-        elif item[1] == y and item[0] < x and top == 0:
-            top += 1
-        elif item[1] == y and item[0] > x and bottom == 0:
-            bottom += 1
-
-    if left+right+top+bottom == 4:
-        return True
-    return False
-"""
-
 
 def is_in_loop(loop, point):
     x, y = point
     point = geomPoint(x, y)
     polygon = Polygon(loop)
     return polygon.contains(point)
-
 
 
 def captured_enemy(field, loop, enemy_color):
