@@ -58,11 +58,25 @@ class Field:
 
     @staticmethod
     def add_loop(field: GameField, loop: [Point]):
-        pass
+        if not field.loops:
+            loops = {1: loop}
+        else:
+            loops = field.loops
+            loops[max(loops.keys())+1] = loop
+
+        field.loops = loops
+        return field
 
     @staticmethod
     def add_empty_loop(field: GameField, loop: [Point]):
-        pass
+        if not field.empty_loops:
+            loops = {1: loop}
+        else:
+            loops = field.empty_loops
+            loops[max(loops.keys())+1] = loop
+
+        field.empty_loops = loops
+        return field
 
 
 class Core:
