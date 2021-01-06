@@ -1,6 +1,9 @@
 from .structure import Point, GamePoint, GameField
 
 min_field_size = 5
+EMPTY_LOOP = "EMPTY"
+LOOP = "LOOP"
+
 
 class Field:
     @staticmethod
@@ -85,7 +88,7 @@ class Core:
         pass
 
     @staticmethod
-    def find_new_loops(field: GameField, point: Point, owner: int):
+    def find_all_new_loops(field: GameField, point: Point, owner: int):
         pass
 
     @staticmethod
@@ -106,4 +109,19 @@ class Core:
 
     @staticmethod
     def is_loop_already_found(field: GameField, loop: [Point]):
-        pass
+        loop_size = len(loop)
+        loop_set = set(loop)
+
+        loops = field.empty_loops
+        for key, item in loops.items():
+            if len(item) == loop_size:
+                if set(loops) == set(item):
+                    return EMPTY_LOOP
+
+        loops = field.loops
+        for key, item in loops.items():
+            if len(item) == loop_size:
+                if set(loops) == set(item):
+                    return LOOP
+
+        return False

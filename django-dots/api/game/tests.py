@@ -1,11 +1,11 @@
 from django.test import Client, TestCase
 
-from .point import Point
+from random import randint
+from .core import Field, Core, EMPTY_LOOP, LOOP
+from .structure import Point, GamePoint, GameField
+
 from . import create
 from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy, calc_loops, set_point_as_loop
-
-from .core import Field, Core
-from .structure import Point, GamePoint, GameField
 
 
 class ApiCreateFieldTest(TestCase):
@@ -68,6 +68,7 @@ class ApiChangeOwnerTest(TestCase):
 
     def test_normal(self):
         point = Point(1, 2)
+        print(point)
         self.field = Field.change_owner(self.field, point, 1)
         self.assertEqual(self.field.field[1][2].owner, 1)
 
@@ -122,6 +123,15 @@ class ApiAddLoopTest(TestCase):
         loops = self.field.empty_loops
         for key in loops.keys():
             self.assertIn(key, [1, 2])
+
+
+class ApiCore(TestCase):
+    def setUp(self):
+        self.loop = [Point(randint(0, 10))] * 5
+
+    def test_in_empty_loop(self):
+        print(self.loop)
+
 
 """
 class ApiCreateFieldTest(TestCase):

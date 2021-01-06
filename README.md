@@ -90,7 +90,7 @@ Adding new player in the field
 ## GameCore()
 A class with main logic of the game  
 
-`find_new_loops(field: GameField, point: Point, owner: int)`  
+`find_all_new_loops(field: GameField, point: Point, owner: int)`  
 Find all new loops in the GameField starting from the point  
 
 `has_enemy_points(field: GameField, loop: [Point, ...])`  
