@@ -61,88 +61,87 @@ Make changes and reload the web page.
 # Package dependencies  
 For ***Python*** see ***Pipfile***  
 For ***Node*** see ***package.json***
+---
+# API for the game core
 
-# API for the game logic
+## Field()
+A class with methods for creating and updating the GameField  
 
-## **create.py**
-**get_new_field()**
-- create an array that contains arrays of Point objects
-- arguments
-  - row - the number of rows
-  - col - the number of cols
-- return an array of arrays of Point objects (field)
+`create_field(height: int, width: int)`
+Create a new empty game
 
-## **main.py**
-**find_loop()**
-- find a loop in the set of points
-- argumets
-  - path - list of tuples; coordinates of path
-- return list of tuples (coordinates) on empty list
+`change_owner(field: GameField, point: namedtuple, owner: int)`
+Update FieldPoint in the GameField, changed it player owner
 
-**is_neighbour()**
-- check if two points is a neighbors
-- arguments
-  - point_1 - first point, tuple
-  - point_2 - second point, tuple
-- return True if points is a neighbors; either False
+`is_full_field(field: GameField)`  
+Check if GameField has no empty points
 
-**is_in_loop()**
-- check if the point in the figure creates a loop
-- arguments
-  - loop - list of tuples; coordinates of the loops
-  - point - tuple with coordinates of the point
-- return True if the point in loop figure; either False
+`add_loop(field: GameField, loop: Point)`
+Addind a new loop into the GameField
 
-**captured_enemy()**
-- check if the loop figure contains one or more enemy points
-- arguments
-  - field - an array of arrays of Point objects
-  - loop - an array of tuples; coordinates of points in the loop
-  - enemy_color - array of dicts {"player_id": int, "color": str}
-- return True if one or more enemy points in the loop; either False
+`add_empty_loop(field: GameField, loop: Point)`
+Adding a new loop without points in it
 
-**calc_loops()**
-- search loops in the game field from the last placed point
-- arguments
-  - point - tuple; coordinates of the latest placed point
-  - field - game field; an array of arrays of Point objects
-  - enemy_color - array of dicts {"player_id": int, "color": str} with only enemy colors
-- return always ONE array with a minimal amount of points, which creates a loop figure and has one or more captured points or empty array  
-    
-**find_loops_id()**
-- find all ID of the loops figure
-- arguments
-  - field - array of array of Point objects
-- return set of ID(int) of the loops figure; or empty set
-    
-**set_point_as_loop()**
-- set new ID for the points in the loop on the GameField
-- arguments
-  - field - array of Point objects
-  - loop - array of points coordiantes in the field
-- return updated field
+## GameCore()
+A class with main logic of the game  
 
-**set_captured_points()**
-- set points as captured in loop, except player points who captured
-- arguments
-  - field - array of array of Point objects
-  - loop - array of tuple coordinates of loop figure
-  - color - dicts {"player_id": int, "color": str}
-- return new field
+`find_new_loops(field: GameField, point: Point, owner: int)`
+Find all new loops in the GameField starting from the point
 
-**is_surrounded()**
-- check if the free point is in the loop, which has no enemy points, if true, call functions to capture this point
-- arguments
-  - point - latest coordinates of the created point
-  - field - the game field with Point objects
-  - colors - array of dicts {"player_id": int, "color": str}
-- return updated field
+`has_enemy_points(field: GameField, loop: [Point, ...])`
+Check if loop contains enemy points
 
-**process()**
-- call other functions to update the game field
-- arguments
-  - point - new point, clicked by the player
-  - field - old game field
-  - player_color - the color of the player, who set this point
-  - colors - array of dicts {"player_id": int, "color": str}
-- return updated field
+`player_set_point(field: GameField, point: Point, owner: int)`
+Main function that call other, to calculate updates, when player set point
+
+`is_point_in_empty_loop(field: GameField, point: Point, enemy: int)`
+Check if player set point in the empty loop
+
+`calc_score(field: GameField)`
+Calculate new score for all players
+
+`set_captured_points(field: GameField, loop: [Point, ...], owner: id)`
+Update points to captured points in loop
+
+`is_allowed_to_set_point(field: GameField, point: Point)`
+Check if player allowed to set point in the cell
+
+`is_loop_already_found(field: GameField, loop: [Point, ...])`
+Check if loop alreay in list of loops
+
+## GameField()
+A class with attributes, contains information about points, loops, empty loops, etc.
+
+`self.owners = [1, 2, ...]`
+Array of id of all players
+
+`self.field = [[GamePoint, ...], ...]`
+Containt all game points in the field
+
+`self.loops = {0: [Point, ...], 1: [Point, ...], ...}`
+Contains all calculated loops, as _key_ required ID of the loop
+
+`self.empty_loops = {0: [Point, ...], 1: [Point, ...], ...}`
+Containt all loops without point in it
+
+
+
+## Point()
+A namedtuple with x and y coordinates of point in the GameField
+
+`Point.x`
+An index of the row in the `GameField.field`
+
+`Point.y`
+An index of the element in row in the `GameField.field`
+
+
+## GamePoint ()
+A class with attributes, contains information about owner and captured player
+
+`self.owner = 1`
+An id of the owner(player) of this point. `None` by default
+
+`self.captured = [1, 2, ...]`
+An list of IDs of the players, who captured this point. `None` by default. The last element is the latest player, who captured it.
+---
