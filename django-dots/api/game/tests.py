@@ -4,6 +4,49 @@ from .point import Point
 from . import create
 from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy, calc_loops, set_point_as_loop
 
+from .core import Field, Core
+from .structure import Point, GamePoint, GameField
+
+
+class ApiCreateFieldTest(TestCase):
+    def test_normal(self):
+        height, width = 5, 10
+        game_field = Field.create_field(height, width)
+
+        self.assertEqual(len(game_field.field), height)
+        self.assertEqual(len(game_field.field[0]), width)
+
+        for row in game_field.field:
+            for item in row:
+                self.assertEqual(item.owner, None)
+                self.assertEqual(item.captured, [])
+
+    def test_zero_size(self):
+        try:
+            game_field = Field.create_field(0, 0)
+        except Exception as E:
+            self.assertEqual(type(E), ValueError)
+
+
+class ApiAddPlayerTest(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+
+    def test_normal(self):
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        self.assertIn(1, self.field.players)
+        self.assertIn(2, self.field.players)
+
+    def test_duplicates(self):
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 1)
+        self.assertEqual(self.field.players, [1])
+
+
+"""
 class ApiCreateFieldTest(TestCase):
     def setUp(self):
         self.normal = [5, 5]
@@ -243,3 +286,4 @@ class ApiLoopIDTest(TestCase):
 class ApiSetCapturedPoint(TestCase):
     def setUp(self):
         pass
+"""

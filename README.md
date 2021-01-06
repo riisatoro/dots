@@ -81,7 +81,10 @@ Check if GameField has no empty points
 Addind a new loop into the GameField
 
 `add_empty_loop(field: GameField, loop: Point)`  
-Adding a new loop without points in it
+Adding a new loop without points in it  
+
+`add_player(field: GameField, player: int) -> GameField`  
+Adding new player in the field  
 
 
 ## GameCore()

@@ -1,10 +1,26 @@
 from .structure import Point, GamePoint, GameField
 
+min_field_size = 5
 
 class Field:
     @staticmethod
-    def create_field(height: int, width: int):
-        pass
+    def create_field(height: int, width: int) -> GameField:
+        if height < min_field_size or width < min_field_size:
+            raise ValueError
+        
+        field = [[GamePoint()] * width] * height
+        game_field = GameField(field)
+        return game_field
+
+    @staticmethod
+    def add_player(field: GameField, player: int) -> GameField:
+        if field.players:
+            if player not in field.players:
+                field.players.append(player)
+        else:
+            field.players = [player]
+        return field
+
 
     @staticmethod
     def change_owner(field: GameField, point: Point, owner: int):

@@ -17,7 +17,7 @@ class GamePoint:
 
 
 class GameField:
-    def __init__(self, players, field, loops, score):
+    def __init__(self, field: [[GamePoint]], players = None,  loops = None, empty_loops = None, score = None):
         self.players = players
         self.field = field
         self.loops = loops
