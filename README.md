@@ -115,35 +115,35 @@ Check if loop alreay in list of loops
 ## GameField()
 A class with attributes, contains information about points, loops, empty loops, etc.
 
-`self.owners = [1, 2, ...]`
-Array of id of all players
+`self.owners = [1, 2, ...]`  
+Array of id of all players  
 
-`self.field = [[GamePoint, ...], ...]`
-Containt all game points in the field
+`self.field = [[GamePoint, ...], ...]`  
+Containt all game points in the field  
 
-`self.loops = {0: [Point, ...], 1: [Point, ...], ...}`
-Contains all calculated loops, as _key_ required ID of the loop
+`self.loops = {0: [Point, ...], 1: [Point, ...], ...}`  
+Contains all calculated loops, as _key_ required ID of the loop  
 
-`self.empty_loops = {0: [Point, ...], 1: [Point, ...], ...}`
-Containt all loops without point in it
+`self.empty_loops = {0: [Point, ...], 1: [Point, ...], ...}`  
+Containt all loops without point in it  
 
 
 ## Point()
-A namedtuple with x and y coordinates of point in the GameField
+A namedtuple with x and y coordinates of point in the GameField  
 
-`Point.x`
-An index of the row in the `GameField.field`
+`Point.x`  
+An index of the row in the `GameField.field`  
 
-`Point.y`
-An index of the element in row in the `GameField.field`
+`Point.y`  
+An index of the element in row in the `GameField.field`  
 
 
 ## GamePoint ()
-A class with attributes, contains information about owner and captured player
+A class with attributes, contains information about owner and captured player  
 
-`self.owner = 1`
-An id of the owner(player) of this point. `None` by default
+`self.owner = 1`  
+An id of the owner(player) of this point. `None` by default  
 
-`self.captured = [1, 2, ...]`
-An list of IDs of the players, who captured this point. `None` by default. The last element is the latest player, who captured it.
+`self.captured = [1, 2, ...]`  
+An list of IDs of the players, who captured this point. `None` by default. The last element is the latest player, who captured it.  
 ---
