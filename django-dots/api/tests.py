@@ -3,14 +3,11 @@ import json
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
 
-"""
+
 from .game.calc_square import process as calc_score
 from .game.find_captured import process as find_loops
 from .game.main import process as calculate_field
-from .game import serializer
-from .game import point
-from .game import to_old
-"""
+
 
 # data2 - empty BLUE loops, one red loop between empty red loops
 # data3 - empty red, one BLUE
@@ -19,7 +16,7 @@ from .game import to_old
 # data6 - BLUE captured 12; RED captured 12
 # data7 - loop in loop; BLUE captured 7
 
-"""
+
 class LoginTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -108,9 +105,9 @@ class GameLoopsTest(TestCase):
     def test_has_one_minimal_loop(self):
         # field has one loop with captured point
         field, colors = self.get_data(3)
-        loop = set([(0, 1), (1, 2), (2, 1), (1, 0)])
+        loop = set(((0, 1), (1, 2), (2, 1), (1, 0)))
         _, loops = find_loops(field, colors[::-1])
-        finded = set(tuple(loops[0]))
+        finded = set(tuple(loops[0][0]))
         self.assertTrue(loop == finded)
 
     def test_has_empty_loop(self):
@@ -124,46 +121,3 @@ class GameLoopsTest(TestCase):
         data = calculate_field(field, [2, 6], colors[0], colors)
         loop = data["loops"]
         self.assertTrue(set(loop[0]) == set([(1, 5), (2, 6), (3, 5), (2, 4)]))
-
-
-class GameFieldSerializerTest(TestCase):
-    def setUp(self):
-        self.json_field = {}
-        with open("django-dots/api/fixtures/serialized.json", 'r') as file:
-            self.json_field = json.load(file)
-
-    def test_from_json(self):
-        field = serializer.GameFieldSerializer.from_json(self.json_field)
-        self.assertEqual(field[0][0].color, 'SYSTEM')
-        self.assertEqual(field[0][1].color, 'RED')
-
-        self.assertFalse(field[1][0].part_of_loop)
-        self.assertEqual(field[1][1].loop_id, [1, 2, 3])
-
-    def test_to_json(self):
-        p1 = point.Point("RED", part_of_loop=True, captured=False, loop_id=[1, 2 ,3])
-        p2 = point.Point("GREEN", part_of_loop=False, captured=True)
-        field = serializer.GameFieldSerializer.to_json([[p1, p2]])
-        self.assertEqual(field[0][0]["color"], "RED")
-        self.assertEqual(field[0][0]["loop_id"], [1, 2, 3])
-        self.assertTrue(field[0][1]["part_of_loop"])
-
-
-class ConvertGameFieldTest(TestCase):
-    def setUp(self):
-        p1 = point.Point("RED", part_of_loop=True, captured=False, loop_id=[1, 2 ,3])
-        p2 = point.Point("GREEN", part_of_loop=False, captured=True)
-        p3 = point.Point("SYSTEM")
-        p4 = point.Point("EMPTY")
-        p5 = point.Point("EMPTY", captured=True)
-        self.field = [
-            [p3, p3, p3, p3],
-            [p3, p1, p2, p3],
-            [p3, p4, p5, p3],
-            [p3, p3, p3, p3],
-        ]
-
-    def test_to_old(self):
-        field = to_old.ConvertField.convert_to_old(self.field)
-        self.assertEqual(field, [['R', 'Gl'], ['E', 'El']])
-"""

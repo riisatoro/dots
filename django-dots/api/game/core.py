@@ -120,12 +120,6 @@ class Core:
                 if field.field[x][y].owner in enemies or field.field[x][y].owner != owner:
                     if polygon.contains(shapePoint(x, y)):
                         captured.append(Point(x, y))
-
-        """
-        field = Core.set_captured_points(field, captured, owner)
-        field = Core.calc_score(field, captured)
-        return field
-        """
         return captured
 
     @staticmethod
