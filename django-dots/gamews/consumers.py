@@ -7,9 +7,6 @@ from api.game.main import process
 from api.game.calc_square import process as find_points
 from django.contrib.auth.models import AnonymousUser
 
-from api.game.to_old import ConvertField
-from api.game.serializer import GameFieldSerializer
-
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
