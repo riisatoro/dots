@@ -155,6 +155,7 @@ class ApiCapturedEnemyTest(TestCase):
         result = captured_enemy(self.field, self.loop, [self.color_2, self.color_3])
         self.assertFalse(result)
 
+
 class ApiFindLoop2Test(TestCase):
     def setUp(self):
         self.loop_1 = [[3, 2], [2, 2], [2, 3], [2, 4], [3, 4], [4, 4]]
@@ -203,6 +204,7 @@ class ApiFindLoop2Test(TestCase):
         loop = calc_loops(self.close_loop_2, self.field, [self.enemy_color])
         self.loop_2.append((2, 3))
         self.assertEqual(set(loop[0]), set(self.loop_2))
+
 
 class ApiLoopIDTest(TestCase):
     def setUp(self):
