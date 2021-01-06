@@ -19,7 +19,7 @@ test-linter-react:
 test-linter-django:
   stage: test
   script:
-    - pip install django djangorestframework channels prospector[with_everything]
+    - pip install django djangorestframework channels prospector[with_everything] shapely
     - prospector --profile django-dots/profile.yaml
 
     
