@@ -105,7 +105,7 @@ Main function that call other, to calculate updates, when player set point
 `is_point_in_empty_loop(field: GameField, point: Point)`  
 Check if player set point in the empty loop  
 
-`calc_score(field: GameField)`  
+`def calc_score(field: GameField, captured: [Point], owner: int)`  
 Calculate new score for all players  
 
 `def set_captured_points(field: GameField, points: [Point], owner: int)`  

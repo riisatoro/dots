@@ -140,9 +140,15 @@ class Core:
         return loop_id
 
     @staticmethod
-    def calc_score(field: GameField, captured: [Point]):
-        for _ in captured:
-            pass
+    def calc_score(field: GameField, captured: [Point], owner: int):
+        score = field.score
+        for x, y in captured:
+            if field.field[x][y].owner is not None and field.field[x][y].owner != owner:
+                captured_by = field.field[x][y].captured
+                score[owner] = score[owner]+1
+                if captured_by:
+                    score[captured_by[-1]] = score[captured_by[-1]]-1
+        field.score = score
         return field
 
     @staticmethod

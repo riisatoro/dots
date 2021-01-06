@@ -252,4 +252,11 @@ class ApiCoreSetCapturedPoints(TestCase):
 
 
 class ApiCoreCalcScore(TestCase):
-    pass
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.captured = [
+            Point(2, 1), Point(2, 2)
+        ]
+
+    def test_increase_score(self):
+        self.field = Core.calc_score(self.field, self.captured)
