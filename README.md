@@ -68,48 +68,48 @@ For ***Node*** see ***package.json***
 ## Field()
 A class with methods for creating and updating the GameField  
 
-`create_field(height: int, width: int)`
+`create_field(height: int, width: int)`  
 Create a new empty game
 
-`change_owner(field: GameField, point: namedtuple, owner: int)`
+`change_owner(field: GameField, point: namedtuple, owner: int)`  
 Update FieldPoint in the GameField, changed it player owner
 
 `is_full_field(field: GameField)`  
 Check if GameField has no empty points
 
-`add_loop(field: GameField, loop: Point)`
+`add_loop(field: GameField, loop: Point)`  
 Addind a new loop into the GameField
 
-`add_empty_loop(field: GameField, loop: Point)`
+`add_empty_loop(field: GameField, loop: Point)`  
 Adding a new loop without points in it
 
 
 ## GameCore()
 A class with main logic of the game  
 
-`find_new_loops(field: GameField, point: Point, owner: int)`
-Find all new loops in the GameField starting from the point
+`find_new_loops(field: GameField, point: Point, owner: int)`  
+Find all new loops in the GameField starting from the point  
 
-`has_enemy_points(field: GameField, loop: [Point, ...])`
-Check if loop contains enemy points
+`has_enemy_points(field: GameField, loop: [Point, ...])`  
+Check if loop contains enemy points  
 
-`player_set_point(field: GameField, point: Point, owner: int)`
-Main function that call other, to calculate updates, when player set point
+`player_set_point(field: GameField, point: Point, owner: int)`  
+Main function that call other, to calculate updates, when player set point  
 
-`is_point_in_empty_loop(field: GameField, point: Point, enemy: int)`
-Check if player set point in the empty loop
+`is_point_in_empty_loop(field: GameField, point: Point, enemy: int)`  
+Check if player set point in the empty loop  
 
-`calc_score(field: GameField)`
-Calculate new score for all players
+`calc_score(field: GameField)`  
+Calculate new score for all players  
 
-`set_captured_points(field: GameField, loop: [Point, ...], owner: id)`
-Update points to captured points in loop
+`set_captured_points(field: GameField, loop: [Point, ...], owner: id)`  
+Update points to captured points in loop  
 
-`is_allowed_to_set_point(field: GameField, point: Point)`
-Check if player allowed to set point in the cell
+`is_allowed_to_set_point(field: GameField, point: Point)`  
+Check if player allowed to set point in the cell  
 
-`is_loop_already_found(field: GameField, loop: [Point, ...])`
-Check if loop alreay in list of loops
+`is_loop_already_found(field: GameField, loop: [Point, ...])`  
+Check if loop alreay in list of loops  
 
 
 ## GameField()
