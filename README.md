@@ -86,6 +86,9 @@ Adding a new loop without points in it
 `add_player(field: GameField, player: int) -> GameField`  
 Adding new player in the field  
 
+`add_player_to_score(field: GameField, player: int)`  
+Adding new player to the score dict  
+
 
 ## GameCore()
 A class with main logic of the game  
@@ -93,7 +96,7 @@ A class with main logic of the game
 `find_all_new_loops(field: GameField, point: Point, owner: int)`  
 Find all new loops in the GameField starting from the point  
 
-`has_enemy_points(field: GameField, loop: [Point, ...])`  
+`find_all_captured_points(field: GameField, loop: [Point], owner: int):`  
 Check if loop contains enemy points  
 
 `player_set_point(field: GameField, point: Point, owner: int)`  
@@ -105,7 +108,7 @@ Check if player set point in the empty loop
 `calc_score(field: GameField)`  
 Calculate new score for all players  
 
-`set_captured_points(field: GameField, loop: [Point, ...], owner: id)`  
+`def set_captured_points(field: GameField, points: [Point], owner: int)`  
 Update points to captured points in loop  
 
 `is_allowed_to_set_point(field: GameField, point: Point)`  

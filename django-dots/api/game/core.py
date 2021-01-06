@@ -34,8 +34,22 @@ class Field:
         if field.players:
             if player not in field.players:
                 field.players.append(player)
+            
         else:
             field.players = [player]
+        
+        field = Field.add_player_to_score(field, player)
+        return field
+
+    @staticmethod
+    def add_player_to_score(field: GameField, player: int):
+        if not field.players or player not in field.players:
+            raise ValueError
+
+        if field.score:
+            field.score[player] = 0
+        else:
+            field.score = {player: 0}
         return field
 
     @staticmethod
@@ -94,8 +108,25 @@ class Core:
         pass
 
     @staticmethod
-    def has_enemy_points(field: GameField, point: Point, owner: int):
-        pass
+    def find_all_captured_points(field: GameField, loop: [Point], owner: int):
+        owner_index = field.players.index(owner)
+        enemies = field.players[:owner_index] + field.players[owner_index+1:]
+
+        polygon = shapePolygon(loop)
+        captured = []
+        
+        for x in range(1, len(field.field)-1):
+            for y in range(1, len(field.field[0])-1):
+                if field.field[x][y].owner in enemies or field.field[x][y].owner != owner:
+                    if polygon.contains(shapePoint(x, y)):
+                        captured.append(Point(x, y))
+
+        """
+        field = Core.set_captured_points(field, captured, owner)
+        field = Core.calc_score(field, captured)
+        return field
+        """
+        return captured
 
     @staticmethod
     def is_point_in_empty_loop(field: GameField, point: Point):
@@ -115,13 +146,12 @@ class Core:
                     loop_id = key
         return loop_id
 
+    @staticmethod
+    def calc_score(field: GameField, captured):
+        return field
 
     @staticmethod
-    def calc_score(field: GameField):
-        pass
-
-    @staticmethod
-    def set_captured_points(field: GameField, point: Point):
+    def set_captured_points(field: GameField, points: [Point], owner: int):
         pass
 
     @staticmethod
