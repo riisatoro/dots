@@ -1,11 +1,11 @@
-from django.test import Client, TestCase
+from django.test import TestCase
 
-from random import randint
+from random import randint, shuffle
 from .core import Field, Core, EMPTY_LOOP, LOOP
 from .structure import Point, GamePoint, GameField
 
-from . import create
-from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy, calc_loops, set_point_as_loop
+# from . import create
+# from .find_captured import find_loop, is_neighbour, is_in_loop, captured_enemy, calc_loops, set_point_as_loop
 
 
 class ApiCreateFieldTest(TestCase):
@@ -68,7 +68,6 @@ class ApiChangeOwnerTest(TestCase):
 
     def test_normal(self):
         point = Point(1, 2)
-        print(point)
         self.field = Field.change_owner(self.field, point, 1)
         self.assertEqual(self.field.field[1][2].owner, 1)
 
@@ -125,13 +124,84 @@ class ApiAddLoopTest(TestCase):
             self.assertIn(key, [1, 2])
 
 
-class ApiCore(TestCase):
+class ApiCoreCheckExistedLoopTest(TestCase):
     def setUp(self):
-        self.loop = [Point(randint(0, 10))] * 5
+        self.loop = [Point(randint(0, 10), randint(0, 10))] * 5
+        self.loops = {1: self.loop}
+        
+        self.field = Field.create_field(5, 5)
 
-    def test_in_empty_loop(self):
-        print(self.loop)
+    def test_loop_is_new(self):
+        self.assertFalse(Core.is_loop_already_found(self.field, self.loop))
+    
+    def test_loop_in_empty(self):
+        self.field.empty_loops = self.loops
+        shuffle(self.loop)
+        self.assertEqual(
+            Core.is_loop_already_found(self.field, self.loop),
+            EMPTY_LOOP
+        )
 
+    def test_loop_in_loops(self):
+        self.field.loops = self.loops
+        shuffle(self.loop)
+        self.assertEqual(
+            Core.is_loop_already_found(self.field, self.loop),
+            LOOP
+        )
+
+
+class ApiCorePointInEmptyLoop(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(7, 7)
+        self.loop_1 = {1: [Point(1, 2), Point(2, 3), Point(3, 2), Point(2, 1)]}
+        self.in_loop_1 = Point(2, 2)
+        self.out_of_loop = Point(4, 4)
+
+        self.in_both_loops = Point(4, 4)
+        self.in_big = Point(2, 4)
+        self.loop_2 = {
+            7: [Point(3, 4), Point(4, 5), Point(5, 4), Point(4, 3)],
+            4: [
+                Point(1,3), Point(1,4), Point(1,5), Point(2,6),
+                Point(3,7), Point(4,7), Point(5,7), Point(6,6),
+                Point(7,5), Point(7,4), Point(7,3), Point(6,2),
+                Point(5,1), Point(4,1), Point(3,1), Point(2, 2),
+            ]
+        }
+        
+
+    def test_no_empty_loop(self):
+        self.assertFalse(
+            Core.is_point_in_empty_loop(self.field, self.in_loop_1)
+        )
+
+    def test_in_empty(self):
+        self.field.empty_loops = self.loop_1
+        self.assertEqual(
+            Core.is_point_in_empty_loop(self.field, self.in_loop_1),
+            1
+        )
+
+    def test_out_of_loop(self):
+        self.field.empty_loops = self.loop_1
+        self.assertFalse(
+            Core.is_point_in_empty_loop(self.field, self.out_of_loop)
+        )
+
+    def test_in_two_empty_loops(self):
+        self.field.empty_loops = self.loop_2
+        self.assertEqual(
+            Core.is_point_in_empty_loop(self.field, self.in_both_loops),
+            7
+        )
+
+    def test_in_one_big_loop(self):
+        self.field.empty_loops = self.loop_2
+        self.assertEqual(
+            Core.is_point_in_empty_loop(self.field, self.in_big),
+            4
+        )
 
 """
 class ApiCreateFieldTest(TestCase):

@@ -1,3 +1,5 @@
+from shapely.geometry import Point as shapePoint
+from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
 
 min_field_size = 5
@@ -96,8 +98,23 @@ class Core:
         pass
 
     @staticmethod
-    def is_point_in_empty_loop(field: GameField, point: Point, enemy: int):
-        pass
+    def is_point_in_empty_loop(field: GameField, point: Point):
+        loop_id = False
+        empty_loops = field.empty_loops
+        
+        if not empty_loops:
+            return loop_id
+
+        for key, loop in empty_loops.items():
+            polygon = shapePolygon(loop)
+            if polygon.contains(shapePoint(point)):
+                if loop_id:
+                    if len(loop) < len(empty_loops[loop_id]):
+                        loop_id = key
+                else:
+                    loop_id = key
+        return loop_id
+
 
     @staticmethod
     def calc_score(field: GameField):
@@ -113,15 +130,17 @@ class Core:
         loop_set = set(loop)
 
         loops = field.empty_loops
-        for key, item in loops.items():
-            if len(item) == loop_size:
-                if set(loops) == set(item):
-                    return EMPTY_LOOP
+        if loops:
+            for key, item in loops.items():
+                if len(item) == loop_size:
+                    if loop_set == set(item):
+                        return EMPTY_LOOP
 
         loops = field.loops
-        for key, item in loops.items():
-            if len(item) == loop_size:
-                if set(loops) == set(item):
-                    return LOOP
+        if loops:
+            for key, item in loops.items():
+                if len(item) == loop_size:
+                    if loop_set == set(item):
+                        return LOOP
 
         return False

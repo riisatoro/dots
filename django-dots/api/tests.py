@@ -3,12 +3,14 @@ import json
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
 
+"""
 from .game.calc_square import process as calc_score
 from .game.find_captured import process as find_loops
 from .game.main import process as calculate_field
 from .game import serializer
 from .game import point
 from .game import to_old
+"""
 
 # data2 - empty BLUE loops, one red loop between empty red loops
 # data3 - empty red, one BLUE

@@ -99,7 +99,7 @@ Check if loop contains enemy points
 `player_set_point(field: GameField, point: Point, owner: int)`  
 Main function that call other, to calculate updates, when player set point  
 
-`is_point_in_empty_loop(field: GameField, point: Point, enemy: int)`  
+`is_point_in_empty_loop(field: GameField, point: Point)`  
 Check if player set point in the empty loop  
 
 `calc_score(field: GameField)`  
