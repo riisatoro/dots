@@ -64,6 +64,7 @@ For ***Node*** see ***package.json***
 ---
 # API for the game core
 
+
 ## Field()
 A class with methods for creating and updating the GameField  
 
@@ -81,6 +82,7 @@ Addind a new loop into the GameField
 
 `add_empty_loop(field: GameField, loop: Point)`
 Adding a new loop without points in it
+
 
 ## GameCore()
 A class with main logic of the game  
@@ -109,6 +111,7 @@ Check if player allowed to set point in the cell
 `is_loop_already_found(field: GameField, loop: [Point, ...])`
 Check if loop alreay in list of loops
 
+
 ## GameField()
 A class with attributes, contains information about points, loops, empty loops, etc.
 
@@ -123,7 +126,6 @@ Contains all calculated loops, as _key_ required ID of the loop
 
 `self.empty_loops = {0: [Point, ...], 1: [Point, ...], ...}`
 Containt all loops without point in it
-
 
 
 ## Point()
