@@ -14,18 +14,18 @@ class Field:
             raise ValueError
 
         field = []
-        for i in range(height):
+        for _ in range(height):
             tmp_row = []
-            for j in range(width):
+            for _ in range(width):
                 tmp_row.append(GamePoint())
             tmp_row.insert(0, GamePoint(owner=-1))
             tmp_row.append(GamePoint(owner=-1))
             field.append(tmp_row[:])
-        
+
         border = [GamePoint(owner=-1)] * (width + 2)
         field.insert(0, border[:])
         field.append(border[:])
-        
+
         game_field = GameField(field)
         return game_field
 
@@ -34,10 +34,9 @@ class Field:
         if field.players:
             if player not in field.players:
                 field.players.append(player)
-            
         else:
             field.players = [player]
-        
+
         field = Field.add_player_to_score(field, player)
         return field
 
@@ -62,7 +61,7 @@ class Field:
         if owner not in field.players:
             raise ValueError
 
-        if field.field[x][y].owner == None:
+        if field.field[x][y].owner is None:
             field.field[x][y].owner = owner
 
         return field
@@ -71,7 +70,7 @@ class Field:
     def is_full_field(field: GameField):
         for row in field.field:
             for point in row:
-                if point.owner == None:
+                if point.owner is None:
                     return False
         return True
 
@@ -114,7 +113,7 @@ class Core:
 
         polygon = shapePolygon(loop)
         captured = []
-        
+
         for x in range(1, len(field.field)-1):
             for y in range(1, len(field.field[0])-1):
                 if field.field[x][y].owner in enemies or field.field[x][y].owner != owner:
@@ -126,7 +125,7 @@ class Core:
     def is_point_in_empty_loop(field: GameField, point: Point):
         loop_id = False
         empty_loops = field.empty_loops
-        
+
         if not empty_loops:
             return loop_id
 
@@ -141,7 +140,9 @@ class Core:
         return loop_id
 
     @staticmethod
-    def calc_score(field: GameField, captured):
+    def calc_score(field: GameField, captured: [Point]):
+        for _ in captured:
+            pass
         return field
 
     @staticmethod
@@ -155,14 +156,14 @@ class Core:
 
         loops = field.empty_loops
         if loops:
-            for key, item in loops.items():
+            for _, item in loops.items():
                 if len(item) == loop_size:
                     if loop_set == set(item):
                         return EMPTY_LOOP
 
         loops = field.loops
         if loops:
-            for key, item in loops.items():
+            for _, item in loops.items():
                 if len(item) == loop_size:
                     if loop_set == set(item):
                         return LOOP
