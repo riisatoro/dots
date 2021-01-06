@@ -13,13 +13,27 @@ class ApiCreateFieldTest(TestCase):
         height, width = 5, 10
         game_field = Field.create_field(height, width)
 
-        self.assertEqual(len(game_field.field), height)
-        self.assertEqual(len(game_field.field[0]), width)
+        self.assertEqual(len(game_field.field), height+2)
+        self.assertEqual(len(game_field.field[0]), width+2)
 
-        for row in game_field.field:
-            for item in row:
-                self.assertEqual(item.owner, None)
-                self.assertEqual(item.captured, [])
+        field = game_field.field
+        for i in range(1, height+1):
+            for j in range(1, width+1):
+                self.assertEqual(field[i][j].owner, None)
+                self.assertEqual(field[i][j].captured, [])
+
+    def test_borders(self):
+        height, width = 5, 10
+        game_field = Field.create_field(height, width)
+        field = game_field.field
+        
+        for i in range(width+1):
+            self.assertEqual(field[0][i].owner, -1)
+            self.assertEqual(field[height+1][i].owner, -1)
+
+        for i in range(height+1):
+            self.assertEqual(field[i][0].owner, -1)
+            self.assertEqual(field[i][width+1].owner, -1)
 
     def test_zero_size(self):
         try:
@@ -45,6 +59,46 @@ class ApiAddPlayerTest(TestCase):
         self.field = Field.add_player(self.field, 1)
         self.assertEqual(self.field.players, [1])
 
+
+class ApiChangeOwnerTest(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        Field.add_player(self.field, 1)
+        Field.add_player(self.field, 2)
+
+    def test_normal(self):
+        point = Point(1, 2)
+        self.field = Field.change_owner(self.field, point, 1)
+        self.assertEqual(self.field.field[1][2].owner, 1)
+
+    def test_index_error(self):
+        try:
+            point = Point(20, -5)
+            self.field = Field.change_owner(self.field, point, 2)
+        except Exception as E:
+            self.assertEqual(type(E), IndexError)
+
+    def test_anonymous_owner(self):
+        try:
+            point = Point(1, 2)
+            self.field = Field.change_owner(self.field, point, 50)
+        except Exception as E:
+            self.assertEqual(type(E), ValueError)
+
+
+class ApiFullFieldTest(TestCase):
+    def setUp(self):
+        self.empty = Field.create_field(5, 5)
+        self.full = Field.create_field(5, 5)
+        for i in range(len(self.full.field)):
+            for j in range(len(self.full.field[0])):
+                self.full.field[i][j].owner = 5
+
+    def test_empty_field(self):
+        self.assertFalse(Field.is_full_field(self.empty))
+        
+    def test_full_field(self):
+        self.assertTrue(Field.is_full_field(self.full))
 
 """
 class ApiCreateFieldTest(TestCase):

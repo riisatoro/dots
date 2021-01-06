@@ -7,8 +7,20 @@ class Field:
     def create_field(height: int, width: int) -> GameField:
         if height < min_field_size or width < min_field_size:
             raise ValueError
+
+        field = []
+        for i in range(height):
+            tmp_row = []
+            for j in range(width):
+                tmp_row.append(GamePoint())
+            tmp_row.insert(0, GamePoint(owner=-1))
+            tmp_row.append(GamePoint(owner=-1))
+            field.append(tmp_row[:])
         
-        field = [[GamePoint()] * width] * height
+        border = [GamePoint(owner=-1)] * (width + 2)
+        field.insert(0, border[:])
+        field.append(border[:])
+        
         game_field = GameField(field)
         return game_field
 
@@ -21,14 +33,28 @@ class Field:
             field.players = [player]
         return field
 
-
     @staticmethod
     def change_owner(field: GameField, point: Point, owner: int):
-        pass
+        x, y = point
+
+        if x not in range(len(field.field)) or y not in range(len(field.field[0])):
+            raise IndexError
+
+        if owner not in field.players:
+            raise ValueError
+
+        if field.field[x][y].owner == None:
+            field.field[x][y].owner = owner
+
+        return field
 
     @staticmethod
     def is_full_field(field: GameField):
-        pass
+        for row in field.field:
+            for point in row:
+                if point.owner == None:
+                    return False
+        return True
 
     @staticmethod
     def add_loop(field: GameField, loop: [Point]):
