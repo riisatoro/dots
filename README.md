@@ -127,6 +127,9 @@ Contains all calculated loops, as _key_ required ID of the loop
 `self.empty_loops = {0: [Point, ...], 1: [Point, ...], ...}`  
 Containt all loops without point in it  
 
+`self.score = {0: 10, 1: 20, ... }`  
+Containt amount of captured points for all players  
+
 
 ## Point()  
 A namedtuple with x and y coordinates of point in the GameField  
