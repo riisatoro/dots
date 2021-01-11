@@ -110,67 +110,65 @@ class Core:
         try:
             if point_1 == point_2:
                 return False
-            
             if abs(point_1[0] - point_2[0]) < 2:
                 if abs(point_1[1] - point_2[1]) < 2:
                     if (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <= 2:
                         return True
         except IndexError:
-            pass
+            return False
         return False
 
     @staticmethod
     def find_loop_in_path(path):
-        if len(path) < 3:
-            return []
-
-        for i in range(0, len(path)):
-            for j in range(0, len(path)):
-                if j-i > 3 and Core.is_neighbour(path[i], path[j]):
-                    return path[i:j+1]
-        return []
+        if len(path) > 3 and Core.is_neighbour(path[0], path[-1]):
+            return True
+        return False
 
     @staticmethod
-    def dfs(field, point, path, visited, loops):
+    def append_new_loop(field, path, loops):
+        if Core.is_loop_already_found(field, path):
+            return
+        set_path = set(path)
+        for index, item in enumerate(loops):
+            set_item = set(item)
+            if set_path == set_item:
+                return
+            if set_item.issubset(set_path):
+                return
+        loops.append(path[:])
+
+    @staticmethod
+    def dfs(field, point, path, loops, visited, owner):
+        x, y = point
         visited[point] = DFS_GRAY
 
-        x, y = point
-        for i in range(point.x-1, point.x+2):
-            for j in range(point.y-1, point.y+2):
-                if field[i][j].owner != field[x][y].owner or Point(i, j) == point:
-                    # if this point is not a player point
-                    # and point is not equals last added to path point
-                    return
+        for i in range(x-1, x+2):
+            for j in range(y-1, y+2):
+                new_point = Point(i, j)
+                if point != new_point and field.field[i][j].owner == owner and not field.field[i][j].captured:
+                    if new_point not in visited.keys():
+                        visited[new_point] = DFS_GRAY
+                        path.append(new_point)
 
-                next_point = Point(i, j)
-                if next_point in visited.keys():
-                    if visited[next_point] == DFS_GRAY:
-                        all_loops = Core.find_all_loops_in_path(path)
-                        pass
-
-                if next_point not in visited.keys():
-                    pass
+                        if len(path) > 3 and Core.find_loop_in_path(path):
+                            Core.append_new_loop(field, path, loops)
+  
+                            visited.pop(new_point)
+                            path.pop()
+                            return
+                        Core.dfs(field, new_point, path, loops, visited, owner)
+                        path.pop()
 
     @staticmethod
-    def find_all_new_loops(field: GameField, point: Point, owner: int):
-        game_field = field.field
-        loops = field.loops
-        empty_loops = field.empty_loops
+    def find_all_new_loops(field, point, owner):  
+        path, loops, visited = [], [], {}
 
-        path = []
-        visited = {}
-        loops = []
-
-        import ipdb; ipdb.set_trace()
-
-        # visited[point] = DFS_WHITE
         path.append(point)
-        Core.dfs(game_field, point, path, visited, loops)
-
-        field.field = game_field
-        field.loops = loops
-        field.empty_loops = empty_loops
-        return field
+        visited[point] = DFS_GRAY
+        Core.dfs(field, point, path, loops, visited, owner)
+        path.pop()
+        
+        return loops
 
     @staticmethod
     def find_all_captured_points(field: GameField, loop: [Point], owner: int):
@@ -233,6 +231,9 @@ class Core:
         loops = field.empty_loops
         if loops:
             for _, item in loops.items():
+                if set(item).issubset(loop_set):
+                    return EMPTY_LOOP
+
                 if len(item) == loop_size:
                     if loop_set == set(item):
                         return EMPTY_LOOP
@@ -240,6 +241,9 @@ class Core:
         loops = field.loops
         if loops:
             for _, item in loops.items():
+                if set(item).issubset(loop_set):
+                    return LOOP
+
                 if len(item) == loop_size:
                     if loop_set == set(item):
                         return LOOP

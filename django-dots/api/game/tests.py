@@ -337,12 +337,6 @@ class ApiCoreIsNeighbours(TestCase):
 
 class ApiCoreFindLoops(TestCase):
     def setUp(self):
-        self.has_loop = [
-            Point(0, 2), Point(1, 2), Point(2, 3), Point(3, 3),
-            Point(4, 2), Point(3, 1), Point(2, 1),
-            Point(1, 0), Point(0, 0)
-        ]
-
         self.no_loop = [
             Point(1, 2), Point(2, 3), Point(3, 3),
             Point(4, 2), Point(3, 1),
@@ -353,28 +347,82 @@ class ApiCoreFindLoops(TestCase):
             Point(4, 2), Point(3, 1), Point(2, 1),
         ]
 
-    def test_has_one_loop(self):
-        loops = Core.find_loop_in_path(self.has_loop)
-        self.assertEqual(len(loops), 6)
-        self.assertEqual(set(loops), set(self.loop))
-
-    def test_path_is_loop(self):
+    def test_is_loop(self):
         loops = Core.find_loop_in_path(self.loop)
-        self.assertEqual(len(loops), 6)
-        self.assertEqual(set(loops), set(self.loop))
+        self.assertTrue(loops)
 
-    def test_has_no_loop(self):
-        loops = Core.find_loop_in_path(self.no_loop)
-        self.assertEqual(len(loops), 0)
+    def test_is_not_a_loop(self):
+        loops = Core.find_loop_in_path(self.not_loop)
+        self.assertFalse(loops)
 
-    def test_empty_path(self):
+    def test_is_not_a_loop(self):
         loops = Core.find_loop_in_path([])
-        self.assertEqual(len(loops), 0)
+        self.assertFalse(loops)
 
 
-class ApiCoreFindAllLoops(TestCase):
+class ApiCoreFindAllNewLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(20, 20)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 10)
+
+        self.points_1 = [
+            Point(1, 2), Point(2, 2), Point(3, 3), Point(4, 3),
+            Point(5, 2), Point(4, 1), Point(3, 1)
+        ]
+        self.loop_1 = [
+            Point(2, 2), Point(3, 3), Point(4, 3),
+            Point(5, 2), Point(4, 1), Point(3, 1)
+        ]
+        self.close_point_1 = Point(3, 1)
+        
+        
+        self.points_2 = [
+            Point(2, 2), Point(3, 3), Point(4, 3), Point(2, 4),
+            Point(5, 2), Point(4, 1), Point(3, 1), Point(1, 3), 
+        ]
+        self.loop_2 = [
+            Point(1, 3), Point(2, 4), Point(2, 2), Point(3, 3),
+        ]
+        self.close_point_2 = Point(2, 4)
+
+        self.points_3 = [
+            Point(1, 2), Point(1, 3), Point(1, 5),
+            Point(2, 1), Point(2, 6), 
+            Point(3, 2), Point(3, 3), Point(3, 5), 
+        ]
+        self.loop_3 = [
+            [Point(1, 2), Point(1, 3), Point(2, 1), Point(3, 2), Point(3, 3)],
+            [Point(1, 5), Point(2, 6), Point(3, 5)]
+        ]
+        self.close_point_3 = Point(2, 4)
+        
 
     def test_one_loop(self):
-        pass
+        for x, y in self.points_1:
+            self.field.field[x][y].owner = 1
+
+        loops = Core.find_all_new_loops(self.field, self.close_point_1, 1)   
+        
+        self.assertEqual(len(loops), 1)
+        self.assertEqual(set(loops[0]), set(self.loop_1))
+
+    def test_two_loop(self):
+        for x, y in self.points_2:
+            self.field.field[x][y].owner = 1
+
+        self.field.loops = {1: self.loop_1}
+
+        loops = Core.find_all_new_loops(self.field, self.close_point_2, 1)
+        self.assertEqual(len(loops), 1)
+        self.assertEqual(set(loops[0]), set(self.loop_2))
+
+    def test_eight_shape_loop(self):
+        self.field = Field.create_field(20, 20)
+        for x, y in self.points_3:
+            self.field.field[x][y].owner = 1
+
+        loops = Core.find_all_new_loops(self.field, self.close_point_3, 1)
+        self.assertEqual(len(loops), 2)
+        self.assertIn(len(loops[0]), [6, 4])
+        self.assertIn(len(loops[1]), [6, 4])
