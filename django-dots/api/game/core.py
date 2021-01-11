@@ -10,6 +10,7 @@ DFS_WHITE = "WHITE"
 DFS_GRAY = "GRAY"
 DFS_BLACK = "BLACK"
 
+
 class Field:
     @staticmethod
     def create_field(height: int, width: int) -> GameField:
@@ -129,7 +130,7 @@ class Core:
         if Core.is_loop_already_found(field, path):
             return
         set_path = set(path)
-        for index, item in enumerate(loops):
+        for _, item in enumerate(loops):
             set_item = set(item)
             if set_path == set_item:
                 return
@@ -152,7 +153,7 @@ class Core:
 
                         if len(path) > 3 and Core.find_loop_in_path(path):
                             Core.append_new_loop(field, path, loops)
-  
+
                             visited.pop(new_point)
                             path.pop()
                             return
@@ -160,14 +161,12 @@ class Core:
                         path.pop()
 
     @staticmethod
-    def find_all_new_loops(field, point, owner):  
+    def find_all_new_loops(field, point, owner):
         path, loops, visited = [], [], {}
-
         path.append(point)
         visited[point] = DFS_GRAY
         Core.dfs(field, point, path, loops, visited, owner)
         path.pop()
-        
         return loops
 
     @staticmethod
@@ -231,21 +230,13 @@ class Core:
         loops = field.empty_loops
         if loops:
             for _, item in loops.items():
-                if set(item).issubset(loop_set):
+                if loop_set == set(item) or set(item).issubset(loop_set) or len(item) == loop_size:
                     return EMPTY_LOOP
-
-                if len(item) == loop_size:
-                    if loop_set == set(item):
-                        return EMPTY_LOOP
 
         loops = field.loops
         if loops:
             for _, item in loops.items():
-                if set(item).issubset(loop_set):
+                if set(item).issubset(loop_set) or len(item) == loop_size or loop_set == set(item):
                     return LOOP
-
-                if len(item) == loop_size:
-                    if loop_set == set(item):
-                        return LOOP
 
         return False
