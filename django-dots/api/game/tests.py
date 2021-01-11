@@ -335,6 +335,43 @@ class ApiCoreIsNeighbours(TestCase):
             self.assertFalse(Core.is_neighbour(self.point, point))
 
 
+class ApiCoreFindLoops(TestCase):
+    def setUp(self):
+        self.has_loop = [
+            Point(0, 2), Point(1, 2), Point(2, 3), Point(3, 3),
+            Point(4, 2), Point(3, 1), Point(2, 1),
+            Point(1, 0), Point(0, 0)
+        ]
+
+        self.no_loop = [
+            Point(1, 2), Point(2, 3), Point(3, 3),
+            Point(4, 2), Point(3, 1),
+        ]
+
+        self.loop = [
+            Point(1, 2), Point(2, 3), Point(3, 3),
+            Point(4, 2), Point(3, 1), Point(2, 1),
+        ]
+
+    def test_has_one_loop(self):
+        loops = Core.find_loop_in_path(self.has_loop)
+        self.assertEqual(len(loops), 6)
+        self.assertEqual(set(loops), set(self.loop))
+
+    def test_path_is_loop(self):
+        loops = Core.find_loop_in_path(self.loop)
+        self.assertEqual(len(loops), 6)
+        self.assertEqual(set(loops), set(self.loop))
+
+    def test_has_no_loop(self):
+        loops = Core.find_loop_in_path(self.no_loop)
+        self.assertEqual(len(loops), 0)
+
+    def test_empty_path(self):
+        loops = Core.find_loop_in_path([])
+        self.assertEqual(len(loops), 0)
+
+
 class ApiCoreFindAllLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(20, 20)

@@ -120,17 +120,15 @@ class Core:
         return False
 
     @staticmethod
-    def find_all_loops_in_path(path):
+    def find_loop_in_path(path):
         if len(path) < 3:
             return []
-        
-        loops = []
-        for i in range(0, len(path)):
-            for j in range(len(path)-1, -1, -1):
-                if j-i < 3 and is_neighbour(path[i], path[j]):
-                    pass
 
-        return loops
+        for i in range(0, len(path)):
+            for j in range(0, len(path)):
+                if j-i > 3 and Core.is_neighbour(path[i], path[j]):
+                    return path[i:j+1]
+        return []
 
     @staticmethod
     def dfs(field, point, path, visited, loops):
