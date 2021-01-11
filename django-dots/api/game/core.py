@@ -6,6 +6,9 @@ min_field_size = 5
 EMPTY_LOOP = "EMPTY"
 LOOP = "LOOP"
 
+DFS_WHITE = "WHITE"
+DFS_GRAY = "GRAY"
+DFS_BLACK = "BLACK"
 
 class Field:
     @staticmethod
@@ -103,8 +106,73 @@ class Core:
         pass
 
     @staticmethod
+    def is_neighbour(point_1, point_2):
+        try:
+            if point_1 == point_2:
+                return False
+            
+            if abs(point_1[0] - point_2[0]) < 2:
+                if abs(point_1[1] - point_2[1]) < 2:
+                    if (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <= 2:
+                        return True
+        except IndexError:
+            pass
+        return False
+
+    @staticmethod
+    def find_all_loops_in_path(path):
+        if len(path) < 3:
+            return []
+        
+        loops = []
+        for i in range(0, len(path)):
+            for j in range(len(path)-1, -1, -1):
+                if j-i < 3 and is_neighbour(path[i], path[j]):
+                    pass
+
+        return loops
+
+    @staticmethod
+    def dfs(field, point, path, visited, loops):
+        visited[point] = DFS_GRAY
+
+        x, y = point
+        for i in range(point.x-1, point.x+2):
+            for j in range(point.y-1, point.y+2):
+                if field[i][j].owner != field[x][y].owner or Point(i, j) == point:
+                    # if this point is not a player point
+                    # and point is not equals last added to path point
+                    return
+
+                next_point = Point(i, j)
+                if next_point in visited.keys():
+                    if visited[next_point] == DFS_GRAY:
+                        all_loops = Core.find_all_loops_in_path(path)
+                        pass
+
+                if next_point not in visited.keys():
+                    pass
+
+    @staticmethod
     def find_all_new_loops(field: GameField, point: Point, owner: int):
-        pass
+        game_field = field.field
+        loops = field.loops
+        empty_loops = field.empty_loops
+
+        path = []
+        visited = {}
+        loops = []
+
+        import ipdb; ipdb.set_trace()
+
+        # visited[point] = DFS_WHITE
+        path.append(point)
+        Core.dfs(game_field, point, path, visited, loops)
+
+        field.field = game_field
+        field.loops = loops
+        field.empty_loops = empty_loops
+        return field
 
     @staticmethod
     def find_all_captured_points(field: GameField, loop: [Point], owner: int):

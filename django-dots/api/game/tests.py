@@ -312,3 +312,32 @@ class ApiCoreCalcScore(TestCase):
         self.assertEqual(score[self.owner_1], 1)
         self.assertEqual(score[self.owner_2], 4)
         self.assertEqual(score[self.owner_3], 0)
+
+
+class ApiCoreIsNeighbours(TestCase):
+    def setUp(self):
+        self.point = Point(3, 3)
+        self.not_neighbours = [
+            Point(1, 1), Point(3, 5), Point(2, 1)
+        ]
+
+    def test_normal(self):
+        x, y = self.point
+        for i in range(x-1, x+2):
+            for j in range(y-1, y+2):
+                if Point(i ,j) == self.point:
+                    self.assertFalse(Core.is_neighbour(self.point, Point(i, j)))
+                else:
+                    self.assertTrue(Core.is_neighbour(self.point, Point(i, j)))
+
+    def test_not_a_neighbour(self):
+        for point in self.not_neighbours:
+            self.assertFalse(Core.is_neighbour(self.point, point))
+
+
+class ApiCoreFindAllLoops(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(20, 20)
+
+    def test_one_loop(self):
+        pass
