@@ -4,11 +4,14 @@ Point = namedtuple("Point", ["x", "y"])
 
 
 class GamePoint:
-    def __init__(self, owner=None, captured=None):
+    def __init__(self, owner=None, captured=None, loops=None):
         self.owner = owner
         self.captured = []
+        self.loops = []
         if captured:
             self.captured = captured
+        if loops:
+            self.loops = loops
 
     def __str__(self):
         return f"Owner: {self.owner}; captured by {self.captured}"

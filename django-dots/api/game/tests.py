@@ -248,15 +248,67 @@ class ApiCoreFindCapturedPoints(TestCase):
 
 
 class ApiCoreSetCapturedPoints(TestCase):
-    pass
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+
+        self.owner_1 = 5
+        self.owner_2 = 10
+        self.field = Field.add_player(self.field, self.owner_1)
+        self.field = Field.add_player(self.field, self.owner_2)
+
+        self.captured = [Point(1, 3), Point(1, 4), Point(1, 5), Point(2, 6)]
+        self.captured_2 = [Point(1, 3), Point(1, 4), Point(1, 5)]
+
+    def test_normal(self):
+        self.field = Core.set_captured_points(self.field, self.captured, self.owner_1)
+        for x, y in self.captured:
+            self.assertEqual(self.field.field[x][y].captured, [self.owner_1])
+
+    def test_captured_twice(self):
+        self.field = Core.set_captured_points(self.field, self.captured, self.owner_1)
+        self.field = Core.set_captured_points(self.field, self.captured_2, self.owner_2)
+        for x, y in self.captured_2:
+            self.assertEqual(self.field.field[x][y].captured, [self.owner_1, self.owner_2])
 
 
 class ApiCoreCalcScore(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)
-        self.captured = [
-            Point(2, 1), Point(2, 2)
+
+        self.owner_1, self.owner_2, self.owner_3 = 1, 2, 3
+        self.field = Field.add_player(self.field, self.owner_1)
+        self.field = Field.add_player(self.field, self.owner_2)
+        self.field = Field.add_player(self.field, self.owner_3)
+
+        self.captured_1 = [
+            Point(2, 1), Point(2, 2), Point(2, 3), Point(5, 5)
+        ]
+        self.captured_2 = [
+            Point(2, 1), Point(2, 2), Point(2, 3), Point(8, 9),
         ]
 
     def test_increase_score(self):
-        self.field = Core.calc_score(self.field, self.captured)
+        for x, y in self.captured_1:
+            self.field.field[x][y].owner = self.owner_3
+
+        self.field = Core.calc_score(self.field, self.captured_1, self.owner_1)
+
+        score = self.field.score
+        self.assertEqual(score[self.owner_1], 4)
+        self.assertEqual(score[self.owner_3], 0)
+
+    def test_descrease_score(self):
+        for x, y in self.captured_1:
+            self.field.field[x][y].owner = self.owner_3
+        for x, y in self.captured_2:
+            self.field.field[x][y].owner = self.owner_3
+
+        self.field = Core.calc_score(self.field, self.captured_1, self.owner_1)
+        for x, y in self.captured_1:
+            self.field.field[x][y].captured = [self.owner_1]
+        self.field = Core.calc_score(self.field, self.captured_2, self.owner_2)
+
+        score = self.field.score
+        self.assertEqual(score[self.owner_1], 1)
+        self.assertEqual(score[self.owner_2], 4)
+        self.assertEqual(score[self.owner_3], 0)
