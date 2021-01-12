@@ -25,12 +25,12 @@ class ApiFieldCreateFieldTest(TestCase):
         field = game_field.field
 
         for i in range(width+1):
-            self.assertEqual(field[0][i].owner, -1)
-            self.assertEqual(field[height+1][i].owner, -1)
+            self.assertTrue(field[0][i].border)
+            self.assertTrue(field[height+1][i].border)
 
         for i in range(height+1):
-            self.assertEqual(field[i][0].owner, -1)
-            self.assertEqual(field[i][width+1].owner, -1)
+            self.assertTrue(field[i][0].border)
+            self.assertTrue(field[i][width+1].border)
 
     def test_zero_size(self):
         try:

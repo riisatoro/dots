@@ -13,23 +13,25 @@ class Field:
     @staticmethod
     def create_field(height: int, width: int) -> GameField:
         if height < min_field_size or width < min_field_size:
-            raise ValueError()
+            raise ValueError("Field height or width must be bigger than 5")
 
         field = []
+        border = [GamePoint(border=True)] * (width + 2)
+        
         for _ in range(height):
             tmp_row = []
-            for _ in range(width):
-                tmp_row.append(GamePoint())
-            tmp_row.insert(0, GamePoint(owner=-1))
-            tmp_row.append(GamePoint(owner=-1))
-            field.append(tmp_row[:])
+            for j in range(width+2):
+                if j == 0 or j == width+1:
+                    tmp_row.append(GamePoint(border=True))
+                else:
+                    tmp_row.append(GamePoint())
 
-        border = [GamePoint(owner=-1)] * (width + 2)
-        field.insert(0, border[:])
-        field.append(border[:])
+            field.append(tmp_row)
+        
+        field.insert(0, border)
+        field.append(border)
 
-        game_field = GameField(field)
-        return game_field
+        return GameField(field)
 
     @staticmethod
     def add_player(field: GameField, player: int) -> GameField:
@@ -153,7 +155,7 @@ class Core:
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 new_point = Point(i, j)
-                if point != new_point and field[i][j].owner != -1 and field[i][j].owner == owner and new_point not in path:
+                if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path:
                     path.append(new_point)
                     if Core.find_loop_in_path(path):
                         loops = Core.append_new_loop(path, loops)
@@ -174,8 +176,8 @@ class Core:
         if len(points) == 0:
             return False
         for x, y in points:
-            point_owner = field.field[x][y].owner
-            if point_owner != -1 and point_owner is not None and point_owner != owner:
+            point = field.field[x][y]
+            if not point.border and point.owner is not None and point.owner != owner:
                 return True
         return False
 
