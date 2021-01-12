@@ -17,12 +17,12 @@ class Field:
 
         field = []
         border = [GamePoint(border=True)] * (width + 2)
-        
+
         field.append(border)
         for _ in range(height):
             tmp_row = []
             for j in range(width+2):
-                if j == 0 or j == width+1:
+                if j < 1 or j == width+1:
                     tmp_row.append(GamePoint(border=True))
                 else:
                     tmp_row.append(GamePoint())
