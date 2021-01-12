@@ -109,9 +109,7 @@ class Core:
 
     @staticmethod
     def find_loop_in_path(path):
-        if len(path) > 3 and Core.is_neighbour(path[0], path[-1]):
-            return True
-        return False
+        return len(path) > 3 and Core.is_neighbour(path[0], path[-1])
 
     @staticmethod
     def append_new_loop(pathes, loops):
