@@ -101,16 +101,11 @@ class Core:
 
     @staticmethod
     def is_neighbour(point_1, point_2):
-        try:
-            if point_1 == point_2:
-                return False
-            if abs(point_1[0] - point_2[0]) < 2:
-                if abs(point_1[1] - point_2[1]) < 2:
-                    if (abs(point_1[0] - point_2[0]) - abs(point_1[1] - point_2[1])) <= 2:
-                        return True
-        except IndexError:
-            return False
-        return False
+        equals = point_1 == point_2
+        horisontal = abs(point_1[0] - point_2[0]) < 2
+        vertical = abs(point_1[1] - point_2[1]) < 2
+        diagonal = (horisontal - vertical) <= 2
+        return not equals and horisontal and vertical and diagonal
 
     @staticmethod
     def find_loop_in_path(path):
