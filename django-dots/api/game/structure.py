@@ -22,14 +22,8 @@ class GamePoint:
 class GameField:
     def __init__(self, field: [[GamePoint]], **kwargs):
         self.field = field
-        self.players = None
-        self.loops = None
-        self.empty_loops = None
-        self.score = None
-
-        if len(kwargs.keys()) > 0:
-            self.players = kwargs["players"]
-            self.field = kwargs["field"]
-            self.loops = kwargs["loops"]
-            self.empty_loops = kwargs["empty_loops"]
-            self.score = kwargs["score"]
+        self.players = kwargs.get("players")
+        self.field = kwargs.get("field")
+        self.loops = kwargs.get("loops")
+        self.empty_loops = kwargs.get("empty_loops")
+        self.score = kwargs.get("score")
