@@ -303,3 +303,5 @@ yarn-debug.log*
 yarn-error.log*
 
 django-dots/gamews/tests
+
+draw.py

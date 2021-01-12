@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from random import randint, shuffle
-from .core import Field, Core, EMPTY_LOOP, LOOP
+from .core import Field, Core
 from .structure import Point, GamePoint
 
 
@@ -151,18 +151,12 @@ class ApiCoreCheckExistedLoopTest(TestCase):
     def test_loop_in_empty(self):
         self.field.empty_loops = self.loops
         shuffle(self.loop)
-        self.assertEqual(
-            Core.is_loop_already_found(self.field, self.loop),
-            EMPTY_LOOP
-        )
+        self.assertTrue(Core.is_loop_already_found(self.field, self.loop))
 
     def test_loop_in_loops(self):
         self.field.loops = self.loops
         shuffle(self.loop)
-        self.assertEqual(
-            Core.is_loop_already_found(self.field, self.loop),
-            LOOP
-        )
+        self.assertTrue(Core.is_loop_already_found(self.field, self.loop))
 
 
 class ApiCorePointInEmptyLoop(TestCase):
@@ -423,3 +417,45 @@ class ApiCoreFindAllNewLoops(TestCase):
         self.assertEqual(len(loops), 2)
         self.assertIn(len(loops[0]), [6, 4])
         self.assertIn(len(loops[1]), [6, 4])
+
+
+class ApiCoreFindEnemyCaptured(TestCase):
+    def setUp(self):
+        pass
+
+    def test_capture_enemy(self):
+        pass
+
+    def test_captured_nothing(self):
+        pass
+
+    def test_captured_enemy_and_empty(self):
+        pass
+
+
+class ApiCoreSortNewLoops(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(20, 20)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        self.loops_1 = [
+            [Point(2, 2), Point(3, 3), Point(4, 3), Point(5, 2), Point(4, 1), Point(3, 1)],
+            [Point(1, 3), Point(2, 4), Point(3, 3), Point(2, 2)]
+        ]
+        self.captured = [Point(3, 2), Point(4, 2)]
+
+    def test_one_loop_captured(self):
+        for loop in self.loops_1:
+            for x, y in loop:
+                self.field.field[x][y].owner = 1
+        
+        for x, y in self.captured:
+            self.field.field[x][y].owner = 2
+
+        field = Core.add_loops_and_capture_points(self.field, self.loops_1, 1)
+        self.assertEqual(len(field.loops), 1)
+        self.assertEqual(len(field.empty_loops), 1)
+        self.assertEqual(set(field.loops[1]), set(self.loops_1[0]))
+        self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
+

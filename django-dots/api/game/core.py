@@ -3,8 +3,6 @@ from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
 
 min_field_size = 5
-EMPTY_LOOP = "EMPTY"
-LOOP = "LOOP"
 
 DFS_WHITE = "WHITE"
 DFS_GRAY = "GRAY"
@@ -65,7 +63,7 @@ class Field:
         if owner not in field.players:
             raise ValueError
 
-        if field.field[x][y].owner is None:
+        if field.field[x][y].owner is None and not field.field[x][y].captured:
             field.field[x][y].owner = owner
 
         return field
@@ -140,6 +138,7 @@ class Core:
 
     @staticmethod
     def dfs(field, point, path, loops, visited, owner):
+        # feature: group path, loops, visited, owner into a solid object
         x, y = point
         visited[point] = DFS_GRAY
 
@@ -162,12 +161,37 @@ class Core:
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
+        # feature: group path, loops, visited, owner into a solid object
         path, loops, visited = [], [], {}
         path.append(point)
         visited[point] = DFS_GRAY
         Core.dfs(field, point, path, loops, visited, owner)
         path.pop()
         return loops
+
+    @staticmethod
+    def find_enemy_captured(field, points, owner):
+        if len(points) == 0:
+            return False
+        for x, y in points:
+            if field.field[x][y].owner != -1 and field.field[x][y].owner is not None:
+                return True
+        return False
+
+    @staticmethod
+    def add_loops_and_capture_points(field, loops, owner):
+        if not loops:
+            return
+        for loop in loops:
+            captured = Core.find_all_captured_points(field, loop, owner)
+
+            if not Core.find_enemy_captured(field, captured, owner):
+                field = Field.add_empty_loop(field, loop)
+            else:
+                field = Field.add_loop(field, loop)
+                field = Core.set_captured_points(field, captured, owner)
+                field = Core.calc_score(field, loop, owner)
+        return field
 
     @staticmethod
     def find_all_captured_points(field: GameField, loop: [Point], owner: int):
@@ -231,12 +255,12 @@ class Core:
         if loops:
             for _, item in loops.items():
                 if loop_set == set(item) or set(item).issubset(loop_set) or len(item) == loop_size:
-                    return EMPTY_LOOP
+                    return True
 
         loops = field.loops
         if loops:
             for _, item in loops.items():
                 if set(item).issubset(loop_set) or len(item) == loop_size or loop_set == set(item):
-                    return LOOP
+                    return True
 
         return False
