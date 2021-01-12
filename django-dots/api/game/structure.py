@@ -22,8 +22,7 @@ class GamePoint:
 class GameField:
     def __init__(self, field: [[GamePoint]], **kwargs):
         self.field = field
-        self.players = kwargs.get("players")
-        self.field = kwargs.get("field")
+        self.players = kwargs.get("players", [])
         self.loops = kwargs.get("loops")
         self.empty_loops = kwargs.get("empty_loops")
         self.score = kwargs.get("score")
