@@ -33,10 +33,8 @@ class ApiFieldCreateFieldTest(TestCase):
             self.assertTrue(field[i][width+1].border)
 
     def test_zero_size(self):
-        try:
-            _ = Field.create_field(0, 0)
-        except Exception as e:
-            self.assertEqual(type(e), ValueError)
+        with self.assertRaises(ValueError):
+            Field.create_field(0, 0)
 
 
 class ApiFieldAddPlayerTest(TestCase):
@@ -69,18 +67,14 @@ class ApiFieldChangeOwnerTest(TestCase):
         self.assertEqual(self.field.field[1][2].owner, 1)
 
     def test_index_error(self):
-        try:
+        with self.assertRaises(IndexError):
             point = Point(20, -5)
             self.field = Field.change_owner(self.field, point, 2)
-        except Exception as e:
-            self.assertEqual(type(e), IndexError)
 
     def test_anonymous_owner(self):
-        try:
+        with self.assertRaises(ValueError):
             point = Point(1, 2)
             self.field = Field.change_owner(self.field, point, 50)
-        except Exception as e:
-            self.assertEqual(type(e), ValueError)
 
 
 class ApiFieldFullFieldTest(TestCase):
@@ -124,10 +118,8 @@ class ApiFieldAddPlayerScore(TestCase):
         self.assertIn(7, self.field.score.keys())
 
     def test_add_just_to_score(self):
-        try:
+        with self.assertRaises(ValueError):
             Field.add_player_to_score(self.field, 270)
-        except Exception as e:
-            self.assertEqual(type(e), ValueError)
 
 
 class ApiCoreCheckExistedLoopTest(TestCase):
