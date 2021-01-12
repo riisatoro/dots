@@ -359,7 +359,7 @@ class ApiCoreFindLoops(TestCase):
 
 class ApiCoreFindAllNewLoops(TestCase):
     def setUp(self):
-        self.field = Field.create_field(0, 20)
+        self.field = Field.create_field(20, 20)
         self.field = Field.add_player(self.field, 1)
         self.field = Field.add_player(self.field, 10)
 
@@ -392,16 +392,16 @@ class ApiCoreFindAllNewLoops(TestCase):
             [Point(1, 5), Point(2, 6), Point(3, 5)]
         ]
         self.close_point_3 = Point(2, 4)
-
+    
     def test_one_loop(self):
         for x, y in self.points_1:
             self.field.field[x][y].owner = 1
 
         loops = Core.find_all_new_loops(self.field, self.close_point_1, 1)
-
         self.assertEqual(len(loops), 1)
         self.assertEqual(set(loops[0]), set(self.loop_1))
 
+    
     def test_two_loop(self):
         for x, y in self.points_2:
             self.field.field[x][y].owner = 1
@@ -409,7 +409,6 @@ class ApiCoreFindAllNewLoops(TestCase):
         self.field.empty_loops = {1: self.loop_1}
 
         loops = Core.find_all_new_loops(self.field, self.close_point_2, 1)
-        print(loops)
         self.assertEqual(len(loops), 1)
         self.assertEqual(set(loops[0]), set(self.loop_2))
 
@@ -464,7 +463,6 @@ class ApiCoreSortNewLoops(TestCase):
         self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
 
 
-
 class ApiCorePlayerSetPoint(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)
@@ -481,6 +479,11 @@ class ApiCorePlayerSetPoint(TestCase):
         self.enemy_1 = [Point(5, 2)]
         self.close_point_1 = Point(6, 2)
 
+        self.points_2 = [
+            Point(1, 2), Point(2, 2), Point(3, 2), Point(3, 3),
+            Point(2, 4), Point(1, 3)
+        ]
+
     def test_normal(self):
         for point in self.points_1:
             self.field = Core.player_set_point(self.field, point, 1)
@@ -491,7 +494,11 @@ class ApiCorePlayerSetPoint(TestCase):
         self.field = Core.player_set_point(self.field, self.close_point_1, 1)
 
         loops = Core.find_all_new_loops(self.field, self.close_point_1, 1)
-        print(loops)
+
+    def test_normal_2(self):
+        for point in self.points_2:
+            self.field = Core.player_set_point(self.field, self.points_2[-1], 2)
+
 
 class ApiCoreTestDepthFirstSearch(TestCase):
     def setUp(self):
@@ -511,7 +518,104 @@ class ApiCoreTestDepthFirstSearch(TestCase):
             self.field.field[x][y].owner = 1
 
         path, loops, visited, owner = [], [], {}, 1
-        Core.dfs(self.field.field, Point(6, 2), path, loops, visited, owner)
+        Core.dfs(self.field.field, Point(6, 2), path, loops, owner)
+
+
+class ApiCoreSetPoint2(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        self.points_1 = [
+            Point(2, 2), Point(3, 1), Point(3, 3), Point(4, 2)
+        ]
+
+        self.points_2 = [
+            Point(2, 2), Point(3, 1), Point(3, 3), 
+            Point(6, 2), Point(5, 1), Point(5, 3), 
+            Point(4, 2)
+        ]
+
+        self.points_3 = [
+            Point(1, 2), Point(1, 3),
+            Point(2, 1), Point(2, 4),
+            Point(3, 2), Point(3, 3),
+        ]
+
+        self.points_4 = [
+            Point(4, 1), Point(4, 4),
+            Point(5, 1), Point(5, 3),
+            Point(6, 2),
+        ]
+
+    def test_romb(self):
+        for point in self.points_1:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        self.assertEqual(len(self.field.empty_loops), 1)
+        self.assertIsNone(self.field.loops)
+
+    def test_enemy_in_romb(self):
+        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
+        for point in self.points_1:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        self.assertEqual(len(self.field.loops), 1)
+        self.assertIsNone(self.field.empty_loops)
+
+
+    def test_two_rombs_one_captured(self):
+        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
+        for point in self.points_2:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        self.assertEqual(len(self.field.loops), 1)
+        self.assertEqual(len(self.field.empty_loops), 1)
+
+    def test_two_rombs_two_captured(self):
+        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
+        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
+        for point in self.points_2:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        self.assertEqual(len(self.field.loops), 2)
+        self.assertIsNone(self.field.empty_loops)
+
+    def test_two_loops_with_common(self):
+        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
+
+        for point in self.points_3:
+            self.field = Core.player_set_point(self.field, point, 1)
+        for point in self.points_4:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        self.points_4.append(Point(3, 2))
+        self.points_4.append(Point(3, 3))
+
+        self.assertEqual(len(self.field.loops), 1)
+        self.assertEqual(set(self.field.loops[1]), set(self.points_4))
         
-        for loop in loops:
-            print(loop)
+        self.assertEqual(len(self.field.empty_loops), 1)
+        self.assertEqual(set(self.field.empty_loops[1]), set(self.points_3))
+
+    def test_set_point_in_loop(self):
+        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
+
+        draw_field(self.field)
+        for point in self.points_3:
+            self.field = Core.player_set_point(self.field, point, 1)
+        
+        draw_field(self.field)
+        for point in self.points_4:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        draw_field(self.field)
+        self.field = Core.player_set_point(self.field, Point(2, 3), 2)
+        
+        draw_field(self.field)
+
+        self.assertEqual(self.field.empty_loops, {})
+        self.assertEqual(len(self.field.loops), 2)
+
+        self.assertEqual(self.field.empty_loops, {})

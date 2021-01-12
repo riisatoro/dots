@@ -104,6 +104,15 @@ class Core:
         field = Field.change_owner(field, point, owner)
         loops = Core.find_all_new_loops(field, point, owner)
         field = Core.add_loops_and_capture_points(field, loops, owner)
+        empty_loop_id = Core.is_point_in_empty_loop(field, point)
+
+        if not loops and empty_loop_id:
+            #ipdb.set_trace()
+            loop = field.empty_loops.pop(empty_loop_id)
+            x, y = loop[0]
+            owner = field.field[x][y].owner
+
+            field = Core.add_loops_and_capture_points(field, [loop], owner)
 
         return field
 
@@ -142,29 +151,27 @@ class Core:
         return loops
 
     @staticmethod
-    def dfs(field, point, path, loops, visited, owner):
+    def dfs(field, point, path, loops, owner):
         x, y = point
-        visited[point] = DFS_GRAY
 
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 new_point = Point(i, j)
-                if point != new_point and field[i][j].owner != -1 and field[i][j].owner == owner and point not in path:
-                    path.append(point)
+                if point != new_point and field[i][j].owner != -1 and field[i][j].owner == owner and new_point not in path:
+                    path.append(new_point)
                     if Core.find_loop_in_path(path):
                         loops = Core.append_new_loop(path, loops)
-                    Core.dfs(field, Point(i, j), path, loops, visited, owner)
-                    path.pop()    
+                    Core.dfs(field, new_point, path, loops, owner)
+                    path.pop()
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
         path, loops, visited = [], [], {}
         path.append(point)
         visited[point] = DFS_GRAY
-        Core.dfs(field, point, path, loops, visited, owner)
+        Core.dfs(field.field, point, path, loops, owner)
         path.pop()
         return loops
-
 
     @staticmethod
     def find_enemy_captured(field, points, owner):
@@ -177,8 +184,6 @@ class Core:
 
     @staticmethod
     def add_loops_and_capture_points(field, loops, owner):
-        if not loops:
-            return field
         for loop in loops:
             captured = Core.find_all_captured_points(field, loop, owner)
 
