@@ -2,6 +2,8 @@ from shapely.geometry import Point as shapePoint
 from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
 
+import ipdb
+
 min_field_size = 5
 
 DFS_WHITE = "WHITE"
@@ -13,7 +15,7 @@ class Field:
     @staticmethod
     def create_field(height: int, width: int) -> GameField:
         if height < min_field_size or width < min_field_size:
-            raise ValueError
+            raise ValueError()
 
         field = []
         for _ in range(height):
@@ -45,7 +47,7 @@ class Field:
     @staticmethod
     def add_player_to_score(field: GameField, player: int):
         if not field.players or player not in field.players:
-            raise ValueError
+            raise ValueError("Can't add player to the score table - invalid player ID")
 
         if field.score:
             field.score[player] = 0
@@ -57,11 +59,8 @@ class Field:
     def change_owner(field: GameField, point: Point, owner: int):
         x, y = point
 
-        if x not in range(len(field.field)) or y not in range(len(field.field[0])):
-            raise IndexError
-
         if owner not in field.players:
-            raise ValueError
+            raise ValueError("Player ID is not in the GameField")
 
         if field.field[x][y].owner is None and not field.field[x][y].captured:
             field.field[x][y].owner = owner
@@ -102,7 +101,12 @@ class Field:
 class Core:
     @staticmethod
     def player_set_point(field: GameField, point: Point, owner: int):
-        pass
+        field = Field.change_owner(field, point, owner)
+        loops = Core.find_all_new_loops(field, point, owner)
+        field = Core.add_loops_and_capture_points(field, loops, owner)
+
+        return field
+
 
     @staticmethod
     def is_neighbour(point_1, point_2):
@@ -138,7 +142,6 @@ class Core:
 
     @staticmethod
     def dfs(field, point, path, loops, visited, owner):
-        # feature: group path, loops, visited, owner into a solid object
         x, y = point
         visited[point] = DFS_GRAY
 
@@ -161,13 +164,13 @@ class Core:
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
-        # feature: group path, loops, visited, owner into a solid object
         path, loops, visited = [], [], {}
         path.append(point)
         visited[point] = DFS_GRAY
         Core.dfs(field, point, path, loops, visited, owner)
         path.pop()
         return loops
+
 
     @staticmethod
     def find_enemy_captured(field, points, owner):
@@ -181,7 +184,7 @@ class Core:
     @staticmethod
     def add_loops_and_capture_points(field, loops, owner):
         if not loops:
-            return
+            return field
         for loop in loops:
             captured = Core.find_all_captured_points(field, loop, owner)
 

@@ -1,8 +1,11 @@
+import ipdb
 from django.test import TestCase
 
 from random import randint, shuffle
 from .core import Field, Core
 from .structure import Point, GamePoint
+
+from .draw import draw_field
 
 
 class ApiFieldCreateFieldTest(TestCase):
@@ -403,9 +406,10 @@ class ApiCoreFindAllNewLoops(TestCase):
         for x, y in self.points_2:
             self.field.field[x][y].owner = 1
 
-        self.field.loops = {1: self.loop_1}
+        self.field.empty_loops = {1: self.loop_1}
 
         loops = Core.find_all_new_loops(self.field, self.close_point_2, 1)
+        print(loops)
         self.assertEqual(len(loops), 1)
         self.assertEqual(set(loops[0]), set(self.loop_2))
 
@@ -458,4 +462,39 @@ class ApiCoreSortNewLoops(TestCase):
         self.assertEqual(len(field.empty_loops), 1)
         self.assertEqual(set(field.loops[1]), set(self.loops_1[0]))
         self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
+
+
+class ApiCorePlayerSetPoint(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        self.points_1 = [
+            Point(1, 2), Point(1, 3),
+            Point(2, 1), Point(2, 4),
+            Point(3, 2), Point(3, 3),
+            Point(4, 1), Point(4, 4),
+            Point(5, 1), Point(5, 3),
+        ]
+        self.enemy_1 = [Point(5, 2)]
+        self.close_point_1 = Point(6, 2)
+
+    def test_normal(self):
+        for point in self.points_1:
+            self.field = Core.player_set_point(self.field, point, 1)
+
+        # ipdb.set_trace()
+        # draw_field(self.field)
+        for point in self.enemy_1:
+            self.field = Core.player_set_point(self.field, point, 2)
+
+        # draw_field(self.field)
+        self.field = Core.player_set_point(self.field, self.close_point_1, 1)
+
+        # draw_field(self.field)
+        
+
+        print(self.field.loops)
+        print(self.field.empty_loops)
 
