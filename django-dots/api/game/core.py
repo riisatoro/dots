@@ -18,6 +18,7 @@ class Field:
         field = []
         border = [GamePoint(border=True)] * (width + 2)
         
+        field.append(border)
         for _ in range(height):
             tmp_row = []
             for j in range(width+2):
@@ -25,10 +26,7 @@ class Field:
                     tmp_row.append(GamePoint(border=True))
                 else:
                     tmp_row.append(GamePoint())
-
             field.append(tmp_row)
-        
-        field.insert(0, border)
         field.append(border)
 
         return GameField(field)
@@ -62,7 +60,7 @@ class Field:
         if owner not in field.players:
             raise ValueError("Player ID is not in the GameField")
 
-        if field.field[x][y].owner is None and not field.field[x][y].captured:
+        if field.field[x][y].owner is None and not field.field[x][y].border and not field.field[x][y].captured:
             field.field[x][y].owner = owner
 
         return field
@@ -76,26 +74,12 @@ class Field:
         return True
 
     @staticmethod
-    def add_loop(field: GameField, loop: [Point]):
-        if not field.loops:
-            loops = {1: loop}
-        else:
-            loops = field.loops
-            loops[max(loops.keys())+1] = loop
+    def add_loop(field_loops, loop: [Point]):
+        if not field_loops:
+            return {1: loop}
 
-        field.loops = loops
-        return field
-
-    @staticmethod
-    def add_empty_loop(field: GameField, loop: [Point]):
-        if not field.empty_loops:
-            loops = {1: loop}
-        else:
-            loops = field.empty_loops
-            loops[max(loops.keys())+1] = loop
-
-        field.empty_loops = loops
-        return field
+        field_loops[max(field_loops.keys())+1] = loop
+        return field_loops
 
 
 class Core:
@@ -187,9 +171,9 @@ class Core:
             captured = Core.find_all_captured_points(field, loop, owner)
 
             if not Core.find_enemy_captured(field, captured, owner):
-                field = Field.add_empty_loop(field, loop)
+                field.empty_loops = Field.add_loop(field.empty_loops, loop)
             else:
-                field = Field.add_loop(field, loop)
+                field.loops = Field.add_loop(field.loops, loop)
                 field = Core.set_captured_points(field, captured, owner)
                 field = Core.calc_score(field, loop, owner)
         return field

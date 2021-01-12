@@ -105,18 +105,10 @@ class ApiFieldAddLoopTest(TestCase):
         self.loop_2 = [Point(4, 3), Point(2, 3), Point(5, 7)]
 
     def test_add_loop(self):
-        self.field = Field.add_loop(self.field, self.loop_1)
-        self.field = Field.add_loop(self.field, self.loop_2)
+        self.field.loops = Field.add_loop(self.field.loops, self.loop_1)
+        self.field.loops = Field.add_loop(self.field.loops, self.loop_2)
 
         loops = self.field.loops
-        for key in loops.keys():
-            self.assertIn(key, [1, 2])
-
-    def test_add_empty_loop(self):
-        self.field = Field.add_empty_loop(self.field, self.loop_1)
-        self.field = Field.add_empty_loop(self.field, self.loop_2)
-
-        loops = self.field.empty_loops
         for key in loops.keys():
             self.assertIn(key, [1, 2])
 
