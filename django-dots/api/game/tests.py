@@ -359,7 +359,7 @@ class ApiCoreFindLoops(TestCase):
 
 class ApiCoreFindAllNewLoops(TestCase):
     def setUp(self):
-        self.field = Field.create_field(20, 20)
+        self.field = Field.create_field(0, 20)
         self.field = Field.add_player(self.field, 1)
         self.field = Field.add_player(self.field, 10)
 
@@ -464,6 +464,7 @@ class ApiCoreSortNewLoops(TestCase):
         self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
 
 
+
 class ApiCorePlayerSetPoint(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)
@@ -484,17 +485,33 @@ class ApiCorePlayerSetPoint(TestCase):
         for point in self.points_1:
             self.field = Core.player_set_point(self.field, point, 1)
 
-        # ipdb.set_trace()
-        # draw_field(self.field)
         for point in self.enemy_1:
             self.field = Core.player_set_point(self.field, point, 2)
 
-        # draw_field(self.field)
         self.field = Core.player_set_point(self.field, self.close_point_1, 1)
 
-        # draw_field(self.field)
+        loops = Core.find_all_new_loops(self.field, self.close_point_1, 1)
+        print(loops)
+
+class ApiCoreTestDepthFirstSearch(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.field = Field.add_player(self.field, 1)
+        self.points = [
+            Point(1, 2), Point(1, 3),
+            Point(2, 1), Point(2, 4),
+            Point(3, 2), Point(3, 3),
+            Point(4, 1), Point(4, 4),
+            Point(5, 1), Point(5, 3),
+            Point(6, 2),
+        ]
+
+    def test_loops(self):
+        for x, y in self.points:
+            self.field.field[x][y].owner = 1
+
+        path, loops, visited, owner = [], [], {}, 1
+        Core.dfs(self.field.field, Point(6, 2), path, loops, visited, owner)
         
-
-        print(self.field.loops)
-        print(self.field.empty_loops)
-
+        for loop in loops:
+            print(loop)

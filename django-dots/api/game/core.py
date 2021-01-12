@@ -128,17 +128,18 @@ class Core:
         return False
 
     @staticmethod
-    def append_new_loop(field, path, loops):
-        if Core.is_loop_already_found(field, path):
-            return
-        set_path = set(path)
-        for _, item in enumerate(loops):
-            set_item = set(item)
-            if set_path == set_item:
-                return
-            if set_item.issubset(set_path):
-                return
-        loops.append(path[:])
+    def append_new_loop(pathes, loops):
+        set_of_path = set(pathes)
+        for index, item in enumerate(loops):
+            set_of_item = set(item)
+            if set_of_path.issubset(set_of_item):
+                loops[index] = pathes.copy()
+                return loops
+            if set_of_item.issubset(set_of_path):
+                return loops
+
+        loops.append(pathes.copy())
+        return loops
 
     @staticmethod
     def dfs(field, point, path, loops, visited, owner):
@@ -148,19 +149,12 @@ class Core:
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 new_point = Point(i, j)
-                if point != new_point and field.field[i][j].owner == owner and not field.field[i][j].captured:
-                    if new_point not in visited.keys():
-                        visited[new_point] = DFS_GRAY
-                        path.append(new_point)
-
-                        if len(path) > 3 and Core.find_loop_in_path(path):
-                            Core.append_new_loop(field, path, loops)
-
-                            visited.pop(new_point)
-                            path.pop()
-                            return
-                        Core.dfs(field, new_point, path, loops, visited, owner)
-                        path.pop()
+                if point != new_point and field[i][j].owner != -1 and field[i][j].owner == owner and point not in path:
+                    path.append(point)
+                    if Core.find_loop_in_path(path):
+                        loops = Core.append_new_loop(path, loops)
+                    Core.dfs(field, Point(i, j), path, loops, visited, owner)
+                    path.pop()    
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
