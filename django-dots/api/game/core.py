@@ -2,8 +2,6 @@ from shapely.geometry import Point as shapePoint
 from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
 
-import ipdb
-
 min_field_size = 5
 
 DFS_WHITE = "WHITE"
@@ -107,7 +105,6 @@ class Core:
         empty_loop_id = Core.is_point_in_empty_loop(field, point)
 
         if not loops and empty_loop_id:
-            #ipdb.set_trace()
             loop = field.empty_loops.pop(empty_loop_id)
             x, y = loop[0]
             owner = field.field[x][y].owner
@@ -115,7 +112,6 @@ class Core:
             field = Core.add_loops_and_capture_points(field, [loop], owner)
 
         return field
-
 
     @staticmethod
     def is_neighbour(point_1, point_2):
@@ -178,7 +174,8 @@ class Core:
         if len(points) == 0:
             return False
         for x, y in points:
-            if field.field[x][y].owner != -1 and field.field[x][y].owner is not None:
+            point_owner = field.field[x][y].owner
+            if point_owner != -1 and point_owner is not None and point_owner != owner:
                 return True
         return False
 

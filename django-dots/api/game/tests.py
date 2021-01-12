@@ -1,11 +1,8 @@
-import ipdb
 from django.test import TestCase
 
 from random import randint, shuffle
 from .core import Field, Core
 from .structure import Point, GamePoint
-
-from .draw import draw_field
 
 
 class ApiFieldCreateFieldTest(TestCase):
@@ -392,7 +389,7 @@ class ApiCoreFindAllNewLoops(TestCase):
             [Point(1, 5), Point(2, 6), Point(3, 5)]
         ]
         self.close_point_3 = Point(2, 4)
-    
+
     def test_one_loop(self):
         for x, y in self.points_1:
             self.field.field[x][y].owner = 1
@@ -401,7 +398,6 @@ class ApiCoreFindAllNewLoops(TestCase):
         self.assertEqual(len(loops), 1)
         self.assertEqual(set(loops[0]), set(self.loop_1))
 
-    
     def test_two_loop(self):
         for x, y in self.points_2:
             self.field.field[x][y].owner = 1
@@ -422,20 +418,6 @@ class ApiCoreFindAllNewLoops(TestCase):
         self.assertIn(len(loops[1]), [6, 4])
 
 
-class ApiCoreFindEnemyCaptured(TestCase):
-    def setUp(self):
-        pass
-
-    def test_capture_enemy(self):
-        pass
-
-    def test_captured_nothing(self):
-        pass
-
-    def test_captured_enemy_and_empty(self):
-        pass
-
-
 class ApiCoreSortNewLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(20, 20)
@@ -452,7 +434,7 @@ class ApiCoreSortNewLoops(TestCase):
         for loop in self.loops_1:
             for x, y in loop:
                 self.field.field[x][y].owner = 1
-        
+
         for x, y in self.captured:
             self.field.field[x][y].owner = 2
 
@@ -461,64 +443,6 @@ class ApiCoreSortNewLoops(TestCase):
         self.assertEqual(len(field.empty_loops), 1)
         self.assertEqual(set(field.loops[1]), set(self.loops_1[0]))
         self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
-
-
-class ApiCorePlayerSetPoint(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(10, 10)
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 2)
-
-        self.points_1 = [
-            Point(1, 2), Point(1, 3),
-            Point(2, 1), Point(2, 4),
-            Point(3, 2), Point(3, 3),
-            Point(4, 1), Point(4, 4),
-            Point(5, 1), Point(5, 3),
-        ]
-        self.enemy_1 = [Point(5, 2)]
-        self.close_point_1 = Point(6, 2)
-
-        self.points_2 = [
-            Point(1, 2), Point(2, 2), Point(3, 2), Point(3, 3),
-            Point(2, 4), Point(1, 3)
-        ]
-
-    def test_normal(self):
-        for point in self.points_1:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        for point in self.enemy_1:
-            self.field = Core.player_set_point(self.field, point, 2)
-
-        self.field = Core.player_set_point(self.field, self.close_point_1, 1)
-
-        loops = Core.find_all_new_loops(self.field, self.close_point_1, 1)
-
-    def test_normal_2(self):
-        for point in self.points_2:
-            self.field = Core.player_set_point(self.field, self.points_2[-1], 2)
-
-
-class ApiCoreTestDepthFirstSearch(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(10, 10)
-        self.field = Field.add_player(self.field, 1)
-        self.points = [
-            Point(1, 2), Point(1, 3),
-            Point(2, 1), Point(2, 4),
-            Point(3, 2), Point(3, 3),
-            Point(4, 1), Point(4, 4),
-            Point(5, 1), Point(5, 3),
-            Point(6, 2),
-        ]
-
-    def test_loops(self):
-        for x, y in self.points:
-            self.field.field[x][y].owner = 1
-
-        path, loops, visited, owner = [], [], {}, 1
-        Core.dfs(self.field.field, Point(6, 2), path, loops, owner)
 
 
 class ApiCoreSetPoint2(TestCase):
@@ -532,8 +456,8 @@ class ApiCoreSetPoint2(TestCase):
         ]
 
         self.points_2 = [
-            Point(2, 2), Point(3, 1), Point(3, 3), 
-            Point(6, 2), Point(5, 1), Point(5, 3), 
+            Point(2, 2), Point(3, 1), Point(3, 3),
+            Point(6, 2), Point(5, 1), Point(5, 3),
             Point(4, 2)
         ]
 
@@ -563,7 +487,6 @@ class ApiCoreSetPoint2(TestCase):
 
         self.assertEqual(len(self.field.loops), 1)
         self.assertIsNone(self.field.empty_loops)
-
 
     def test_two_rombs_one_captured(self):
         self.field = Core.player_set_point(self.field, Point(3, 2), 2)
@@ -595,25 +518,20 @@ class ApiCoreSetPoint2(TestCase):
 
         self.assertEqual(len(self.field.loops), 1)
         self.assertEqual(set(self.field.loops[1]), set(self.points_4))
-        
+
         self.assertEqual(len(self.field.empty_loops), 1)
         self.assertEqual(set(self.field.empty_loops[1]), set(self.points_3))
 
     def test_set_point_in_loop(self):
         self.field = Core.player_set_point(self.field, Point(5, 2), 2)
 
-        draw_field(self.field)
         for point in self.points_3:
             self.field = Core.player_set_point(self.field, point, 1)
-        
-        draw_field(self.field)
+
         for point in self.points_4:
             self.field = Core.player_set_point(self.field, point, 1)
 
-        draw_field(self.field)
         self.field = Core.player_set_point(self.field, Point(2, 3), 2)
-        
-        draw_field(self.field)
 
         self.assertEqual(self.field.empty_loops, {})
         self.assertEqual(len(self.field.loops), 2)

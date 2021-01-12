@@ -7,6 +7,7 @@ inherits:
 ignore-paths:
   - dots
   - django-dots/manage.py
+  - draw.py
 
 uses:
   - django
