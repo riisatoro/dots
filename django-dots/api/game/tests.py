@@ -1,10 +1,9 @@
 from django.test import TestCase
+from dataclasses import asdict
 
 from random import randint, shuffle
 from .core import Field, Core
 from .structure import Point, GamePoint
-
-
 
 
 class ApiFieldCreateFieldTest(TestCase):
@@ -523,6 +522,17 @@ class ApiCoreSetPoint2(TestCase):
         self.assertEqual(len(self.field.loops), 2)
 
         self.assertEqual(self.field.empty_loops, {})
+
+
+class GameFieldSerialize(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+
+    def test_normal(self):
+        field_dict = asdict(self.field)
+        field_dict.pop("empty_loops")
+        self.assertEqual(["field", "players", "loops", "score"], list(field_dict.keys()))
+
 
 #from .draw import draw_field
 #class SimpleGameTest(TestCase):
