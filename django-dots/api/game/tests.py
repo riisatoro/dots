@@ -4,6 +4,8 @@ from random import randint, shuffle
 from .core import Field, Core
 from .structure import Point, GamePoint
 
+from .draw import draw_field
+
 
 class ApiFieldCreateFieldTest(TestCase):
     def test_normal(self):
@@ -521,3 +523,41 @@ class ApiCoreSetPoint2(TestCase):
         self.assertEqual(len(self.field.loops), 2)
 
         self.assertEqual(self.field.empty_loops, {})
+
+
+class SimpleGameTest(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.field = Field.add_player(self.field, 0)
+        self.field = Field.add_player(self.field, 1)
+
+        self.points_1 = [
+            Point(1, 2), Point(1, 3), Point(2, 1), Point(2, 4), Point(3, 2)
+        ]
+        self.points_2 = [
+            Point(4, 1), Point(4, 4), Point(5, 1), Point(5, 3), Point(6, 2)
+        ]
+        self.points_3 = [
+        ]
+    
+    def test_normal(self):
+        print("")
+        for point in self.points_1:
+            self.field = Core.player_set_point(self.field, point, 0)
+            draw_field(self.field)
+        self.field = Core.player_set_point(self.field, Point(2, 3), 1)
+        draw_field(self.field)
+        self.field = Core.player_set_point(self.field, Point(3, 3), 0)
+        draw_field(self.field)
+
+        for point in self.points_2:
+            self.field = Core.player_set_point(self.field, point, 0)
+            draw_field(self.field)
+        self.field = Core.player_set_point(self.field, Point(5, 2), 1)
+        draw_field(self.field)
+
+        """
+        for point in self.points_2:
+            self.field = Core.player_set_point(self.field, point, 0)
+            draw_field(self.field)
+        """
