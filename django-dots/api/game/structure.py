@@ -1,5 +1,5 @@
 from collections import namedtuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 Point = namedtuple("Point", ["x", "y"])
 
