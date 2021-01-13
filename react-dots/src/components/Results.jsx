@@ -5,48 +5,30 @@ import { Stage, Layer } from 'react-konva';
 import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
 
-import { getCanvasGrid, getCircleCoords, createLoopFigure } from '../actions/gameFieldDrawable';
+import { getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle } from '../actions/gameFieldDrawable';
 
 function Results(props) {
   const {
-    captured, field, closeResults, loops, cellSize, fieldSize
+    captured, field, closeResults, loops, cellSize, fieldSize, playerColors
   } = props;
   closeResults();
-
+  /*
   const canvasGrid = getCanvasGrid(fieldSize, cellSize);
   const circle = getCircleCoords(field, cellSize, playerColors);
   const emptyCircle = createEmptyCircle(field, cellSize);
   const loop = createLoopFigure(field, loops, cellSize, playerColors);
-
+  
   const results = [];
 
   // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of Object.entries(captured)) {
     results.push(`${key} captured ${value} points`);
   }
+  */
 
   return (
     <section className="results">
       <p className="header align-center h3 space-around">Results</p>
-
-      <div className="gameCanvas">
-          <Stage
-            width={fieldSize * cellSize + cellSize * 2}
-            height={fieldSize * cellSize + cellSize * 2}
-            onClick={this.gridClicked.bind(this)}
-          >
-            <Layer x={cellSize} y={cellSize}>
-              {canvasGrid.map((line) => line)}
-              {emptyCircle.map((circl) => circl)}
-              {loop.map((l1) => l1)}
-              {circle.map((circ) => circ)}
-            </Layer>
-          </Stage>
-        </div>
-
-      <div>
-        {results.map((item) => <p className="align-center">{item}</p>)}
-      </div>
     </section>
   );
 }
@@ -80,3 +62,24 @@ export default connect(
     },
   }),
 )(Results);
+
+/*
+  <div>
+        {results.map((item) => <p className="align-center">{item}</p>)}
+      </div>
+      
+      <div className="gameCanvas">
+          <Stage
+            width={fieldSize * cellSize + cellSize * 2}
+            height={fieldSize * cellSize + cellSize * 2}
+            onClick={this.gridClicked.bind(this)}
+          >
+            <Layer x={cellSize} y={cellSize}>
+              {canvasGrid.map((line) => line)}
+              {emptyCircle.map((circl) => circl)}
+              {loop.map((l1) => l1)}
+              {circle.map((circ) => circ)}
+            </Layer>
+          </Stage>
+        </div>
+*/
