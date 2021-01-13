@@ -1,5 +1,4 @@
 from django.test import TestCase
-from dataclasses import asdict
 
 from random import randint, shuffle
 from .core import Field, Core
