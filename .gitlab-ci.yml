@@ -10,11 +10,12 @@ variables:
 
 cache:
   paths:
-   - .cache/pip
+    - .cache/pip
 
 
-before-script:
- - pip install -r django-dots/requirements.txt
+before_script:
+  script:
+    - pip install -r django-dots/requirements.txt
 
 
 test-linter-react:
