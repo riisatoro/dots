@@ -14,8 +14,7 @@ cache:
 
 
 before_script:
-  script:
-    - pip install -r django-dots/requirements.txt
+  - pip install -r django-dots/requirements.txt
 
 
 test-linter-react:
