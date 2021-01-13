@@ -56,7 +56,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         if data["TYPE"] == types.PLAYER_SET_DOT:
             if await self.is_allowed_to_set_point(user_id, room_id):
-                colors = await self.get_user_colors(room_id)
                 size = await self.get_field_size(room_id)
                 field = GameFieldSerializer().from_database(
                     await self.get_game_field(room_id, user_id), size, size
@@ -66,17 +65,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 new_field = field
                 try:
                     new_field = Core.player_set_point(field, point, user_id)
-                    self.update_field(
+                    await self.update_field(
                         GameFieldSerializer().to_database(new_field),
+                        room_id
                     )
                     await self.change_player_turn(room_id)
-                    new_field = GameFieldSerializer().to_client(new_field, pop_values=["empty_loops"])
                 except Exception as e:
                     print("EXCEPTIOIN", e)
 
-                new_field["colors"] = colors
+                is_full = Field.is_full_field(new_field)
+                new_field = GameFieldSerializer().to_client(new_field, pop_values=["empty_loops"])
+                new_field["is_full"] = is_full
+                new_field["colors"] = await self.get_user_colors(room_id)
                 new_field["turn"] = await self.get_who_has_turn(room_id)
-                new_field["is_full"] = Field.is_full_field(new_field)
                 self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": new_field}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:

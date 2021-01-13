@@ -19,17 +19,17 @@ function getCanvasGrid(amount, size) {
   return grid;
 }
 
-function getCircleCoords(field, size) {
+function getCircleCoords(field, size, playerColors) {
   const circle = [];
   const colorTable = {
     O: 'orange', R: 'red', B: 'blue', Y: 'khaki', G: 'green',
   };
-  for (let i = 0; i < field.length; i += 1) {
-    for (let j = 0; j < field.length; j += 1) {
-      if (colorTable[field[i][j][0]] !== undefined) {
+  for (let i = 1; i < field.length - 1; i += 1) {
+    for (let j = 1; j < field[0].length - 1; j += 1) {
+      if (field[i][j].owner != null) {
         circle.push(<Circle
-          x={j * size}
-          y={i * size}
+          x={(j - 1) * size}
+          y={(i - 1) * size}
           radius={6}
           fillRadialGradientStartPoint={{
             x: -1.5,
@@ -41,7 +41,7 @@ function getCircleCoords(field, size) {
             y: 0,
           }}
           fillRadialGradientEndRadius={5}
-          fillRadialGradientColorStops={[0, 'white', 1, colorTable[field[i][j][0]]]}
+          fillRadialGradientColorStops={[0, 'white', 1, colorTable[playerColors[field[i][j].owner]]]}
         />);
       }
     }
@@ -49,54 +49,54 @@ function getCircleCoords(field, size) {
   return circle;
 }
 
-function createLoopFigure(loops, cellSize) {
-  try {
-    const colorTable = {
-      O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
-    };
-    const loop = loops.playerLoop;
-    const linePoints = [];
-    const jsxLoop = [];
-    const color = colorTable[loops.color];
+function createLoopFigure(field, loops, cellSize, playerColors) {
+  if (loops == null) return [];
 
-    loop.forEach((item) => {
-      const coords = [];
-      item.forEach((point) => point.forEach((coord) => coords.unshift(coord * cellSize)));
-      linePoints.push(coords);
+  const colorTable = {
+    O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
+  };
+
+  const jsxLoop = [];
+  Object.keys(loops).forEach((key) => {
+    const loop = loops[key];
+    const { owner } = field[loop[0][0]][loop[0][1]];
+    const color = colorTable[playerColors[owner]];
+    console.log('Color', color);
+    const chainPoints = [];
+    loop.forEach((point) => {
+      chainPoints.push((point[1] - 1) * cellSize);
+      chainPoints.push((point[0] - 1) * cellSize);
     });
+    jsxLoop.push(<Line
+      x={0}
+      y={0}
+      points={chainPoints}
+      stroke={color}
+      strokeWidth={2}
+      closed
+    />);
+    jsxLoop.push(<Line
+      x={0}
+      y={0}
+      opacity={0.2}
+      fill={color}
+      points={chainPoints}
+      closed
+    />);
+  });
 
-    for (let i = 0; i < linePoints.length; i += 1) {
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        points={linePoints[i]}
-        stroke={color}
-        strokeWidth={2}
-        closed
-      />);
-      jsxLoop.push(<Line
-        x={0}
-        y={0}
-        opacity={0.2}
-        fill={color}
-        points={linePoints[i]}
-        closed
-      />);
-    }
-    return jsxLoop;
-  } catch (e) {
-    return [];
-  }
+  return jsxLoop;
 }
 
 function createEmptyCircle(field, cellSize) {
   const circle = [];
-  for (let i = 0; i < field.length; i += 1) {
-    for (let j = 0; j < field.length; j += 1) {
-      if (field[i][j] === 'E') {
+  const gameField = field;
+  for (let i = 1; i < gameField.length - 1; i += 1) {
+    for (let j = 1; j < gameField[0].length - 1; j += 1) {
+      if (gameField[i][j].owner === null) {
         circle.push(<Circle
-          x={j * cellSize}
-          y={i * cellSize}
+          x={(j - 1) * cellSize}
+          y={(i - 1) * cellSize}
           radius={4}
           strokeWidth={0.5}
           stroke="gray"

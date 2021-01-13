@@ -36,8 +36,8 @@ class GameField extends Component {
     const { cellSize } = this.props;
     const xAxis = e.evt.layerX - cellSize / 2;
     const yAxis = e.evt.layerY - cellSize / 2;
-    const xPoint = Math.floor(xAxis / cellSize);
-    const yPoint = Math.floor(yAxis / cellSize);
+    const xPoint = Math.floor(xAxis / cellSize) + 1;
+    const yPoint = Math.floor(yAxis / cellSize) + 1;
     this.socket.send(JSON.stringify({ fieldPoint: [yPoint, xPoint], TYPE: TYPES.PLAYER_SET_DOT }));
   }
 
@@ -49,32 +49,17 @@ class GameField extends Component {
       gameResults,
       loops,
       cellSize,
+      playerColors,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
-    const circle = getCircleCoords(field, cellSize);
-    const loop1 = createLoopFigure(loops[0], cellSize);
-    const loop2 = createLoopFigure(loops[1], cellSize);
+    const circle = getCircleCoords(field, cellSize, playerColors);
     const emptyCircle = createEmptyCircle(field, cellSize);
-
-    let userTurn = '';
-    if (turn === 'NaN') {
-      userTurn = ' not your ';
-    } else {
-      userTurn = ` ${turn} `;
-    }
+    const loop = createLoopFigure(field, loops, cellSize, playerColors);
 
     return (
       <section className="field">
         { gameResults && <Redirect to="/game_result" /> }
-        <div>
-          <p>
-            Now is
-            {userTurn}
-            turn
-          </p>
-        </div>
-
         <hr />
         <div className="gameCanvas">
           <Stage
@@ -83,11 +68,10 @@ class GameField extends Component {
             onClick={this.gridClicked.bind(this)}
           >
             <Layer x={cellSize} y={cellSize}>
-              {loop1.map((l1) => l1)}
-              {loop2.map((l2) => l2)}
               {canvasGrid.map((line) => line)}
-              {circle.map((circ) => circ)}
               {emptyCircle.map((circl) => circl)}
+              {loop.map((l1) => l1)}
+              {circle.map((circ) => circ)}
             </Layer>
           </Stage>
         </div>
@@ -102,20 +86,23 @@ class GameField extends Component {
   }
 }
 
+/*
 GameField.propTypes = {
   roomID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
-  turn: PropTypes.string,
-  loops: PropTypes.array.isRequired,
+  turn: PropTypes.number,
+  loops: PropTypes.array,
+  colors: PropTypes.array.isRequired,
   gameResults: PropTypes.bool.isRequired,
   cellSize: PropTypes.number.isRequired,
 
   receiveReply: PropTypes.func.isRequired,
 };
-
+*/
 GameField.defaultProps = {
   turn: '',
+  loops: [],
 };
 
 const mapStateToProps = (state) => {
@@ -131,6 +118,7 @@ const mapStateToProps = (state) => {
     gameResults: state.gameResults,
     loops: state.loops,
     cellSize: state.cellSize,
+    playerColors: state.playerColors,
   };
   return data;
 };
@@ -150,3 +138,14 @@ export default connect(
   }
   ),
 )(GameField);
+
+
+/*
+<Layer x={cellSize} y={cellSize}>
+              {loop1.map((l1) => l1)}
+              {loop2.map((l2) => l2)}
+              
+              
+              
+            </Layer>
+*/

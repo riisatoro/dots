@@ -14,9 +14,9 @@ function Results(props) {
   closeResults();
 
   const canvasGrid = getCanvasGrid(fieldSize, cellSize);
-  const circle = getCircleCoords(field, cellSize);
-  const loop1 = createLoopFigure(loops[0], cellSize);
-  const loop2 = createLoopFigure(loops[1], cellSize);
+  const circle = getCircleCoords(field, cellSize, playerColors);
+  const emptyCircle = createEmptyCircle(field, cellSize);
+  const loop = createLoopFigure(field, loops, cellSize, playerColors);
 
   const results = [];
 
@@ -29,19 +29,20 @@ function Results(props) {
     <section className="results">
       <p className="header align-center h3 space-around">Results</p>
 
-      <div>
-        <Stage
-          width={fieldSize * cellSize + cellSize * 2}
-          height={fieldSize * cellSize + cellSize * 2}
-        >
-          <Layer x={cellSize} y={cellSize}>
-            {loop1.map((l1) => l1)}
-            {loop2.map((l2) => l2)}
-            {canvasGrid.map((line) => line)}
-            {circle.map((circ) => circ)}
-          </Layer>
-        </Stage>
-      </div>
+      <div className="gameCanvas">
+          <Stage
+            width={fieldSize * cellSize + cellSize * 2}
+            height={fieldSize * cellSize + cellSize * 2}
+            onClick={this.gridClicked.bind(this)}
+          >
+            <Layer x={cellSize} y={cellSize}>
+              {canvasGrid.map((line) => line)}
+              {emptyCircle.map((circl) => circl)}
+              {loop.map((l1) => l1)}
+              {circle.map((circ) => circ)}
+            </Layer>
+          </Stage>
+        </div>
 
       <div>
         {results.map((item) => <p className="align-center">{item}</p>)}
@@ -66,6 +67,7 @@ const mapStateToProps = (state) => {
     loops: state.loops,
     cellSize: state.cellSize,
     fieldSize: state.socket.fieldSize,
+    playerColors: state.playerColors,
   };
   return data;
 };
