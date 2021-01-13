@@ -120,6 +120,8 @@ media/
 # !**/migrations
 # !**/migrations/__init__.py
 
+builds/
+cache/
 
 
 .DS_STORE
