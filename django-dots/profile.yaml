@@ -19,6 +19,8 @@ pyflakes:
   run: true
 
 pylint:
+  options:
+    use_pylint_default_path_finder: True
   run: true
   disable: 
     - W0221

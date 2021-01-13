@@ -538,6 +538,11 @@ class SimpleGameTest(TestCase):
             Point(4, 1), Point(4, 4), Point(5, 1), Point(5, 3), Point(6, 2)
         ]
         self.points_3 = [
+            Point(6, 8), Point(7, 7), Point(7, 9), Point(8, 6), Point(8, 8), Point(8, 10),
+            Point(9, 7), Point(9, 9)
+        ]
+        self.points_4 = [
+            Point(7, 8), Point(8, 7), Point(8, 9)
         ]
     
     def test_normal(self):
@@ -556,8 +561,14 @@ class SimpleGameTest(TestCase):
         self.field = Core.player_set_point(self.field, Point(5, 2), 1)
         draw_field(self.field)
 
-        """
-        for point in self.points_2:
+        for point in self.points_3:
             self.field = Core.player_set_point(self.field, point, 0)
             draw_field(self.field)
-        """
+
+        for point in self.points_4:
+            self.field = Core.player_set_point(self.field, point, 1)
+            draw_field(self.field)
+
+        self.field = Core.player_set_point(self.field, Point(9, 8), 1)
+        self.field = Core.player_set_point(self.field, Point(10, 8), 0)
+        
