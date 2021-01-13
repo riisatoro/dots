@@ -29,5 +29,5 @@ test-backend:
     - postgres:latest
   stage: test
   script:
-    - pip install django-dots/requirements.txt
+    - pip install -r django-dots/requirements.txt
     - python django-dots/manage.py test api
