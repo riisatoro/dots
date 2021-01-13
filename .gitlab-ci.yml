@@ -9,7 +9,7 @@ variables:
 
 
 cache:
-  path:
+  paths:
    - .cache/pip
 
 
