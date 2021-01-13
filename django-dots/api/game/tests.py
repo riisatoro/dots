@@ -18,8 +18,8 @@ class ApiFieldCreateFieldTest(TestCase):
         field = game_field.field
         for i in range(1, height+1):
             for j in range(1, width+1):
-                self.assertEqual(field[i][j].owner, None)
-                self.assertEqual(field[i][j].captured, [])
+                self.assertIsNone(field[i][j].owner)
+                self.assertIsNone(field[i][j].captured)
 
     def test_borders(self):
         height, width = 5, 10

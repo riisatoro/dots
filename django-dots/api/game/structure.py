@@ -1,28 +1,18 @@
 from collections import namedtuple
+from dataclasses import dataclass, field
 
 Point = namedtuple("Point", ["x", "y"])
 
-
+@dataclass
 class GamePoint:
-    def __init__(self, owner=None, border=False, captured=None, loops=None):
-        self.owner = owner
-        self.captured = []
-        self.loops = []
-        self.border = border
+    owner: int = None
+    captured: list = None
+    border: bool = False
 
-        if captured:
-            self.captured = captured
-        if loops:
-            self.loops = loops
-
-    def __str__(self):
-        return f"Owner: {self.owner}; captured by {self.captured}"
-
-
+@dataclass
 class GameField:
-    def __init__(self, field: [[GamePoint]], **kwargs):
-        self.field = field
-        self.players = kwargs.get("players", [])
-        self.loops = kwargs.get("loops")
-        self.empty_loops = kwargs.get("empty_loops")
-        self.score = kwargs.get("score")
+    field: [[GamePoint]]
+    players: list = None
+    loops: dict = None
+    empty_loops: dict = None
+    score: dict = None
