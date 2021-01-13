@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from api.models import GameRoom, UserGame
-from api.game.core import Core
+from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
 
@@ -76,6 +76,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
                 new_field["colors"] = colors
                 new_field["turn"] = await self.get_who_has_turn(room_id)
+                new_field["is_full"] = Field.is_full_field(new_field)
                 self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": new_field}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
