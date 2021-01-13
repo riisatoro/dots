@@ -1,5 +1,4 @@
 from django.contrib.auth import login, logout, authenticate
-from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 
 from rest_framework import status
@@ -11,15 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from . import models
-
-
-class Main(APIView):
-    """Main url just to check if server works"""
-    def get(self, request):
-        return HttpResponse('OK')
-
-    def post(self, request):
-        return HttpResponse('OK')
+from .game.core import Field
+from .game.serializers import GameFieldSerializer
 
 
 class Register(APIView):
@@ -100,27 +92,28 @@ class GameRoomView(APIView):
 
     def post(self, request):
         data = request.data
-
         size = data["size"]
         already_waiting = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
-        if not already_waiting:
-            room = models.GameRoom(field=[["E"]*size]*size, size=size)
-        else:
+        print(data, size, already_waiting)
+        if already_waiting:
             return Response(
                 {"error": True, "message": "Unexpected color or user already created a room."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        # ---
+        field = Field.add_player(Field.create_field(size, size), request.user.id)
+        room = models.GameRoom(field=GameFieldSerializer().to_database(field), size=size)
 
         try:
             room.full_clean()
-        except ValidationError:
+            room.save()
+        except ValidationError as v:
+            print(v)
             return Response(
                 {"error": True, "message": "Unexpected field size."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        room.save()
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
         user_game.save()
-        room.save()
 
         return Response({
             "error": False,
@@ -141,32 +134,40 @@ class GameRoomJoin(APIView):
     def post(self, request):
         already_joined = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
 
-        if not already_joined:
-            room_id = request.data["room_id"]
-            owner = models.UserGame.objects.filter(
-                game_room__id=room_id, game_room__is_started=False)\
-                .exclude(user=request.user)
+        if already_joined:
+            print("JOINED")
+            return Response(
+                {"error": True, "message": "User already playing or created a room."},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
-            room = models.GameRoom.objects.filter(id=room_id)
-            if room.exists() and owner.exists():
-                owner = owner.get()
-                room = room.get()
+        room_id = request.data["room_id"]
+        owner = models.UserGame.objects.filter(
+            game_room__id=room_id, game_room__is_started=False
+        ).exclude(user=request.user)
 
-                user_game = models.UserGame(user=request.user, game_room=room, color=request.data["color"])
-                user_game.save()
+        room = models.GameRoom.objects.filter(id=room_id)
+        if not room.exists() or not owner.exists():
+            print(f"ROOM {room.exists()} OWNER {owner.exists()}")
+            return Response(
+                {"error": True, "message": "Room does not exists."},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
-                room.is_started = True
-                owner.turn = True
-                room.save()
-                owner.save()
-                # field, field_size, room_id turn
-                return Response({"error": False, "field": room.field, "field_size": room.size, "room_id": room_id, "turn": False})
+        owner = owner.get()
+        room = room.get()
 
-            return Response({"error": True, "message": "Room does not exists."},
-                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        user_game = models.UserGame(user=request.user, game_room=room, color=request.data["color"])
+        user_game.save()
 
-        return Response({"error": True, "message": "User already playing or created a room."},
-                        status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        room.is_started = True
+        room.field = GameFieldSerializer().to_database(
+            Field.add_player(GameFieldSerializer().from_database(room.field, room.size, room.size), request.user.id)
+        )
+        owner.turn = True
+        room.save()
+        owner.save()
+        return Response({"error": False, "field": room.field, "field_size": room.size, "room_id": room_id, "turn": False})
 
 
 class GameRoomLeave(APIView):

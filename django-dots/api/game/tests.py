@@ -528,7 +528,23 @@ class GameFieldSerialize(TestCase):
     def setUp(self):
         self.field = Field.create_field(5, 5)
 
-    def test_normal(self):
+    def test_to_dict(self):
         field_dict = asdict(self.field)
         field_dict.pop("empty_loops")
         self.assertEqual(["field", "players", "loops", "score"], list(field_dict.keys()))
+
+    def test_from_json(self):
+        field_dict = asdict(self.field)
+        field = field_dict["field"]
+
+        new_field = Field.create_field(len(field), len(field[0]))
+        for row_index, row in enumerate(field):
+            for col_index, point in enumerate(row):
+                new_field.field[row_index][col_index] = GamePoint(
+                    owner=point.get("owner"), captured=point.get("captured"), border=point.get("border")
+                )
+
+        new_field.players = field.get("players")
+        new_field.loops = field.get("loops")
+        new_field.empty_loops = field.get("empty_loops")
+        new_field.score = field.get("score")

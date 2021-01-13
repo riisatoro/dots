@@ -1,17 +1,20 @@
 import json
 from . import types
+from django.contrib.auth.models import AnonymousUser
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+
 from api.models import GameRoom, UserGame
-from api.game.main import process
-from api.game.calc_square import process as find_points
-from django.contrib.auth.models import AnonymousUser
+from api.game.core import Core
+from api.game.serializers import GameFieldSerializer
+from api.game.structure import Point
 
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
+        print(self.scope["user"])
         if self.scope["user"].is_authenticated:
             await self.channel_layer.group_add(
                 self.room_group_name,
@@ -53,18 +56,27 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         if data["TYPE"] == types.PLAYER_SET_DOT:
             if await self.is_allowed_to_set_point(user_id, room_id):
-                field = await self.get_game_field(room_id, user_id)
-                if field:
-                    user_color = await self.get_this_user_color(user_id, room_id)
-                    colors = await self.get_user_colors(room_id)
-                    game_data = process(field, data["fieldPoint"], user_color, colors)
-                    await self.update_field(game_data["field"], room_id)
-                    if game_data["changed"]:
-                        turn = await self.change_player_turn(room_id)
-                        captured = await self.get_captured_points(game_data["field"], room_id)
-                        game_data["turn"] = turn
-                        game_data["captured"] = captured
-                    self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": game_data}
+                colors = await self.get_user_colors(room_id)
+                size = await self.get_field_size(room_id)
+                field = GameFieldSerializer().from_database(
+                    await self.get_game_field(room_id, user_id), size, size
+                )
+                point = Point(data["fieldPoint"][0], data["fieldPoint"][1])
+
+                new_field = field
+                try:
+                    new_field = Core.player_set_point(field, point, user_id)
+                    self.update_field(
+                        GameFieldSerializer().to_database(new_field),
+                    )
+                    await self.change_player_turn(room_id)
+                    new_field = GameFieldSerializer().to_client(new_field, pop_values=["empty_loops"])
+                except Exception as e:
+                    print("EXCEPTIOIN", e)
+
+                new_field["colors"] = colors
+                new_field["turn"] = await self.get_who_has_turn(room_id)
+                self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": new_field}
 
         elif data["TYPE"] == types.PLAYER_GIVE_UP:
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
@@ -87,6 +99,10 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         ))
 
     @database_sync_to_async
+    def get_field_size(self, room_id):
+        return GameRoom.objects.get(id=room_id).size
+
+    @database_sync_to_async
     def user_is_auth(self, user):
         if user == AnonymousUser:
             return False
@@ -99,14 +115,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return game.get().game_room.field
 
     @database_sync_to_async
-    def get_this_user_color(self, user_id, room_id):
-        color = UserGame.objects.filter(user=user_id, game_room=room_id).get().color
-        return color
-
-    @database_sync_to_async
     def get_user_colors(self, room_id):
-        colors = UserGame.objects.filter(game_room__id=room_id).values_list('color').all()
-        colors = [colors[0][0], colors[1][0]]
+        data = UserGame.objects.filter(game_room__id=room_id).all()
+        colors = {}
+        for color in data:
+            colors[color.user.id] = color.color
         return colors
 
     @database_sync_to_async
@@ -147,21 +160,5 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return GameRoom.objects.filter(id=room_id, is_started=False).exists()
 
     @database_sync_to_async
-    def get_captured_points(self, field, room_id):
-        players = UserGame.objects.filter(game_room=room_id).all()
-        user1, user2 = players[0].user.username, players[1].user.username
-        color1, color2 = players[0].color, players[1].color
-        captured1, captured2 = find_points(field, color2), find_points(field, color1)
-        data = {
-            user1: captured1,
-            user2: captured2
-        }
-
-        player1 = UserGame.objects.filter(game_room=room_id, user__username=user1).get()
-        player1.score = captured2
-        player1.save()
-        player2 = UserGame.objects.filter(game_room=room_id, user__username=user2).get()
-        player2.score = captured1
-        player2.save()
-
-        return data
+    def get_who_has_turn(self, room_id):
+        return UserGame.objects.get(game_room_id=room_id, turn=True).user.id

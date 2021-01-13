@@ -3,6 +3,7 @@ from dataclasses import asdict
 from .structure import GamePoint
 from .core import Field
 
+
 class GameFieldSerializer:
     def to_database(self, data):
         return asdict(data)
@@ -14,7 +15,7 @@ class GameFieldSerializer:
             for col_index, point in enumerate(row):
                 new_field.field[row_index][col_index] = GamePoint(
                     owner=point.get("owner"), captured=point.get("captured"), border=point.get("border")
-                    )
+                )
 
         new_field.players = data.get("players")
         new_field.loops = data.get("loops")
