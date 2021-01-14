@@ -176,20 +176,17 @@ class Core:
             else:
                 field.loops = Field.add_loop(field.loops, loop)
                 field = Core.set_captured_points(field, captured, owner)
-                field = Core.calc_score(field, loop, owner)
+                field = Core.calc_score(field)
         return field
 
     @staticmethod
     def find_all_captured_points(field: GameField, loop: [Point], owner: int):
-        owner_index = field.players.index(owner)
-        enemies = field.players[:owner_index] + field.players[owner_index+1:]
-
         polygon = shapePolygon(loop)
         captured = []
 
         for x in range(1, len(field.field)-1):
             for y in range(1, len(field.field[0])-1):
-                if field.field[x][y].owner in enemies or field.field[x][y].owner != owner:
+                if field.field[x][y].owner != owner or field.field[x][y].owner == owner and field.field[x][y].captured is not None:
                     if polygon.contains(shapePoint(x, y)):
                         captured.append(Point(x, y))
         return captured
@@ -213,20 +210,23 @@ class Core:
         return loop_id
 
     @staticmethod
-    def calc_score(field: GameField, captured: [Point], owner: int):
-        for x, y in captured:
-            if field.field[x][y].owner is not None and field.field[x][y].owner != owner:
-                captured_by = field.field[x][y].captured
-                field.score[owner] += 1
+    def calc_score(field: GameField):
+        score = {}
+        for player in field.players:
+            score[player] = 0
 
-                if captured_by:
-                    field.score[captured_by[-1]] -= 1
+        for row in field.field:
+            for point in row:
+                if point.captured and point.owner != point.captured[-1] and point.owner is not None:
+                    score[point.captured[-1]] += 1
+
+        field.score = score
         return field
 
     @staticmethod
     def set_captured_points(field: GameField, points: [Point], owner: int):
         for x, y in points:
-            if field.field[x][y].captured:
+            if field.field[x][y].captured is not None:
                 field.field[x][y].captured.append(owner)
             else:
                 field.field[x][y].captured = [owner]

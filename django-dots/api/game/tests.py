@@ -269,11 +269,10 @@ class ApiCoreCalcScore(TestCase):
         for x, y in self.captured_1:
             self.field.field[x][y].owner = self.owner_3
 
-        self.field = Core.calc_score(self.field, self.captured_1, self.owner_1)
+        self.field = Core.calc_score(self.field)
 
         score = self.field.score
         self.assertEqual(score[self.owner_1], 4)
-        self.assertEqual(score[self.owner_3], 0)
 
     def test_descrease_score(self):
         for x, y in self.captured_1:
@@ -281,15 +280,14 @@ class ApiCoreCalcScore(TestCase):
         for x, y in self.captured_2:
             self.field.field[x][y].owner = self.owner_3
 
-        self.field = Core.calc_score(self.field, self.captured_1, self.owner_1)
+        self.field = Core.calc_score(self.field)
         for x, y in self.captured_1:
             self.field.field[x][y].captured = [self.owner_1]
-        self.field = Core.calc_score(self.field, self.captured_2, self.owner_2)
+        self.field = Core.calc_score(self.field)
 
         score = self.field.score
         self.assertEqual(score[self.owner_1], 1)
         self.assertEqual(score[self.owner_2], 4)
-        self.assertEqual(score[self.owner_3], 0)
 
 
 class ApiCoreIsNeighbours(TestCase):

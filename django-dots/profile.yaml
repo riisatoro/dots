@@ -5,9 +5,12 @@ inherits:
   - full_pep8
 
 ignore-paths:
-  - dots
+  - builds
+  - cache
+  - .idea
   - django-dots/manage.py
   - draw.py
+  - routing.py
 
 uses:
   - django

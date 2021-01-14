@@ -29,8 +29,11 @@ class GameFieldSerializer:
                 owner = point.get("owner")
                 if owner is not None:
                     owner = int(owner)
+                captured = point.get("captured")
+                if captured is not None:
+                    captured = list(map(int, captured))
                 new_field.field[row_index][col_index] = GamePoint(
-                    owner=owner, captured=point.get("captured"), border=point.get("border")
+                    owner=owner, captured=captured, border=point.get("border")
                 )
 
         new_field.players = list(map(int, data.get("players")))
