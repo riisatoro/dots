@@ -69,7 +69,7 @@ class Field:
     def is_full_field(field: GameField):
         for row in field.field:
             for point in row:
-                if point.owner is None:
+                if point.owner is None and point.captured is None and not point.border:
                     return False
         return True
 
