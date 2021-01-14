@@ -33,7 +33,7 @@ class Register(APIView):
 
         user = User.objects.create_user(username, email, password)
         token = Token.objects.get_or_create(user=user)[0]
-        return Response({"error": False, "username": username, "token": str(token)})
+        return Response({"error": False, "username": username, "token": str(token), "id": user.id})
 
 
 class Logout(APIView):
@@ -58,7 +58,7 @@ class Login(APIView):
         if user:
             login(request, user)
             token = Token.objects.get_or_create(user=user)[0]
-            return Response({"error": False, "username": body["username"], "token": str(token)})
+            return Response({"error": False, "username": body["username"], "token": str(token), "id": token.user.id})
         return Response({"error": True, "message": "Invalid username or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -111,7 +111,6 @@ class GameRoomView(APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
-        turn = models.UserGame.objects.get(game_room_id=room.id, turn=True).user.id
         user_game.save()
 
         return Response({
@@ -120,7 +119,7 @@ class GameRoomView(APIView):
             "room_id": room.id,
             "field": room.field,
             "field_size": room.size,
-            "turn": turn,
+            "turn": request.user.id,
         })
 
 

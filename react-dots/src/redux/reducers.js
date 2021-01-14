@@ -13,10 +13,13 @@ export default function updateState(state = initialState, action) {
         if (data.error) {
           return { ...state, reply: { error: data.error, message: data.message } };
         }
+        console.log(data);
         return {
           ...state,
           reply: { error: false, message: '' },
-          user: { auth: true, username: data.username, token: data.token },
+          user: {
+            auth: true, username: data.username, token: data.token, userID: data.id,
+          },
           components: { },
         };
       }
@@ -76,7 +79,7 @@ export default function updateState(state = initialState, action) {
           ...state,
           socket: socketData,
           components: { gameField: true },
-          field: reply.field,
+          field: reply.field.field,
           turn: state.user.username,
           gameStarted: true,
           loops: [],
@@ -104,8 +107,8 @@ export default function updateState(state = initialState, action) {
           ...state,
           socket: socketData,
           components: { gameField: true },
-          field: reply.field,
-          turn: 'NaN',
+          field: reply.field.field,
+          turn: reply.turn,
           gameStarted: true,
           loops: [],
         };
@@ -124,6 +127,7 @@ export default function updateState(state = initialState, action) {
           gameEnd: data.is_full,
           loops: data.loops,
           playerColors: data.colors,
+          score: data.score,
 
           components: { gameField: false },
           gameStarted: false,
@@ -138,6 +142,7 @@ export default function updateState(state = initialState, action) {
         gameEnd: data.is_full,
         loops: data.loops,
         playerColors: data.colors,
+        score: data.score,
       };
     }
 

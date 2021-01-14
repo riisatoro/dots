@@ -7,7 +7,9 @@ import { Stage, Layer } from 'react-konva';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
-import { getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle } from '../actions/gameFieldDrawable';
+import {
+  getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle,
+} from '../actions/gameFieldDrawable';
 import '../../public/css/game_field.css';
 
 class GameField extends Component {
@@ -50,6 +52,8 @@ class GameField extends Component {
       loops,
       cellSize,
       playerColors,
+      userID,
+      score,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
@@ -57,9 +61,31 @@ class GameField extends Component {
     const emptyCircle = createEmptyCircle(field, cellSize);
     const loop = createLoopFigure(field, loops, cellSize, playerColors);
 
+    const humanTextColor = {
+      R: 'Red',
+      O: 'Orange',
+      G: 'Green',
+      B: 'Blue',
+      Y: 'Yellow',
+    };
+    const colorKey = playerColors[turn];
+    const userColorKey = playerColors[userID];
+
+    const userColor = `Your points are ${humanTextColor[userColorKey]}`;
+    const textTurn = `Now is ${humanTextColor[colorKey]} turn`;
+
+    let textScore = '';
+    Object.keys(score).forEach((key) => {
+      textScore += `${humanTextColor[playerColors[key]]} captured ${score[key]} points `;
+    });
+
     return (
       <section className="field">
         { gameResults && <Redirect to="/game_result" /> }
+        <div className="game-info align-center">
+          <p>{userColor}</p>
+          <p>{textTurn}</p>
+        </div>
         <hr />
         <div className="gameCanvas">
           <Stage
@@ -76,6 +102,10 @@ class GameField extends Component {
           </Stage>
         </div>
 
+        <div className="align-center game-score">
+          <p>{textScore}</p>
+        </div>
+
         <div className="align-center">
           <a href="/game_result">
             <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
@@ -86,27 +116,28 @@ class GameField extends Component {
   }
 }
 
-/*
 GameField.propTypes = {
+  userID: PropTypes.number.isRequired,
   roomID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.number,
-  loops: PropTypes.array,
-  colors: PropTypes.array.isRequired,
+  loops: PropTypes.object,
   gameResults: PropTypes.bool.isRequired,
   cellSize: PropTypes.number.isRequired,
-
+  playerColors: PropTypes.object.isRequired,
   receiveReply: PropTypes.func.isRequired,
+  score: PropTypes.object.isRequired,
 };
-*/
+
 GameField.defaultProps = {
   turn: '',
-  loops: [],
+  loops: {},
 };
 
 const mapStateToProps = (state) => {
   const data = {
+    userID: state.user.userID,
     roomID: state.socket.roomId,
     field: state.field,
     fieldSize: state.socket.fieldSize,
@@ -119,6 +150,7 @@ const mapStateToProps = (state) => {
     loops: state.loops,
     cellSize: state.cellSize,
     playerColors: state.playerColors,
+    score: state.score,
   };
   return data;
 };
@@ -138,14 +170,3 @@ export default connect(
   }
   ),
 )(GameField);
-
-
-/*
-<Layer x={cellSize} y={cellSize}>
-              {loop1.map((l1) => l1)}
-              {loop2.map((l2) => l2)}
-              
-              
-              
-            </Layer>
-*/

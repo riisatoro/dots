@@ -3,7 +3,9 @@ import TYPES from './types';
 const setInitial = () => (
   {
     reply: { error: false, message: '' },
-    user: { auth: false, userName: '', token: '' },
+    user: {
+      auth: false, userName: '', token: '', userID: null,
+    },
     socket: {
       connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
     },
