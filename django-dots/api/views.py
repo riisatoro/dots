@@ -111,6 +111,7 @@ class GameRoomView(APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
+        turn = models.UserGame.objects.get(game_room_id=room.id, turn=True).user.id
         user_game.save()
 
         return Response({
@@ -119,6 +120,7 @@ class GameRoomView(APIView):
             "room_id": room.id,
             "field": room.field,
             "field_size": room.size,
+            "turn": turn,
         })
 
 
@@ -178,15 +180,4 @@ class GameRoomLeave(APIView):
             .get().game_room
         room.is_ended = True
         room.save()
-        return Response()
-
-
-class GameRoomFinish(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        return Response()
-
-    def post(self, request):
-
         return Response()
