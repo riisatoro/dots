@@ -1,3 +1,4 @@
+import json
 from dataclasses import asdict
 
 from .structure import GamePoint, Point
@@ -18,9 +19,12 @@ class GameFieldSerializer:
                 tmp[int(key)] = [Point(x, y) for x, y in item]
             else:
                 tmp[int(key)] = int(item)
+        print(tmp)
         return tmp
 
     def from_database(self, data, height, width):
+        print(data["loops"])
+
         field = data["field"]
         new_field = Field.create_field(height, width)
         for row_index, row in enumerate(field):
@@ -36,6 +40,7 @@ class GameFieldSerializer:
         new_field.loops = self.set_int_dict_keys(data.get("loops"))
         new_field.empty_loops = self.set_int_dict_keys(data.get("empty_loops"))
         new_field.score = self.set_int_dict_keys(data.get("score"))
+        print(new_field.loops)
         return new_field
 
     def to_client(self, data, pop_values: list = None):

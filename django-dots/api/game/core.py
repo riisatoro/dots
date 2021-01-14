@@ -78,6 +78,13 @@ class Field:
         if not field_loops:
             return {1: loop}
 
+        for key, item in field_loops.items():
+            if set(item).issubset(set(loop)):
+                return field_loops
+            if set(loop).issubset(set(item)):
+                field_loops[key] = loop
+                return field_loops
+
         field_loops[max(field_loops.keys())+1] = loop
         return field_loops
 
@@ -132,7 +139,7 @@ class Core:
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 new_point = Point(i, j)
-                if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path:
+                if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
                     path.append(new_point)
                     if Core.find_loop_in_path(path):
                         loops = Core.append_new_loop(path, loops)
@@ -155,12 +162,14 @@ class Core:
         for x, y in points:
             point = field.field[x][y]
             if not point.border and point.owner is not None and point.owner != owner:
-                return True
+                if point.captured is None or point.captured[-1] != owner:
+                    return True
         return False
 
     @staticmethod
     def add_loops_and_capture_points(field, loops, owner):
         for loop in loops:
+            
             captured = Core.find_all_captured_points(field, loop, owner)
 
             if not Core.find_enemy_captured(field, captured, owner):
