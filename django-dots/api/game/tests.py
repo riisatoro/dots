@@ -521,19 +521,3 @@ class ApiCoreSetPoint2(TestCase):
         self.assertEqual(len(self.field.loops), 2)
 
         self.assertEqual(self.field.empty_loops, {})
-
-
-class ApiCoreSetPointsDraw(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(6, 6)
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 2)
-
-        self.points = [
-            Point(4, 2), Point(6, 2), Point(5, 1), Point(5, 3), Point(6, 1), Point(4, 3)
-        ]
-
-    def test_normal(self):
-        for point in self.points:
-            self.field = Core.player_set_point(self.field, point, 1)
-            print(self.field.empty_loops)
