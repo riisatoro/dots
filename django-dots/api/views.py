@@ -94,7 +94,6 @@ class GameRoomView(APIView):
         data = request.data
         size = data["size"]
         already_waiting = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
-        print(data, size, already_waiting)
         if already_waiting:
             return Response(
                 {"error": True, "message": "Unexpected color or user already created a room."},
@@ -107,7 +106,6 @@ class GameRoomView(APIView):
             room.full_clean()
             room.save()
         except ValidationError as v:
-            print(v)
             return Response(
                 {"error": True, "message": "Unexpected field size."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)
@@ -135,7 +133,6 @@ class GameRoomJoin(APIView):
         already_joined = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
 
         if already_joined:
-            print("JOINED")
             return Response(
                 {"error": True, "message": "User already playing or created a room."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -148,7 +145,6 @@ class GameRoomJoin(APIView):
 
         room = models.GameRoom.objects.filter(id=room_id)
         if not room.exists() or not owner.exists():
-            print(f"ROOM {room.exists()} OWNER {owner.exists()}")
             return Response(
                 {"error": True, "message": "Room does not exists."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY

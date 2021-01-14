@@ -19,7 +19,6 @@ class GameFieldSerializer:
                 tmp[int(key)] = [Point(x, y) for x, y in item]
             else:
                 tmp[int(key)] = int(item)
-        print(tmp)
         return tmp
 
     def from_database(self, data, height, width):

@@ -14,7 +14,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = "game_room_" + self.room_id
-        print(self.scope["user"])
         if self.scope["user"].is_authenticated:
             await self.channel_layer.group_add(
                 self.room_group_name,
@@ -71,7 +70,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     )
                     await self.change_player_turn(room_id)
                 except Exception as e:
-                    print("EXCEPTIOIN", e)
+                    pass
 
                 is_full = Field.is_full_field(new_field)
                 new_field = GameFieldSerializer().to_client(new_field, pop_values=["empty_loops"])
