@@ -13,7 +13,6 @@ export default function updateState(state = initialState, action) {
         if (data.error) {
           return { ...state, reply: { error: data.error, message: data.message } };
         }
-        console.log(data);
         return {
           ...state,
           reply: { error: false, message: '' },

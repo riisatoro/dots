@@ -61,7 +61,6 @@ function createLoopFigure(field, loops, cellSize, playerColors) {
     const loop = loops[key];
     const { owner } = field[loop[0][0]][loop[0][1]];
     const color = colorTable[playerColors[owner]];
-    console.log('Color', color);
     const chainPoints = [];
     loop.forEach((point) => {
       chainPoints.push((point[1] - 1) * cellSize);
