@@ -167,16 +167,34 @@ class Core:
         return False
 
     @staticmethod
+    def only_empty_captured(field, loop):
+        for x, y in loop:
+            if field[x][y].owner is not None:
+                return False
+        return True
+
+    @staticmethod
+    def is_empty_loop(field, captured):
+        for x, y in captured:
+            if field[x][y].owner is not None:
+                return False
+        return True
+
+    @staticmethod
     def add_loops_and_capture_points(field, loops, owner):
         for loop in loops:
             captured = Core.find_all_captured_points(field, loop, owner)
+            if not captured:
+                continue
 
-            if not Core.find_enemy_captured(field, captured, owner):
-                field.empty_loops = Field.add_loop(field.empty_loops, loop)
-            else:
+            if Core.find_enemy_captured(field, captured, owner):
                 field.loops = Field.add_loop(field.loops, loop)
                 field = Core.set_captured_points(field, captured, owner)
                 field = Core.calc_score(field)
+            else:
+                if Core.is_empty_loop(field.field, captured):
+                    field.empty_loops = Field.add_loop(field.empty_loops, loop)
+
         return field
 
     @staticmethod
@@ -186,7 +204,7 @@ class Core:
 
         for x in range(1, len(field.field)-1):
             for y in range(1, len(field.field[0])-1):
-                if field.field[x][y].owner != owner or field.field[x][y].owner == owner and field.field[x][y].captured is not None:
+                if field.field[x][y].owner != owner or (field.field[x][y].owner == owner and field.field[x][y].captured is not None):
                     if polygon.contains(shapePoint(x, y)):
                         captured.append(Point(x, y))
         return captured
