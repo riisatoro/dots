@@ -1,4 +1,4 @@
-import json
+
 from dataclasses import asdict
 
 from .structure import GamePoint, Point
@@ -15,7 +15,7 @@ class GameFieldSerializer:
         tmp = {}
         for key, item in data.items():
             tmp[int(key)] = item
-            if type(item) == list:
+            if isinstance(item, list):
                 tmp[int(key)] = [Point(x, y) for x, y in item]
             else:
                 tmp[int(key)] = int(item)

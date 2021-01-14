@@ -69,7 +69,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                         room_id
                     )
                     await self.change_player_turn(room_id)
-                except Exception as e:
+                except Exception:
                     pass
 
                 is_full = Field.is_full_field(new_field)

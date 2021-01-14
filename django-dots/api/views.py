@@ -105,7 +105,7 @@ class GameRoomView(APIView):
         try:
             room.full_clean()
             room.save()
-        except ValidationError as v:
+        except ValidationError:
             return Response(
                 {"error": True, "message": "Unexpected field size."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY)

@@ -169,7 +169,6 @@ class Core:
     @staticmethod
     def add_loops_and_capture_points(field, loops, owner):
         for loop in loops:
-            
             captured = Core.find_all_captured_points(field, loop, owner)
 
             if not Core.find_enemy_captured(field, captured, owner):
