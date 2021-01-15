@@ -1,3 +1,4 @@
+
 from django.test import TestCase
 
 from random import randint, shuffle
@@ -519,3 +520,43 @@ class ApiCoreSetPoint2(TestCase):
         self.assertEqual(len(self.field.loops), 2)
 
         self.assertEqual(self.field.empty_loops, {})
+
+import time
+from .draw import draw_field
+
+class ApiCoreTestSpeedCalculation(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(11, 11)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        self.enemy = [
+            Point(4, 5),Point(4, 9),Point(5, 3),Point(6, 6),
+            Point(8, 4),Point(8, 10),Point(10, 5),Point(10, 8), Point(6, 8)
+        ]
+
+        self.points = [
+            Point(1, 2), Point(2, 1), Point(2, 3), Point(3, 2),
+            Point(4, 2),
+            Point(4, 3), Point(5, 2), Point(6, 2), Point(7, 3), Point(6, 4), Point(5, 4),
+            Point(6, 5), Point(5, 6), Point(4, 7), Point(3, 8), Point(2, 7), Point(2, 6), Point(2, 5), Point(3, 4),
+            Point(2, 9), Point(3, 10), Point(4, 10), Point(5, 9), Point(5, 8),
+            Point(6, 7), Point(7, 6),
+            Point(8, 3), Point(9, 4), Point(9, 5), Point(9, 6), Point(8, 7),
+            Point(8, 8), Point(7, 9), Point(6, 9),
+            Point(7, 10), Point(8, 11), Point(9, 10), Point(9, 9),
+            Point(10, 7), Point(10, 9), Point(11, 8),
+            Point(10, 3), Point(11, 4), Point(11, 5), Point(11, 6),
+        ]
+
+    def test_normal(self):
+        for point in self.enemy:
+            self.field = Core.player_set_point(self.field, point, 2)
+
+        for point in self.points:
+            self.field = Core.player_set_point(self.field, point, 1)
+            draw_field(self.field)
+            print("")
+
+        self.field = Core.player_set_point(self.field, Point(10, 10), 1)
+        draw_field(self.field)

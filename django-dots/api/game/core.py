@@ -88,21 +88,34 @@ class Field:
         field_loops[max(field_loops.keys())+1] = loop
         return field_loops
 
-
+import time
 class Core:
     @staticmethod
     def player_set_point(field: GameField, point: Point, owner: int):
+        start_time = time.time()
         field = Field.change_owner(field, point, owner)
+        print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
+
+        start_time = time.time()
         loops = Core.find_all_new_loops(field, point, owner)
+        print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
+
+        start_time = time.time()
         field = Core.add_loops_and_capture_points(field, loops, owner)
+        print("--- %s seconds on add_loops_and_capture_points() ---" % (time.time() - start_time))
+        
+        start_time = time.time()
         empty_loop_id = Core.is_point_in_empty_loop(field, point)
+        print("--- %s seconds on is_point_in_empty_loop() ---" % (time.time() - start_time))
 
         if not loops and empty_loop_id:
+            start_time = time.time()
             loop = field.empty_loops.pop(empty_loop_id)
             x, y = loop[0]
             owner = field.field[x][y].owner
 
             field = Core.add_loops_and_capture_points(field, [loop], owner)
+            print("--- %s seconds when point is empty loop ---" % (time.time() - start_time))
 
         return field
 
@@ -125,26 +138,38 @@ class Core:
             set_of_item = set(item)
             if set_of_path.issubset(set_of_item):
                 loops[index] = pathes.copy()
-                return loops
+                return False
             if set_of_item.issubset(set_of_path):
-                return loops
+                return False
 
         loops.append(pathes.copy())
-        return loops
+        return True
 
     @staticmethod
     def dfs(field, point, path, loops, owner):
         x, y = point
 
-        for i in range(x-1, x+2):
-            for j in range(y-1, y+2):
-                new_point = Point(i, j)
-                if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
-                    path.append(new_point)
-                    if Core.find_loop_in_path(path):
-                        loops = Core.append_new_loop(path, loops)
-                    Core.dfs(field, new_point, path, loops, owner)
-                    path.pop()
+        surrounded_points = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2) if (x, y) != (i, j) and not field[i][j].border]
+        owner_amount = 0
+        for x, y in surrounded_points:
+            if field[x][y].owner == owner and field[x][y].captured is None:
+                owner_amount += 1
+            if owner_amount > 1:
+                break
+        else:
+            return
+
+        for i, j in surrounded_points:
+            new_point = Point(i, j)
+            if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
+                path.append(new_point)
+                if Core.find_loop_in_path(path):
+                    # ---
+                    Core.append_new_loop(path, loops)
+                    
+                    # ---
+                Core.dfs(field, new_point, path, loops, owner)
+                path.pop()
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
