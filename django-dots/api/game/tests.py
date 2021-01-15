@@ -562,7 +562,7 @@ class ApiCoreTestSpeedCalculation(TestCase):
             Point(8, 8), Point(7, 9), Point(6, 9),
             Point(7, 10), Point(8, 11), Point(9, 10), Point(9, 9),
             Point(10, 7), Point(10, 9), Point(11, 8),
-            Point(10, 3), Point(11, 4), Point(11, 5), Point(11, 6),
+            Point(10, 3), Point(11, 4), Point(11, 6), Point(11, 5), 
         ]
 
     def test_normal(self):
@@ -573,5 +573,5 @@ class ApiCoreTestSpeedCalculation(TestCase):
         for point in self.points:
             self.field = Core.player_set_point(self.field, point, 1)
             draw_field(self.field)
-            # print("loops", self.field.loops)
-            # print("empty", self.field.empty_loops)
+            print("loops", self.field.loops)
+            print("empty", self.field.empty_loops)

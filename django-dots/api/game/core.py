@@ -129,7 +129,12 @@ class Core:
 
     @staticmethod
     def find_loop_in_path(path):
-        return len(path) > 3 and Core.is_neighbour(path[0], path[-1])
+        indexes = []
+        if len(path) > 3:
+            for i in range(0, len(path)-3):
+                if Core.is_neighbour(path[i], path[-1]):
+                    indexes.append(i)
+        return indexes
 
     @staticmethod
     def append_new_loop(pathes, loops):
@@ -138,15 +143,12 @@ class Core:
             set_of_item = set(item)
             if set_of_path.issubset(set_of_item):
                 loops[index] = pathes.copy()
-                return False
-            if set_of_item.issubset(set_of_path):
-                return False
 
         loops.append(pathes.copy())
         return True
 
     @staticmethod
-    def dfs(field, point, path, loops, owner):
+    def dfs(field, captured_loops, empty_loops, point, path, loops, owner):
         x, y = point
 
         surrounded_points = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2) if (x, y) != (i, j) and not field[i][j].border]
@@ -163,17 +165,26 @@ class Core:
             new_point = Point(i, j)
             if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
                 path.append(new_point)
-                if Core.find_loop_in_path(path):
-                    Core.append_new_loop(path, loops)
-                Core.dfs(field, new_point, path, loops, owner)
+                loop_indexes = Core.find_loop_in_path(path)
+                for index in loop_indexes:
+                    if index != 0 and captured_loops is not None:
+                        if set(path[index:]) in list(map(set, captured_loops.values())) or set(path[index:]) in list(map(set, empty_loops.values())):
+                            return path[index]
+                    elif index == 0:
+                        loops.append(path.copy())
+
+                return_to = Core.dfs(field, captured_loops, empty_loops, new_point, path, loops, owner)
                 path.pop()
+
+                if return_to is not None and return_to != path[-1]:
+                    return return_to
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
         path, loops, visited = [], [], {}
         path.append(point)
         visited[point] = DFS_GRAY
-        Core.dfs(field.field, point, path, loops, owner)
+        Core.dfs(field.field, field.loops, field.empty_loops, point, path, loops, owner)
         path.pop()
         return loops
 
