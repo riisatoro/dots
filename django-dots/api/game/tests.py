@@ -521,8 +521,24 @@ class ApiCoreSetPoint2(TestCase):
 
         self.assertEqual(self.field.empty_loops, {})
 
+
+class ApiCoreFindLoopPath(TestCase):
+    def setUp(self):
+        self.p1 = [
+            Point(1, 2), Point(2, 1), Point(2, 3), Point(3, 2), Point(2, 2)
+        ]
+        self.p2 = [
+            Point(4, 3), Point(5, 2), Point(6, 2), Point(7, 3), Point(6, 4), Point(5, 4), Point(6, 4), Point(7, 4)
+        ]
+
+    def test_normal(self):
+        print(Core.find_loop_in_path(self.p1))
+        print(Core.find_loop_in_path(self.p2))
+
+
 import time
 from .draw import draw_field
+
 
 class ApiCoreTestSpeedCalculation(TestCase):
     def setUp(self):
@@ -557,6 +573,3 @@ class ApiCoreTestSpeedCalculation(TestCase):
             self.field = Core.player_set_point(self.field, point, 1)
             draw_field(self.field)
             print("")
-
-        self.field = Core.player_set_point(self.field, Point(10, 10), 1)
-        draw_field(self.field)
