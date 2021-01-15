@@ -148,19 +148,70 @@ class Core:
         return True
 
     @staticmethod
+    def get_loops_from_path(path, loops):
+        set_of_loops = list(map(set, loops))
+        for i in range(0, len(path)-3):
+            if Core.is_neighbour(path[i], path[-1]):
+                for points_set in set_of_loops:
+                    if points_set.issubset(set(path[i:])):
+                        return
+                else:
+                    loops.append(path[i:].copy())
+
+    @staticmethod
+    def filter_only_new_loops(loops, captured_loops, empty_loops):
+        for index, loop in enumerate(loops):
+            if not loops:
+                return
+            loop_set = set(loop)
+            for captured in captured_loops:
+                if captured.issubser(loop_set):
+                    loops.pop(index)
+                    break
+        
+            for empty in empty_loops:
+                if empty.issubset(loop_set):
+                    loops.pop(index)
+                    break
+
+    @staticmethod
+    def filter_has_points_to_capture(field, loops, owner):
+        for index, loop in enumerate(loops):
+            point = loop[0]
+            for loop_point in loop:
+                if not Core.is_neighbour(point, loop_point):
+                    break
+            else:
+                loops.pop(index)
+                
+
+    @staticmethod
     def dfs(field, captured_loops, empty_loops, point, path, loops, owner):
         x, y = point
+        surrounded_points = [
+            Point(i, j) 
+            for i in range(x-1, x+2) 
+            for j in range(y-1, y+2) 
+            if Point(i, j) != point
+                and Point(i, j) not in path
+                and not field[i][j].border
+                and field[i][j].owner == owner
+                and field[i][j].captured == None
+        ]
 
-        surrounded_points = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2) if (x, y) != (i, j) and not field[i][j].border]
-        owner_amount = 0
-        for x, y in surrounded_points:
-            if field[x][y].owner == owner and field[x][y].captured is None:
-                owner_amount += 1
-            if owner_amount > 1:
-                break
-        else:
-            return
+        path.append(point)
+        if len(path) > 3:
+            Core.get_loops_from_path(path, loops)
+            Core.filter_only_new_loops(loops, captured_loops, empty_loops)
 
+
+        # loops.append(path.copy())
+        
+        for next_point in surrounded_points:
+            Core.dfs(field, captured_loops, empty_loops, next_point, path, loops, owner)
+            path.pop()
+
+        """
         for i, j in surrounded_points:
             new_point = Point(i, j)
             if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
@@ -169,8 +220,9 @@ class Core:
                 for index in loop_indexes:
                     if index != 0 and captured_loops is not None:
                         if set(path[index:]) in list(map(set, captured_loops.values())) or set(path[index:]) in list(map(set, empty_loops.values())):
-                            return path[index]
-                    elif index == 0:
+                            return path[index+1]
+                    
+                    if len(path) > 3 and Core.is_neighbour(path[0], path[-1]):
                         loops.append(path.copy())
 
                 return_to = Core.dfs(field, captured_loops, empty_loops, new_point, path, loops, owner)
@@ -178,14 +230,34 @@ class Core:
 
                 if return_to is not None and return_to != path[-1]:
                     return return_to
+        """
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
-        path, loops, visited = [], [], {}
-        path.append(point)
-        visited[point] = DFS_GRAY
-        Core.dfs(field.field, field.loops, field.empty_loops, point, path, loops, owner)
-        path.pop()
+        x, y = point
+        surrounded_points = [
+            Point(i, j) 
+            for i in range(x-1, x+2) 
+            for j in range(y-1, y+2) 
+            if Point(i, j) != point
+                and not field.field[i][j].border
+                and field.field[i][j].owner == owner
+                and field.field[i][j].captured == None
+        ]
+        if len(surrounded_points) < 2:
+            return []
+
+        path, loops = [], []
+        
+        captured_loops = []
+        empty_loops = []
+        if field.loops:
+            captured_loops = list(map(set, field.loops.values()))
+        if field.empty_loops:
+            empty_loops = list(map(set, field.empty_loops.values()))
+        print(captured_loops, empty_loops)
+        
+        Core.dfs(field.field, captured_loops, empty_loops, point, path, loops, owner)
         return loops
 
     @staticmethod

@@ -575,3 +575,39 @@ class ApiCoreTestSpeedCalculation(TestCase):
             draw_field(self.field)
             print("loops", self.field.loops)
             print("empty", self.field.empty_loops)
+
+class ApiCoreDFS(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.player = Field.add_player(self.field, 5)
+        self.points_1 = [
+            Point(2, 3), Point(3, 2), Point(3 ,4), Point(4, 3)
+        ]
+        self.points_2 = [
+            Point(5, 3), Point(6, 4), Point(5, 5), Point(4, 5)
+        ]
+
+        self.points_3 = [
+            Point(6, 6), Point(6, 7), Point(5, 6), Point(5, 7),
+            Point(4, 6), Point(4, 7), Point(3, 6), Point(3, 8),
+            Point(2, 6), Point(2, 7), Point(2, 8),
+        ]
+
+    def test_normal(self):
+        for x, y in self.points_1:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(4, 3), 5)
+        self.field.empty_loops = {1: loops[0]}
+
+        for x, y in self.points_2:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(4, 5), 5)
+        self.field.empty_loops[2] =  loops[0]
+
+        for x, y in self.points_3:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(2, 7), 5)
+        print(loops)
