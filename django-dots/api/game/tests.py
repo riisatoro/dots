@@ -525,7 +525,7 @@ class ApiCoreSetPoint2(TestCase):
 class ApiCoreFindLoopPath(TestCase):
     def setUp(self):
         self.p1 = [
-            Point(1, 2), Point(2, 1), Point(2, 3), Point(3, 2), Point(2, 2)
+            Point(1, 2), Point(2, 1), Point(3, 2), Point(2, 3)
         ]
         self.p2 = [
             Point(4, 3), Point(5, 2), Point(6, 2), Point(7, 3), Point(6, 4), Point(5, 4), Point(6, 4), Point(7, 4)
@@ -566,10 +566,12 @@ class ApiCoreTestSpeedCalculation(TestCase):
         ]
 
     def test_normal(self):
+
         for point in self.enemy:
             self.field = Core.player_set_point(self.field, point, 2)
 
         for point in self.points:
             self.field = Core.player_set_point(self.field, point, 1)
             draw_field(self.field)
-            print("")
+            # print("loops", self.field.loops)
+            # print("empty", self.field.empty_loops)

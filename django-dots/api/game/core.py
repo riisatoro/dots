@@ -128,7 +128,7 @@ class Core:
         return not equals and horisontal and vertical and diagonal
 
     @staticmethod
-    def find_loop_in_path(field, path):
+    def find_loop_in_path(path):
         return len(path) > 3 and Core.is_neighbour(path[0], path[-1])
 
     @staticmethod
@@ -136,11 +136,11 @@ class Core:
         set_of_path = set(pathes)
         for index, item in enumerate(loops):
             set_of_item = set(item)
-            if set_of_item.issubset(set_of_path):
-                return False
             if set_of_path.issubset(set_of_item):
                 loops[index] = pathes.copy()
-                return True
+                return False
+            if set_of_item.issubset(set_of_path):
+                return False
 
         loops.append(pathes.copy())
         return True
@@ -163,9 +163,8 @@ class Core:
             new_point = Point(i, j)
             if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
                 path.append(new_point)
-                if Core.find_loop_in_path(field, path):
+                if Core.find_loop_in_path(path):
                     Core.append_new_loop(path, loops)
-
                 Core.dfs(field, new_point, path, loops, owner)
                 path.pop()
 
