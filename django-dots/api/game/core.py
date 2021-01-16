@@ -94,19 +94,19 @@ class Core:
     def player_set_point(field: GameField, point: Point, owner: int):
         start_time = time.time()
         field = Field.change_owner(field, point, owner)
-        print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
+        #print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
 
         start_time = time.time()
         loops = Core.find_all_new_loops(field, point, owner)
-        print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
+        #print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
 
         start_time = time.time()
         field = Core.add_loops_and_capture_points(field, loops, owner)
-        print("--- %s seconds on add_loops_and_capture_points() ---" % (time.time() - start_time))
+        #print("--- %s seconds on add_loops_and_capture_points() ---" % (time.time() - start_time))
         
         start_time = time.time()
         empty_loop_id = Core.is_point_in_empty_loop(field, point)
-        print("--- %s seconds on is_point_in_empty_loop() ---" % (time.time() - start_time))
+        #print("--- %s seconds on is_point_in_empty_loop() ---" % (time.time() - start_time))
 
         if not loops and empty_loop_id:
             start_time = time.time()
@@ -115,7 +115,7 @@ class Core:
             owner = field.field[x][y].owner
 
             field = Core.add_loops_and_capture_points(field, [loop], owner)
-            print("--- %s seconds when point is empty loop ---" % (time.time() - start_time))
+            #print("--- %s seconds when point is empty loop ---" % (time.time() - start_time))
 
         return field
 
@@ -150,13 +150,22 @@ class Core:
     @staticmethod
     def get_loops_from_path(path, loops):
         set_of_loops = list(map(set, loops))
+        # ---
+        index = False
+        # ---
         for i in range(0, len(path)-3):
             if Core.is_neighbour(path[i], path[-1]):
                 for points_set in set_of_loops:
                     if points_set.issubset(set(path[i:])):
                         return
                 else:
-                    loops.append(path[i:].copy())
+                    # ---
+                    #new_loops.append(path[i:].copy())
+                    index = i
+        
+        if index is not False:
+            loops.append(path[index:].copy())
+        # ---
 
     @staticmethod
     def filter_only_new_loops(loops, captured_loops, empty_loops):
@@ -175,15 +184,26 @@ class Core:
                     break
 
     @staticmethod
-    def filter_has_points_to_capture(field, loops, owner):
-        for index, loop in enumerate(loops):
-            point = loop[0]
-            for loop_point in loop:
-                if not Core.is_neighbour(point, loop_point):
-                    break
-            else:
-                loops.pop(index)
-                
+    def has_less_three_siblings(loop):
+        # check if last point has no  more than 2 sibling
+        for index, point in enumerate(loop):
+            amount = 0
+            for sibling in loop:
+                if Core.is_neighbour(point, sibling):
+                    amount += 1
+                if amount > 2:
+                    return index
+        return False
+
+    """
+    @staticmethod
+    def filter_loops_captured_same(field, new_loops, captured_loops, empty_loops):
+        polygons = []
+        for loop in new_loops:
+            polygons.append(shapePolygon(loop))
+
+        """
+
 
     @staticmethod
     def dfs(field, captured_loops, empty_loops, point, path, loops, owner):
@@ -201,36 +221,32 @@ class Core:
 
         path.append(point)
         if len(path) > 3:
+            if Core.has_less_three_siblings(path) != False:
+                return
+
             Core.get_loops_from_path(path, loops)
+            # loops.append(min(new_loops, key=len))
             Core.filter_only_new_loops(loops, captured_loops, empty_loops)
+            # print(new_loops)
+            # if new_loops:
+            #    loops.append(min(new_loops, key=len))
+            
 
-
-        # loops.append(path.copy())
         
         for next_point in surrounded_points:
             Core.dfs(field, captured_loops, empty_loops, next_point, path, loops, owner)
             path.pop()
 
-        """
-        for i, j in surrounded_points:
-            new_point = Point(i, j)
-            if point != new_point and not field[i][j].border and field[i][j].owner == owner and new_point not in path and field[i][j].captured is None:
-                path.append(new_point)
-                loop_indexes = Core.find_loop_in_path(path)
-                for index in loop_indexes:
-                    if index != 0 and captured_loops is not None:
-                        if set(path[index:]) in list(map(set, captured_loops.values())) or set(path[index:]) in list(map(set, empty_loops.values())):
-                            return path[index+1]
-                    
-                    if len(path) > 3 and Core.is_neighbour(path[0], path[-1]):
-                        loops.append(path.copy())
-
-                return_to = Core.dfs(field, captured_loops, empty_loops, new_point, path, loops, owner)
-                path.pop()
-
-                if return_to is not None and return_to != path[-1]:
-                    return return_to
-        """
+    @staticmethod
+    def pop_with_common_points(loops):
+        res = {}
+        for loop in loops:
+            key = (loop[1], loop[-1])
+            if key in res.keys():
+                res[key] = min([res[key], loop], key=len)
+            else:
+                res[key] = loop
+        return list(res.values())
 
     @staticmethod
     def find_all_new_loops(field, point, owner):
@@ -255,9 +271,11 @@ class Core:
             captured_loops = list(map(set, field.loops.values()))
         if field.empty_loops:
             empty_loops = list(map(set, field.empty_loops.values()))
-        print(captured_loops, empty_loops)
         
         Core.dfs(field.field, captured_loops, empty_loops, point, path, loops, owner)
+        
+        loops = Core.pop_with_common_points(loops)
+
         return loops
 
     @staticmethod
@@ -265,7 +283,7 @@ class Core:
         if len(points) == 0:
             return False
         for x, y in points:
-            point = field.field[x][y]
+            point = field[x][y]
             if not point.border and point.owner is not None and point.owner != owner:
                 if point.captured is None or point.captured[-1] != owner:
                     return True
@@ -303,13 +321,13 @@ class Core:
         return field
 
     @staticmethod
-    def find_all_captured_points(field: GameField, loop: [Point], owner: int):
+    def find_all_captured_points(field, loop: [Point], owner: int):
         polygon = shapePolygon(loop)
         captured = []
 
-        for x in range(1, len(field.field)-1):
-            for y in range(1, len(field.field[0])-1):
-                if field.field[x][y].owner != owner or (field.field[x][y].owner == owner and field.field[x][y].captured is not None):
+        for x in range(1, len(field)-1):
+            for y in range(1, len(field[0])-1):
+                if field[x][y].owner != owner or (field[x][y].owner == owner and field[x][y].captured is not None):
                     if polygon.contains(shapePoint(x, y)):
                         captured.append(Point(x, y))
         return captured

@@ -593,6 +593,16 @@ class ApiCoreDFS(TestCase):
             Point(2, 6), Point(2, 7), Point(2, 8),
         ]
 
+        self.points_4 = [
+            Point(7, 5), Point(7, 8), Point(8, 6), Point(8, 7)
+        ]
+
+        self.points_5 = [
+            Point(6, 2), Point(7, 2), Point(8, 3), Point(8, 4), 
+        ]
+
+        self.points_6 = [Point(4, 1), Point(5, 1)]
+
     def test_normal(self):
         for x, y in self.points_1:
             self.field.field[x][y].owner = 5
@@ -610,4 +620,66 @@ class ApiCoreDFS(TestCase):
             self.field.field[x][y].owner = 5
 
         loops = Core.find_all_new_loops(self.field, Point(2, 7), 5)
-        print(loops)
+        self.field.empty_loops[3] = loops[0]
+
+        for x, y in self.points_4:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(8, 7), 5)
+        for loop in loops:
+            self.field.empty_loops[max(self.field.empty_loops.keys()) + 1] = loop
+        
+        for x, y in self.points_5:
+            self.field.field[x][y].owner = 5
+        loops = Core.find_all_new_loops(self.field, Point(8, 4), 5)
+        for loop in loops:
+            print(loop)
+        
+        self.field.field[8][2].owner = 5
+        loops = Core.find_all_new_loops(self.field, Point(8, 2), 5)
+        self.assertEqual(loops, [])
+
+        for x, y in self.points_6:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(5, 1), 5)
+        for loop in loops:
+            print(loop)
+
+
+class ApiCoreTestPopLoops(TestCase):
+    def setUp(self):
+        self.loops = [
+            [Point(1, 1), Point(1, 2), Point(2, 1), Point(3, 1)],
+            [Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4), Point(1, 5)],
+            [Point(1, 1), Point(1, 2), Point(1, 3), Point(1, 4)]
+        ]
+
+    def test_normal(self):
+        Core.pop_loops_with_common(self.loops)
+        print(self.loops)
+
+"""
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+
+a = [
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=6, y=4), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=6, y=6), Point(x=5, y=5), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=6, y=6), Point(x=5, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=6, y=6), Point(x=5, y=7), Point(x=4, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=6, y=6), Point(x=5, y=7), Point(x=4, y=7), Point(x=3, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=8, y=6), Point(x=8, y=7), Point(x=7, y=8), Point(x=6, y=7), Point(x=5, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=8, y=6), Point(x=8, y=7), Point(x=7, y=8), Point(x=6, y=7), Point(x=5, y=7), Point(x=4, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+    [Point(x=8, y=4), Point(x=7, y=5), Point(x=8, y=6), Point(x=8, y=7), Point(x=7, y=8), Point(x=6, y=7), Point(x=5, y=7), Point(x=4, y=7), Point(x=3, y=6), Point(x=4, y=5), Point(x=3, y=4), Point(x=4, y=3), Point(x=5, y=3), Point(x=6, y=2), Point(x=7, y=2), Point(x=8, y=3)],
+]
+
+res = {}
+for loop in a:
+    if (loop[1], loop[-1]) in res.keys():
+        res[(loop[1], loop[-1])] = min([res[(loop[1], loop[-1])], loop], key=len)
+    else:
+        res[(loop[1], loop[-1])] = loop
+
+
+"""
