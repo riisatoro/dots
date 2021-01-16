@@ -89,6 +89,8 @@ class Field:
         return field_loops
 
 import time
+from collections import Counter
+from _collections import defaultdict
 class Core:
     @staticmethod
     def player_set_point(field: GameField, point: Point, owner: int):
@@ -98,9 +100,27 @@ class Core:
         #print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
 
         start_time = time.time()
-        loops = Core.find_all_new_loops(field, point, owner)
-        #print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
+        # loops = Core.find_all_new_loops(field, point, owner)
 
+        all_loops = Core.find_all_loops(field.field, point, owner)
+        loop_stats = [
+            {
+                'loop': loop,
+                'stats': Core.prepare_loop_stats(field.field, loop, owner)
+            }
+            for loop in all_loops
+            if len(loop) > 3
+        ]
+        normal_loops = [
+            s for s in loop_stats
+            if s['stats']['empty'] or s['stats']['enemy']
+        ]
+        enemy_loops = [s for s in normal_loops if s['stats']['enemy']]
+        houses = [s for s in normal_loops if not s['stats']['enemy']]
+        print(enemy_loops, houses)
+
+        #print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
+        """
         start_time = time.time()
         field = Core.add_loops_and_capture_points(field, loops, owner)
         #print("--- %s seconds on add_loops_and_capture_points() ---" % (time.time() - start_time))
@@ -117,8 +137,76 @@ class Core:
 
             field = Core.add_loops_and_capture_points(field, [loop], owner)
             #print("--- %s seconds when point is empty loop ---" % (time.time() - start_time))
-
+        """
         return field
+
+    @staticmethod
+    def find_all_loops(field, starting_point, owner):
+        path_root = "ROOT"
+        parents = {}
+        loops = []
+
+        def build_loop(point, root):
+            if point == root or point == path_root:
+                return [starting_point]
+            return [
+                *build_loop(parents[point], root),
+                point
+            ] 
+
+        def do_dfs(point):
+            neighbors = [
+                Point(x, y)
+                for x in range(point.x-1, point.x+2)
+                for y in range(point.y-1, point.y+2) 
+            ]
+            parent = parents.get(point)
+            related_neighbors = [
+                p for p in neighbors
+                if p != point
+                and field[p.x][p.y].owner == owner
+                and p != parent
+            ]
+            for neigbor in related_neighbors:
+                neigbor_parent = parents.get(neigbor)
+                if neigbor_parent and (neigbor_parent != point or neigbor_parent == path_root):
+                    loops.append(build_loop(neigbor, point))
+                    continue
+
+                parents[neigbor] = point
+                do_dfs(neigbor)
+
+        parents[starting_point] = path_root
+        do_dfs(starting_point)
+        return loops
+
+    @staticmethod
+    def prepare_loop_stats(field, loop, owner):
+        polygon = shapePolygon([
+            shapePoint(point.x, point.y)
+            for point in loop
+        ])
+        result = {
+            'empty': [],
+            'captured': [],
+            'own': [],
+            'enemy': []
+        }
+        for y, row in enumerate(field):
+            for x, point_data in enumerate(row):
+                if polygon.contains(shapePoint(x, y)):
+                    point = Point(x, y)
+                    if point_data.captured:
+                        result['captured'].append(point)
+                    elif point_data.owner == owner:
+                        result['own'].append(point)
+                    elif not point_data.owner:
+                        result['empty'].append(point)
+                    elif point_data.owner != owner:
+                        result['enemy'].append(point)
+                    else:
+                        raise ValueError('Unexpected clause')
+        return result
 
     @staticmethod
     def is_neighbour(point_1, point_2):
@@ -214,20 +302,17 @@ class Core:
         ]
 
         path.append(point)
-        if len(path) > 3:
-            index = Core.has_less_three_siblings(path)
-            if index != False:
-                return
-            #    return len(path) - index - 1
-
-            Core.get_loops_from_path(path, loops)
+        # if len(path) > 3:
+        #     index = Core.has_less_three_siblings(path)
+        #     if index != False:
+        #         return
+        #     #    return len(path) - index - 1
+        # 
+        #     Core.get_loops_from_path(path, loops)
         
         for next_point in surrounded_points:
-            index = Core.dfs(field, next_point, path, loops, owner)
+            Core.dfs(field, next_point, path, loops, owner)
             path.pop()
-            if index:
-                return index - 1
-
 
     @staticmethod
     def pop_with_common_points(loops):
