@@ -603,14 +603,21 @@ class ApiCoreDFS(TestCase):
 
         self.points_6 = [Point(4, 1), Point(5, 1)]
         self.points_7 = [Point(2, 1), Point(1, 2)]
+        self.points_8 = [
+            Point(8, 9), Point(9, 9), Point(9, 6), Point(10, 7), Point(10, 8),
+        ]
+        self.points_9 = [
+            Point(9, 2), Point(9, 3), Point(10, 2), Point(10, 3), Point(10, 4), Point(10, 5),
+        ]
 
         self.full_points_set = [
             *self.points_1, *self.points_2, *self.points_3, *self.points_4,
-            *self.points_5, *self.points_6, *self.points_7
+            *self.points_5, *self.points_6, *self.points_7, *self.points_8,
+            *self.points_9
         ]
 
         self.enemies = [
-            Point(3, 7), Point(3, 3), Point(5, 2), Point(4, 4)
+            Point(3, 7), Point(3, 3), Point(5, 2), Point(4, 4), Point(9, 8)
         ]
 
     def test_normal(self):

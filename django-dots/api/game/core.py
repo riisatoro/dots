@@ -92,6 +92,7 @@ import time
 class Core:
     @staticmethod
     def player_set_point(field: GameField, point: Point, owner: int):
+        
         start_time = time.time()
         field = Field.change_owner(field, point, owner)
         #print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
@@ -197,6 +198,9 @@ class Core:
 
     @staticmethod
     def dfs(field, point, path, loops, owner):
+        if point == Point(9, 3) or (path and path[0] == Point(9, 3)):
+            #import ipdb; ipdb.set_trace()
+            pass
         x, y = point
         surrounded_points = [
             Point(i, j) 
@@ -211,14 +215,18 @@ class Core:
 
         path.append(point)
         if len(path) > 3:
-            if Core.has_less_three_siblings(path) != False:
-                return
+            index = Core.has_less_three_siblings(path)
+            if index != False:
+                return len(path) - index - 1
 
             Core.get_loops_from_path(path, loops)
         
         for next_point in surrounded_points:
-            Core.dfs(field, next_point, path, loops, owner)
+            index = Core.dfs(field, next_point, path, loops, owner)
             path.pop()
+            if index:
+                return index - 1
+
 
     @staticmethod
     def pop_with_common_points(loops):
