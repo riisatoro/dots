@@ -602,6 +602,16 @@ class ApiCoreDFS(TestCase):
         ]
 
         self.points_6 = [Point(4, 1), Point(5, 1)]
+        self.points_7 = [Point(2, 1), Point(1, 2)]
+
+        self.full_points_set = [
+            *self.points_1, *self.points_2, *self.points_3, *self.points_4,
+            *self.points_5, *self.points_6, *self.points_7
+        ]
+
+        self.enemies = [
+            Point(3, 7), Point(3, 3), Point(5, 2), Point(4, 4)
+        ]
 
     def test_normal(self):
         for x, y in self.points_1:
@@ -633,7 +643,7 @@ class ApiCoreDFS(TestCase):
             self.field.field[x][y].owner = 5
         loops = Core.find_all_new_loops(self.field, Point(8, 4), 5)
         for loop in loops:
-            print(loop)
+            self.field.empty_loops[max(self.field.empty_loops.keys()) + 1] = loop
         
         self.field.field[8][2].owner = 5
         loops = Core.find_all_new_loops(self.field, Point(8, 2), 5)
@@ -644,8 +654,35 @@ class ApiCoreDFS(TestCase):
 
         loops = Core.find_all_new_loops(self.field, Point(5, 1), 5)
         for loop in loops:
-            print(loop)
+            self.field.empty_loops[max(self.field.empty_loops.keys()) + 1] = loop
 
+        for x, y in self.points_7:
+            self.field.field[x][y].owner = 5
+
+        loops = Core.find_all_new_loops(self.field, Point(2, 1), 5)
+        for loop in loops:
+            self.field.empty_loops[max(self.field.empty_loops.keys()) + 1] = loop
+
+        # print(loops)
+
+    def test_full(self):
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+
+        for point in self.enemies:
+            self.field = Core.player_set_point(self.field, point, 2)
+            draw_field(self.field)
+
+        for point in self.full_points_set:
+            self.field = Core.player_set_point(self.field, point, 1)
+            draw_field(self.field)
+
+        for point in self.enemies:
+            self.field = Core.player_set_point(self.field, point, 2)
+            draw_field(self.field)
+
+        for item in self.field.empty_loops.values():
+            print(item)
 
 class ApiCoreTestPopLoops(TestCase):
     def setUp(self):

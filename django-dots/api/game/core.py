@@ -174,7 +174,7 @@ class Core:
                 return
             loop_set = set(loop)
             for captured in captured_loops:
-                if captured.issubser(loop_set):
+                if captured.issubset(loop_set):
                     loops.pop(index)
                     break
         
@@ -195,18 +195,8 @@ class Core:
                     return index
         return False
 
-    """
     @staticmethod
-    def filter_loops_captured_same(field, new_loops, captured_loops, empty_loops):
-        polygons = []
-        for loop in new_loops:
-            polygons.append(shapePolygon(loop))
-
-        """
-
-
-    @staticmethod
-    def dfs(field, captured_loops, empty_loops, point, path, loops, owner):
+    def dfs(field, point, path, loops, owner):
         x, y = point
         surrounded_points = [
             Point(i, j) 
@@ -225,16 +215,9 @@ class Core:
                 return
 
             Core.get_loops_from_path(path, loops)
-            # loops.append(min(new_loops, key=len))
-            Core.filter_only_new_loops(loops, captured_loops, empty_loops)
-            # print(new_loops)
-            # if new_loops:
-            #    loops.append(min(new_loops, key=len))
-            
-
         
         for next_point in surrounded_points:
-            Core.dfs(field, captured_loops, empty_loops, next_point, path, loops, owner)
+            Core.dfs(field, next_point, path, loops, owner)
             path.pop()
 
     @staticmethod
@@ -272,9 +255,10 @@ class Core:
         if field.empty_loops:
             empty_loops = list(map(set, field.empty_loops.values()))
         
-        Core.dfs(field.field, captured_loops, empty_loops, point, path, loops, owner)
+        Core.dfs(field.field, point, path, loops, owner)
         
         loops = Core.pop_with_common_points(loops)
+        Core.filter_only_new_loops(loops, captured_loops, empty_loops)
 
         return loops
 
@@ -283,7 +267,7 @@ class Core:
         if len(points) == 0:
             return False
         for x, y in points:
-            point = field[x][y]
+            point = field.field[x][y]
             if not point.border and point.owner is not None and point.owner != owner:
                 if point.captured is None or point.captured[-1] != owner:
                     return True
@@ -325,9 +309,9 @@ class Core:
         polygon = shapePolygon(loop)
         captured = []
 
-        for x in range(1, len(field)-1):
-            for y in range(1, len(field[0])-1):
-                if field[x][y].owner != owner or (field[x][y].owner == owner and field[x][y].captured is not None):
+        for x in range(1, len(field.field)-1):
+            for y in range(1, len(field.field[0])-1):
+                if field.field[x][y].owner != owner or (field.field[x][y].owner == owner and field.field[x][y].captured is not None):
                     if polygon.contains(shapePoint(x, y)):
                         captured.append(Point(x, y))
         return captured
