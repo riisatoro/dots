@@ -688,7 +688,12 @@ class ApiCoreDFS(TestCase):
             self.field = Core.player_set_point(self.field, point, 2)
             draw_field(self.field)
 
+        print("EMPTY")
         for item in self.field.empty_loops.values():
+            print(item)
+
+        print("LOOPS")
+        for item in self.field.loops.values():
             print(item)
 
 class ApiCoreTestPopLoops(TestCase):

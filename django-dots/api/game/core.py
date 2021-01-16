@@ -187,9 +187,9 @@ class Core:
     @staticmethod
     def has_less_three_siblings(loop):
         # check if last point has no  more than 2 sibling
-        for index, point in enumerate(loop):
+        for index, point in enumerate(loop[len(loop)-4:]):
             amount = 0
-            for sibling in loop:
+            for sibling in loop[len(loop)-4:]:
                 if Core.is_neighbour(point, sibling):
                     amount += 1
                 if amount > 2:
@@ -217,7 +217,8 @@ class Core:
         if len(path) > 3:
             index = Core.has_less_three_siblings(path)
             if index != False:
-                return len(path) - index - 1
+                return
+            #    return len(path) - index - 1
 
             Core.get_loops_from_path(path, loops)
         
