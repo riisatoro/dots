@@ -632,7 +632,7 @@ class ApiCoreDFS(TestCase):
             self.field = Core.process_point(self.field, point, 1)
 
             if self.field.new_loops or self.field.new_houses:
-                import bpdb; bpdb.set_trace()
+                pass
                 
 
 class ApiCoreTestNewHomes(TestCase):
@@ -705,6 +705,17 @@ class ApiCoreTestStats(TestCase):
 
         for point in self.points:
             self.field = Core.process_point(self.field, point, 1)
+        
+        stats = Core.prepare_loop_stats(self.field, [Point(2, 1), Point(3, 2)])
 
-        # stats = Core.prepare_loop_stats(self.field.field, self.field.new_houses[0]['path'], 1)
-        # print(stats)
+        stats = Core.prepare_loop_stats(self.field.field, self.field.new_houses[0]['path'], 1)
+        self.assertEqual(stats['empty'], [Point(4, 2)])
+        self.assertEqual(stats['enemy'], [])
+
+        stats = Core.prepare_loop_stats(self.field.field, self.field.new_loops[0]['path'], 1)
+        self.assertEqual(stats['empty'], [])
+        self.assertEqual(stats['enemy'], [])
+        self.assertEqual(stats['captured'], [Point(2, 2)])
+
+class ApiCoreTestFindLoops(TestCase):
+    pass
