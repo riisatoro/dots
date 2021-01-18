@@ -97,8 +97,7 @@ class Core:
 
         normal_paths = [
             x for x in path_stats
-            if Core.all_neighbors(x['path'])
-            and x['stats']['empty'] or x['stats']['enemy']
+            if x['stats']['empty'] or x['stats']['enemy']
         ]
 
         loops = [
@@ -127,14 +126,6 @@ class Core:
         possible_houses = [*old_houses, *empty_loops]
         field = Core.add_houses(field, possible_houses)
         return field
-
-    @staticmethod
-    def all_neighbors(path):
-        for index in range(1, len(path)+1):
-            if not Core.is_neighbour(path[index-1], path[index % (len(path))]):
-                return False
-        return True
-        
 
     @staticmethod
     def add_new_loop(game_field, path, owner):
@@ -272,7 +263,7 @@ class Core:
             for neigbor in related_neighbors:
                 neigbor_parent = parents.get(neigbor)
                 if neigbor_parent and neigbor_parent != point:
-                    path = build_path(neigbor, point)
+                    path = build_path(neigbor_parent, neigbor)
                     if len(path) > 3:
                         loops.append(path)
                     continue

@@ -635,3 +635,76 @@ class ApiCoreDFS(TestCase):
                 import bpdb; bpdb.set_trace()
                 
 
+class ApiCoreTestNewHomes(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+        self.enemies = [
+            Point(2, 2), 
+        ]
+        self.points = [
+            Point(1, 1), Point(2, 1), Point(4, 1),
+            Point(1, 2), Point(5, 2),
+            Point(2, 3), Point(4, 3),
+            Point(3, 2)
+        ]
+
+    def test_8_loop(self):
+        for point in self.enemies:
+            self.field = Core.process_point(self.field, point, 2)
+
+        for point in self.points:
+            self.field = Core.process_point(self.field, point, 1)
+
+        self.assertEqual(len(self.field.new_loops), 1)
+        self.assertEqual(len(self.field.new_houses), 1)
+        self.assertEqual(len(self.field.new_loops[0]['path']), 4)
+
+
+class ApiCoreTestNewLoops(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+        self.enemies = [
+            Point(2, 2), Point(4, 2)
+        ]
+        self.points = [
+            Point(1, 1), Point(2, 1), Point(3, 1), Point(4, 1),
+            Point(1, 2), Point(5, 2),
+            Point(2, 3), Point(3, 3), Point(4, 3),
+            Point(3, 2)
+        ]
+
+    def test_loop(self):
+        for point in self.enemies:
+            self.field = Core.process_point(self.field, point, 2)
+
+        for point in self.points:
+            self.field = Core.process_point(self.field, point, 1)
+
+class ApiCoreTestStats(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 2)
+        self.enemies = [
+            Point(2, 2), 
+        ]
+        self.points = [
+            Point(1, 1), Point(2, 1), Point(4, 1),
+            Point(1, 2), Point(5, 2),
+            Point(2, 3), Point(4, 3),
+            Point(3, 2)
+        ]
+
+    def test_stats(self):
+        for point in self.enemies:
+            self.field = Core.process_point(self.field, point, 2)
+
+        for point in self.points:
+            self.field = Core.process_point(self.field, point, 1)
+
+        # stats = Core.prepare_loop_stats(self.field.field, self.field.new_houses[0]['path'], 1)
+        # print(stats)
