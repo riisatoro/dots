@@ -1,6 +1,9 @@
+import itertools
+from collections import Counter, defaultdict
 from shapely.geometry import Point as shapePoint
 from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
+
 
 min_field_size = 5
 
@@ -60,8 +63,8 @@ class Field:
         if owner not in field.players:
             raise ValueError("Player ID is not in the GameField")
 
-        if field.field[x][y].owner is None and not field.field[x][y].border and not field.field[x][y].captured:
-            field.field[x][y].owner = owner
+        if field.field[y][x].owner is None and not field.field[y][x].border and not field.field[y][x].is_captured:
+            field.field[y][x].owner = owner
 
         return field
 
@@ -73,53 +76,152 @@ class Field:
                     return False
         return True
 
-    @staticmethod
-    def add_loop(field_loops, loop: [Point]):
-        if not field_loops:
-            return {1: loop}
 
-        for key, item in field_loops.items():
-            if set(item).issubset(set(loop)):
-                return field_loops
-            if set(loop).issubset(set(item)):
-                field_loops[key] = loop
-                return field_loops
-
-        field_loops[max(field_loops.keys())+1] = loop
-        return field_loops
-
-import time
-from collections import Counter
-from _collections import defaultdict
 class Core:
+
+    @staticmethod
+    def process_point(field: GameField, point: Point, owner: int):
+        field = Field.change_owner(field, point, owner)
+        
+        from .draw import draw_field; draw_field(field)
+
+        all_paths = Core.build_all_loops(field.field, point, owner)        
+        path_stats = [
+            {
+                'path': path,
+                'owner': owner,
+                'stats': Core.prepare_loop_stats(field.field, path, owner)
+            }
+            for path in all_paths
+        ]
+
+        normal_paths = [
+            x for x in path_stats
+            if Core.all_neighbors(x['path'])
+            and x['stats']['empty'] or x['stats']['enemy']
+        ]
+
+        loops = [
+            p for p in normal_paths
+            if p['stats']['enemy']
+        ]
+
+        for loop in loops:
+            field = Core.add_new_loop(field, loop['path'], owner)
+
+        old_houses = field.new_houses
+
+        for possible_loop in old_houses:
+            field = Core.add_new_loop(
+                field,
+                possible_loop['path'],
+                possible_loop['owner']
+            )
+
+        field.new_houses = []
+
+        empty_loops = [
+            p for p in normal_paths
+            if not p['stats']['enemy']
+        ]
+        possible_houses = [*old_houses, *empty_loops]
+        field = Core.add_houses(field, possible_houses)
+        return field
+
+    @staticmethod
+    def all_neighbors(path):
+        for index in range(1, len(path)+1):
+            if not Core.is_neighbour(path[index-1], path[index % (len(path))]):
+                return False
+        return True
+        
+
+    @staticmethod
+    def add_new_loop(game_field, path, owner):
+        stats = Core.prepare_loop_stats(game_field.field, path, owner)
+        if not stats['enemy'] or stats['path_captured']:
+            return game_field
+
+        point_lists = [v for v in stats.values() if isinstance(v, list)]
+        captured_points = set(itertools.chain.from_iterable(point_lists))
+        for point in captured_points:
+            game_field.field[point.y][point.x].captured_by.append(owner)
+
+        game_field.new_loops.append({'owner': owner, 'path': path})
+        return game_field
+    
+    @staticmethod
+    def add_houses(game_field, houses):
+        captured_empty_points = set()
+
+        def add_new_house(path, owner):
+            stats = Core.prepare_loop_stats(game_field.field, path, owner)
+            if stats['enemy'] or stats['path_captured']:
+                return
+
+            all_points_processed = any(
+                p in captured_empty_points for p in stats['empty']
+            )
+            if all_points_processed:
+                return
+
+            for point in stats['empty']:
+                captured_empty_points.add(point)
+
+            game_field.new_houses.append({
+                'owner': owner, 'path': path
+            })
+        
+        for house in houses:
+            add_new_house(house['path'], house['owner'])
+
+        return game_field
+
+    @staticmethod
+    def get_game_stats(field):
+        captured_points = [
+            p.captured_by[-1]
+            for row in field.field
+            for p in row if
+            p.is_captured
+        ]
+        result = Counter(captured_points)
+        return dict(result)
+
     @staticmethod
     def player_set_point(field: GameField, point: Point, owner: int):
-        
-        start_time = time.time()
-        field = Field.change_owner(field, point, owner)
-        #print("--- %s seconds on change_owner() ---" % (time.time() - start_time))
 
-        start_time = time.time()
+        field = Field.change_owner(field, point, owner)
         # loops = Core.find_all_new_loops(field, point, owner)
 
-        all_loops = Core.find_all_loops(field.field, point, owner)
+        all_loops = Core.build_all_loops(field.field, point, owner)        
         loop_stats = [
             {
                 'loop': loop,
                 'stats': Core.prepare_loop_stats(field.field, loop, owner)
             }
             for loop in all_loops
-            if len(loop) > 3
         ]
+
         normal_loops = [
             s for s in loop_stats
-            if s['stats']['empty'] or s['stats']['enemy']
+            if (s['stats']['empty'] or s['stats']['enemy'])
         ]
-        enemy_loops = [s for s in normal_loops if s['stats']['enemy']]
-        houses = [s for s in normal_loops if not s['stats']['enemy']]
-        print(enemy_loops, houses)
+        # enemy_loops = [s for s in normal_loops if s['stats']['enemy']]
+        # houses = [s for s in normal_loops if not s['stats']['enemy']]
+        
+        """
+        for loop in enemy_loops:
+            print("ENEMY", loop["loop"])
 
-        #print("--- %s seconds on find_all_new_loops() ---" % (time.time() - start_time))
+
+        for loop in houses:
+            print("HOME", loop["loop"])
+        """
+
+        # if point == (4, 5):
+        #    import bpdb; bpdb.set_trace()
+
         """
         start_time = time.time()
         field = Core.add_loops_and_capture_points(field, loops, owner)
@@ -141,17 +243,17 @@ class Core:
         return field
 
     @staticmethod
-    def find_all_loops(field, starting_point, owner):
+    def build_all_loops(field, starting_point, owner):
         path_root = "ROOT"
-        parents = {}
+        parents = {starting_point: path_root}
         loops = []
 
-        def build_loop(point, root):
+        def build_path(point, root):
             if point == root or point == path_root:
-                return [starting_point]
+                return [starting_point if root == path_root else root]
             return [
-                *build_loop(parents[point], root),
-                point
+                point,
+                *build_path(parents[point], root),
             ] 
 
         def do_dfs(point):
@@ -164,48 +266,59 @@ class Core:
             related_neighbors = [
                 p for p in neighbors
                 if p != point
-                and field[p.x][p.y].owner == owner
-                and p != parent
+                and not field[p.y][p.x].is_captured
+                and field[p.y][p.x].owner == owner
             ]
             for neigbor in related_neighbors:
                 neigbor_parent = parents.get(neigbor)
-                if neigbor_parent and (neigbor_parent != point or neigbor_parent == path_root):
-                    loops.append(build_loop(neigbor, point))
+                if neigbor_parent and neigbor_parent != point:
+                    path = build_path(neigbor, point)
+                    if len(path) > 3:
+                        loops.append(path)
                     continue
 
                 parents[neigbor] = point
                 do_dfs(neigbor)
 
-        parents[starting_point] = path_root
+
         do_dfs(starting_point)
         return loops
 
     @staticmethod
-    def prepare_loop_stats(field, loop, owner):
+    def prepare_loop_stats(field, path, owner):
         polygon = shapePolygon([
             shapePoint(point.x, point.y)
-            for point in loop
+            for point in path
         ])
+        min_x, min_y, max_x, max_y = map(int, polygon.bounds)
         result = {
             'empty': [],
             'captured': [],
             'own': [],
-            'enemy': []
+            'enemy': [],
+            'path_captured': any(
+                field[p.y][p.x].is_captured
+                for p in path
+            )
         }
-        for y, row in enumerate(field):
-            for x, point_data in enumerate(row):
-                if polygon.contains(shapePoint(x, y)):
-                    point = Point(x, y)
-                    if point_data.captured:
-                        result['captured'].append(point)
-                    elif point_data.owner == owner:
-                        result['own'].append(point)
-                    elif not point_data.owner:
-                        result['empty'].append(point)
-                    elif point_data.owner != owner:
-                        result['enemy'].append(point)
-                    else:
-                        raise ValueError('Unexpected clause')
+        points = [
+            (Point(x, y), field[y][x])
+            for x in range(min_x, max_x+1)
+            for y in range(min_y, max_y+1)
+        ]
+
+        for point, point_data in points:
+            if polygon.contains(shapePoint(point)):
+                if point_data.is_captured:
+                    result['captured'].append(point)
+                elif point_data.owner == owner:
+                    result['own'].append(point)
+                elif not point_data.owner:
+                    result['empty'].append(point)
+                elif point_data.owner != owner:
+                    result['enemy'].append(point)
+                else:
+                    raise ValueError('Unexpected clause')
         return result
 
     @staticmethod

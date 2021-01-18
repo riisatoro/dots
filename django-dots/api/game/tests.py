@@ -535,11 +535,6 @@ class ApiCoreFindLoopPath(TestCase):
         print(Core.find_loop_in_path(self.p1))
         print(Core.find_loop_in_path(self.p2))
 
-
-import time
-from .draw import draw_field
-
-
 class ApiCoreTestSpeedCalculation(TestCase):
     def setUp(self):
         self.field = Field.create_field(11, 11)
@@ -575,6 +570,11 @@ class ApiCoreTestSpeedCalculation(TestCase):
             draw_field(self.field)
             print("loops", self.field.loops)
             print("empty", self.field.empty_loops)
+
+
+
+import time
+from .draw import draw_field
 
 
 class ApiCoreDFS(TestCase):
@@ -618,14 +618,20 @@ class ApiCoreDFS(TestCase):
         ]
 
         self.enemies = [
-            Point(3, 7), Point(3, 3), Point(5, 2), Point(4, 4), Point(9, 8)
+            Point(3, 7), # Point(3, 3), Point(5, 2), Point(4, 4), Point(9, 8)
         ]
 
     def test_full(self):
         self.field = Field.add_player(self.field, 1)
         self.field = Field.add_player(self.field, 2)
 
+        for point in self.enemies:
+            self.field = Core.process_point(self.field, point, 2)
+
         for point in self.full_points_set:
-            self.field = Core.player_set_point(self.field, point, 1)
-            draw_field(self.field)
+            self.field = Core.process_point(self.field, point, 1)
+
+            if self.field.new_loops or self.field.new_houses:
+                import bpdb; bpdb.set_trace()
+                
 
