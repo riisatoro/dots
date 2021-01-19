@@ -3,6 +3,7 @@ from collections import Counter, defaultdict
 from shapely.geometry import Point as shapePoint
 from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
+import pprint
 
 
 min_field_size = 5
@@ -78,21 +79,18 @@ class Field:
 
 
 class Core:
-
     @staticmethod
     def process_point(field: GameField, point: Point, owner: int):
         field = Field.change_owner(field, point, owner)
-        
-        from .draw import draw_field; draw_field(field)
-
-        all_paths = Core.build_all_loops(field.field, point, owner)        
+    
+        all_paths = Core.build_all_loops(field.field, point, owner)
         path_stats = [
             {
                 'path': path,
                 'owner': owner,
                 'stats': Core.prepare_loop_stats(field.field, path, owner)
             }
-            for path in all_paths
+            for path in all_paths if Core.is_neighbour(path[0], path[-1])
         ]
 
         normal_paths = [
@@ -138,6 +136,7 @@ class Core:
         for point in captured_points:
             game_field.field[point.y][point.x].captured_by.append(owner)
 
+        print(path)
         game_field.new_loops.append({'owner': owner, 'path': path})
         return game_field
     
@@ -243,8 +242,8 @@ class Core:
             if point == root or point == path_root:
                 return [starting_point if root == path_root else root]
             return [
-                point,
                 *build_path(parents[point], root),
+                point,
             ] 
 
         def do_dfs(point):
@@ -253,27 +252,31 @@ class Core:
                 for x in range(point.x-1, point.x+2)
                 for y in range(point.y-1, point.y+2) 
             ]
-            parent = parents.get(point)
+            
             related_neighbors = [
                 p for p in neighbors
                 if p != point
                 and not field[p.y][p.x].is_captured
                 and field[p.y][p.x].owner == owner
             ]
+
+            parent = parents.get(point)
             for neigbor in related_neighbors:
                 neigbor_parent = parents.get(neigbor)
                 if neigbor_parent and neigbor_parent != point:
-                    path = build_path(neigbor_parent, neigbor)
+                    path = build_path(neigbor, starting_point)
                     if len(path) > 3:
                         loops.append(path)
                     continue
 
                 parents[neigbor] = point
                 do_dfs(neigbor)
+                parents.pop(neigbor)
 
 
         do_dfs(starting_point)
         return loops
+
 
     @staticmethod
     def prepare_loop_stats(field, path, owner):

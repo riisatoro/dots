@@ -40,7 +40,7 @@ class GameField extends Component {
     const yAxis = e.evt.layerY - cellSize / 2;
     const xPoint = Math.floor(xAxis / cellSize) + 1;
     const yPoint = Math.floor(yAxis / cellSize) + 1;
-    this.socket.send(JSON.stringify({ fieldPoint: [yPoint, xPoint], TYPE: TYPES.PLAYER_SET_DOT }));
+    this.socket.send(JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }));
   }
 
   render() {

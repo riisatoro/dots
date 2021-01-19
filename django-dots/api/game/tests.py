@@ -1,9 +1,10 @@
-
+from itertools import cycle
 from django.test import TestCase
 
 from random import randint, shuffle
 from .core import Field, Core
 from .structure import Point, GamePoint
+from .draw import draw_field
 
 
 class ApiFieldCreateFieldTest(TestCase):
@@ -428,100 +429,6 @@ class ApiCoreSortNewLoops(TestCase):
         self.assertEqual(set(field.empty_loops[1]), set(self.loops_1[1]))
 
 
-class ApiCoreSetPoint2(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(10, 10)
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 2)
-
-        self.points_1 = [
-            Point(2, 2), Point(3, 1), Point(3, 3), Point(4, 2)
-        ]
-
-        self.points_2 = [
-            Point(2, 2), Point(3, 1), Point(3, 3),
-            Point(6, 2), Point(5, 1), Point(5, 3),
-            Point(4, 2)
-        ]
-
-        self.points_3 = [
-            Point(1, 2), Point(1, 3),
-            Point(2, 1), Point(2, 4),
-            Point(3, 2), Point(3, 3),
-        ]
-
-        self.points_4 = [
-            Point(4, 1), Point(4, 4),
-            Point(5, 1), Point(5, 3),
-            Point(6, 2),
-        ]
-
-    def test_romb(self):
-        for point in self.points_1:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.assertEqual(len(self.field.empty_loops), 1)
-        self.assertIsNone(self.field.loops)
-
-    def test_enemy_in_romb(self):
-        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
-        for point in self.points_1:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.assertEqual(len(self.field.loops), 1)
-        self.assertIsNone(self.field.empty_loops)
-
-    def test_two_rombs_one_captured(self):
-        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
-        for point in self.points_2:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.assertEqual(len(self.field.loops), 1)
-        self.assertEqual(len(self.field.empty_loops), 1)
-
-    def test_two_rombs_two_captured(self):
-        self.field = Core.player_set_point(self.field, Point(3, 2), 2)
-        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
-        for point in self.points_2:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.assertEqual(len(self.field.loops), 2)
-        self.assertIsNone(self.field.empty_loops)
-
-    def test_two_loops_with_common(self):
-        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
-
-        for point in self.points_3:
-            self.field = Core.player_set_point(self.field, point, 1)
-        for point in self.points_4:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.points_4.append(Point(3, 2))
-        self.points_4.append(Point(3, 3))
-
-        self.assertEqual(len(self.field.loops), 1)
-        self.assertEqual(set(self.field.loops[1]), set(self.points_4))
-
-        self.assertEqual(len(self.field.empty_loops), 1)
-        self.assertEqual(set(self.field.empty_loops[1]), set(self.points_3))
-
-    def test_set_point_in_loop(self):
-        self.field = Core.player_set_point(self.field, Point(5, 2), 2)
-
-        for point in self.points_3:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        for point in self.points_4:
-            self.field = Core.player_set_point(self.field, point, 1)
-
-        self.field = Core.player_set_point(self.field, Point(2, 3), 2)
-
-        self.assertEqual(self.field.empty_loops, {})
-        self.assertEqual(len(self.field.loops), 2)
-
-        self.assertEqual(self.field.empty_loops, {})
-
-
 class ApiCoreFindLoopPath(TestCase):
     def setUp(self):
         self.p1 = [
@@ -535,45 +442,8 @@ class ApiCoreFindLoopPath(TestCase):
         print(Core.find_loop_in_path(self.p1))
         print(Core.find_loop_in_path(self.p2))
 
-class ApiCoreTestSpeedCalculation(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(11, 11)
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 2)
-
-        self.enemy = [
-            Point(4, 5),Point(4, 9),Point(5, 3),Point(6, 6),
-            Point(8, 4),Point(8, 10),Point(10, 5),Point(10, 8), Point(6, 8)
-        ]
-
-        self.points = [
-            Point(1, 2), Point(2, 1), Point(2, 3), Point(3, 2),
-            Point(4, 2),
-            Point(4, 3), Point(5, 2), Point(6, 2), Point(7, 3), Point(6, 4), Point(5, 4),
-            Point(6, 5), Point(5, 6), Point(4, 7), Point(3, 8), Point(2, 7), Point(2, 6), Point(2, 5), Point(3, 4),
-            Point(2, 9), Point(3, 10), Point(4, 10), Point(5, 9), Point(5, 8),
-            Point(6, 7), Point(7, 6),
-            Point(8, 3), Point(9, 4), Point(9, 5), Point(9, 6), Point(8, 7),
-            Point(8, 8), Point(7, 9), Point(6, 9),
-            Point(7, 10), Point(8, 11), Point(9, 10), Point(9, 9),
-            Point(10, 7), Point(10, 9), Point(11, 8),
-            Point(10, 3), Point(11, 4), Point(11, 6), Point(11, 5), 
-        ]
-
-    def test_normal(self):
-
-        for point in self.enemy:
-            self.field = Core.player_set_point(self.field, point, 2)
-
-        for point in self.points:
-            self.field = Core.player_set_point(self.field, point, 1)
-            draw_field(self.field)
-            print("loops", self.field.loops)
-            print("empty", self.field.empty_loops)
 
 
-
-import time
 from .draw import draw_field
 
 
@@ -684,6 +554,7 @@ class ApiCoreTestNewLoops(TestCase):
         for point in self.points:
             self.field = Core.process_point(self.field, point, 1)
 
+
 class ApiCoreTestStats(TestCase):
     def setUp(self):
         self.field = Field.create_field(5, 5)
@@ -717,5 +588,85 @@ class ApiCoreTestStats(TestCase):
         self.assertEqual(stats['enemy'], [])
         self.assertEqual(stats['captured'], [Point(2, 2)])
 
-class ApiCoreTestFindLoops(TestCase):
-    pass
+
+class ApiCoreBuildAllLoops(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(6, 6)
+        self.field = Field.add_player(self.field, 1)
+        self.field = Field.add_player(self.field, 1)
+        self.points_1 = [
+            Point(1, 1), Point(2, 1), Point(1, 2), Point(3, 2), Point(2, 3)
+        ]
+        self.points_2 = [
+            Point(2, 4), Point(3, 5), Point(4, 5), Point(5, 4), Point(5, 3), Point(4, 2)
+        ]
+        self.points_3 = [Point(5, 1), Point(6, 2)]
+
+        self.points_4 = [
+            Point(2, 1), Point(1, 2), Point(3, 2), Point(4, 1), Point(5, 2), Point(4, 3), Point(2, 3)
+            ]
+
+        self.result_loop_1 = [
+            Point(2, 3), Point(3, 2),  Point(2, 1), Point(1, 2)
+            ]
+        self.result_loop_2 = [
+            Point(4, 2), Point(5, 3), Point(5, 4), Point(4, 5), Point(3, 5), Point(2, 4), Point(2, 3), Point(3, 2)
+        ]
+
+        self.result_loop_4_1 = [
+            Point(x=4, y=3), Point(x=5, y=2), Point(x=4, y=1), Point(x=3, y=2)
+        ]
+
+        self.result_loop_4_2 = [
+            Point(x=2, y=3), Point(x=1, y=2), Point(x=2, y=1), Point(x=3, y=2)
+        ]
+
+    def test_rombus(self):
+        point = self.points_1[-1]
+        for p in self.points_1:
+            Core.process_point(self.field, p, 1)
+
+        self.assertEqual(len(self.field.new_houses), 1)
+        self.assertEqual(len(self.field.new_loops), 0)
+
+        c = cycle(self.result_loop_1)
+        r = zip(c, self.field.new_houses[0]['path'])
+        for p in r:
+            self.assertEqual(p[0], p[1])
+
+    def test_two_loops(self):
+        for p in self.points_1:
+            Core.process_point(self.field, p, 1)
+        for p in self.points_2:
+            Core.process_point(self.field, p, 1)
+
+        draw_field(self.field)
+        self.assertEqual(len(self.field.new_houses), 2)
+        self.assertEqual(len(self.field.new_loops), 0)
+
+        c = cycle(self.result_loop_1)
+        r = zip(c, self.field.new_houses[0]['path'])
+        for p in r:
+            self.assertEqual(p[0], p[1])
+
+        c = cycle(self.result_loop_2)
+        r = zip(c, self.field.new_houses[1]['path'])
+        for p in r:
+            self.assertEqual(p[0], p[1])
+
+    def test_eight_shape_loops(self):
+        for p in self.points_4:
+            Core.process_point(self.field, p, 1)
+
+        self.assertEqual(len(self.field.new_houses), 2)
+        print(self.field.new_houses)
+
+        c = cycle(self.result_loop_4_1)
+        r = zip(c, self.field.new_houses[0]['path'])
+        for p in r:
+            self.assertEqual(p[0], p[1])
+
+        c = cycle(self.result_loop_4_2)
+        r = zip(c, self.field.new_houses[1]['path'])
+        for p in r:
+            self.assertEqual(p[0], p[1])
