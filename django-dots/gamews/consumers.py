@@ -75,7 +75,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     print("EXCEPTION", e)
 
                 is_full = Field.is_full_field(new_field)
-                new_field = GameFieldSerializer().to_client(new_field, pop_values=["empty_loops"])
+                new_field = GameFieldSerializer().to_client(new_field)
                 new_field["is_full"] = is_full
                 new_field["colors"] = await self.get_user_colors(room_id)
                 new_field["turn"] = await self.get_who_has_turn(room_id)

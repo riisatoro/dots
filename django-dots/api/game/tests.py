@@ -1,3 +1,4 @@
+import json
 from itertools import cycle
 from django.test import TestCase
 
@@ -7,6 +8,20 @@ from .structure import Point, GamePoint
 from .draw import draw_field
 
 
+def prepare_field(data):
+    x, y = data["field"]
+    field = Field.create_field(x, y)
+
+    for player in data["players"]:
+        field = Field.add_player(field, player)
+    return field
+
+
+def tuple_to_point(path):
+    return [Point(x, y) for x, y in path]
+
+
+"""
 class ApiFieldCreateFieldTest(TestCase):
     def test_normal(self):
         height, width = 5, 10
@@ -444,9 +459,6 @@ class ApiCoreFindLoopPath(TestCase):
 
 
 
-from .draw import draw_field
-
-
 class ApiCoreDFS(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)
@@ -588,29 +600,34 @@ class ApiCoreTestStats(TestCase):
         self.assertEqual(stats['enemy'], [])
         self.assertEqual(stats['captured'], [Point(2, 2)])
 
+"""
+
 
 class ApiCoreBuildAllLoops(TestCase):
     def setUp(self):
-        self.field = Field.create_field(6, 6)
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 1)
-        self.points_1 = [
-            Point(1, 1), Point(2, 1), Point(1, 2), Point(3, 2), Point(2, 3)
-        ]
+        with open('django-dots/api/fixtures/field_and_points.json') as file:
+            self.data = json.load(file)
+            self.data = self.data['ApiCoreBuildAllLoops']
+
+        self.field = prepare_field(self.data)
+
         self.points_2 = [
-            Point(2, 4), Point(3, 5), Point(4, 5), Point(5, 4), Point(5, 3), Point(4, 2)
+            Point(2, 4), Point(3, 5), Point(4, 5), Point(
+                5, 4), Point(5, 3), Point(4, 2)
         ]
         self.points_3 = [Point(5, 1), Point(6, 2)]
 
         self.points_4 = [
-            Point(2, 1), Point(1, 2), Point(3, 2), Point(4, 1), Point(5, 2), Point(4, 3), Point(2, 3)
-            ]
+            Point(2, 1), Point(1, 2), Point(3, 2), Point(
+                4, 1), Point(5, 2), Point(4, 3), Point(2, 3)
+        ]
 
         self.result_loop_1 = [
             Point(2, 3), Point(3, 2),  Point(2, 1), Point(1, 2)
-            ]
+        ]
         self.result_loop_2 = [
-            Point(4, 2), Point(5, 3), Point(5, 4), Point(4, 5), Point(3, 5), Point(2, 4), Point(2, 3), Point(3, 2)
+            Point(4, 2), Point(5, 3), Point(5, 4), Point(4, 5), Point(
+                3, 5), Point(2, 4), Point(2, 3), Point(3, 2)
         ]
 
         self.result_loop_4_1 = [
@@ -622,20 +639,17 @@ class ApiCoreBuildAllLoops(TestCase):
         ]
 
     def test_rombus(self):
-        point = self.points_1[-1]
-        for p in self.points_1:
+        for p in tuple_to_point(self.data['points_1']):
             Core.process_point(self.field, p, 1)
 
         self.assertEqual(len(self.field.new_houses), 1)
         self.assertEqual(len(self.field.new_loops), 0)
 
-        c = cycle(self.result_loop_1)
-        r = zip(c, self.field.new_houses[0]['path'])
-        for p in r:
-            self.assertEqual(p[0], p[1])
+        loop = self.field.new_houses[0]['path']
+        self.assertTrue(self.loops_are_equal(loop, self.result_loop_1))
 
     def test_two_loops(self):
-        for p in self.points_1:
+        for p in tuple_to_point(self.data['points_1']):
             Core.process_point(self.field, p, 1)
         for p in self.points_2:
             Core.process_point(self.field, p, 1)
@@ -644,22 +658,16 @@ class ApiCoreBuildAllLoops(TestCase):
         self.assertEqual(len(self.field.new_houses), 2)
         self.assertEqual(len(self.field.new_loops), 0)
 
-        c = cycle(self.result_loop_1)
-        r = zip(c, self.field.new_houses[0]['path'])
-        for p in r:
-            self.assertEqual(p[0], p[1])
-
-        c = cycle(self.result_loop_2)
-        r = zip(c, self.field.new_houses[1]['path'])
-        for p in r:
-            self.assertEqual(p[0], p[1])
+        loop_1 = self.field.new_houses[0]['path']
+        loop_2 = self.field.new_houses[1]['path']
+        self.assertTrue(loop_1, self.result_loop_1)
+        self.assertTrue(loop_2, self.result_loop_2)
 
     def test_eight_shape_loops(self):
         for p in self.points_4:
             Core.process_point(self.field, p, 1)
 
         self.assertEqual(len(self.field.new_houses), 2)
-        print(self.field.new_houses)
 
         c = cycle(self.result_loop_4_1)
         r = zip(c, self.field.new_houses[0]['path'])
@@ -670,3 +678,46 @@ class ApiCoreBuildAllLoops(TestCase):
         r = zip(c, self.field.new_houses[1]['path'])
         for p in r:
             self.assertEqual(p[0], p[1])
+
+    def test_loops_comparison(self):
+        loop_1 = [Point(2, 1), Point(1, 2), Point(2, 3), Point(3, 2)]
+        loop_2 = [Point(1, 2), Point(2, 3), Point(3, 2), Point(2, 1)]
+        loop_3 = [Point(1, 2), Point(2, 3), Point(3, 2), Point(2, 2)]
+
+        self.assertFalse(self.loops_are_equal(loop_1, []))
+        self.assertFalse(self.loops_are_equal(loop_1, [*loop_1, loop_1[0]]))
+        self.assertFalse(self.loops_are_equal(loop_1, loop_3))
+                
+        self.assertTrue(self.loops_are_equal(loop_1, loop_1))
+        self.assertTrue(self.loops_are_equal(loop_1, loop_2))
+        self.assertTrue(self.loops_are_equal(loop_1, list(reversed(loop_1))))
+        self.assertTrue(self.loops_are_equal(loop_1, list(reversed(loop_2))))
+
+        self.assertFalse(self.loops_are_equal(loop_1, sorted(loop_1)))
+
+    def loops_are_equal(self, expected, actual):
+        if len(expected) != len(actual):
+            return False
+
+        if set(expected) != set(actual):
+            return False
+
+        common_start = cycle(actual)
+        while next(common_start) != expected[-1]:
+            pass
+
+        all_equal = all(
+            point_1 == point_2
+            for point_1, point_2 in zip(common_start, expected)
+        )
+
+        reversed_expected = list(reversed(expected))
+        while next(common_start) != reversed_expected[-1]:
+            pass
+
+        reversed_all_equal = all(
+            point_1 == point_2
+            for point_1, point_2 in zip(common_start, reversed_expected)
+        )
+
+        return all_equal or reversed_all_equal
