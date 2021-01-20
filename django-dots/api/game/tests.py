@@ -21,7 +21,59 @@ def tuple_to_point(path):
     return [Point(x, y) for x, y in path]
 
 
-"""
+def loops_are_equal(expected, actual):
+    if len(expected) != len(actual):
+        return False
+
+    if set(expected) != set(actual):
+        return False
+
+    common_start = cycle(actual)
+    while next(common_start) != expected[-1]:
+        pass
+
+    all_equal = all(
+        point_1 == point_2
+        for point_1, point_2 in zip(common_start, expected)
+    )
+
+    reversed_expected = list(reversed(expected))
+    while next(common_start) != reversed_expected[-1]:
+        pass
+
+    reversed_all_equal = all(
+        point_1 == point_2
+        for point_1, point_2 in zip(common_start, reversed_expected)
+    )
+
+    return all_equal or reversed_all_equal
+
+
+class ApiCoreTestLoopsAreEqual(TestCase):
+    def setUp(self):
+        with open('django-dots/api/fixtures/field_and_points.json') as file:
+            self.data = json.load(file)
+            self.data = self.data['ApiCoreTestLoopsAreEqual']
+
+        self.field = prepare_field(self.data)
+
+    def test_loops_comparison(self):
+        loop_1 = tuple_to_point(self.data['loop_1'])
+        loop_2 = tuple_to_point(self.data['loop_2'])
+        loop_3 = tuple_to_point(self.data['loop_1'])
+
+        self.assertFalse(loops_are_equal(loop_1, []))
+        self.assertFalse(loops_are_equal(loop_1, [*loop_1, loop_1[0]]))
+        self.assertFalse(loops_are_equal(loop_1, loop_3))
+
+        self.assertTrue(loops_are_equal(loop_1, loop_1))
+        self.assertTrue(loops_are_equal(loop_1, loop_2))
+        self.assertTrue(loops_are_equal(loop_1, list(reversed(loop_1))))
+        self.assertTrue(loops_are_equal(loop_1, list(reversed(loop_2))))
+
+        self.assertFalse(loops_are_equal(loop_1, sorted(loop_1)))
+
+
 class ApiFieldCreateFieldTest(TestCase):
     def test_normal(self):
         height, width = 5, 10
@@ -54,6 +106,7 @@ class ApiFieldCreateFieldTest(TestCase):
             Field.create_field(0, 0)
 
 
+"""
 class ApiFieldAddPlayerTest(TestCase):
     def setUp(self):
         self.field = Field.create_field(5, 5)
@@ -328,31 +381,6 @@ class ApiCoreIsNeighbours(TestCase):
             self.assertFalse(Core.is_neighbour(self.point, point))
 
 
-class ApiCoreFindLoops(TestCase):
-    def setUp(self):
-        self.no_loop = [
-            Point(1, 2), Point(2, 3), Point(3, 3),
-            Point(4, 2), Point(3, 1),
-        ]
-
-        self.loop = [
-            Point(1, 2), Point(2, 3), Point(3, 3),
-            Point(4, 2), Point(3, 1), Point(2, 1),
-        ]
-
-    def test_is_loop(self):
-        loops = Core.find_loop_in_path(self.loop)
-        self.assertTrue(loops)
-
-    def test_is_not_a_loop(self):
-        loops = Core.find_loop_in_path(self.no_loop)
-        self.assertFalse(loops)
-
-    def test_empty_loop(self):
-        loops = Core.find_loop_in_path([])
-        self.assertFalse(loops)
-
-
 class ApiCoreFindAllNewLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(20, 20)
@@ -456,66 +484,7 @@ class ApiCoreFindLoopPath(TestCase):
     def test_normal(self):
         print(Core.find_loop_in_path(self.p1))
         print(Core.find_loop_in_path(self.p2))
-
-
-
-class ApiCoreDFS(TestCase):
-    def setUp(self):
-        self.field = Field.create_field(10, 10)
-        self.player = Field.add_player(self.field, 5)
-        self.points_1 = [
-            Point(2, 3), Point(3, 2), Point(3 ,4), Point(4, 3)
-        ]
-        self.points_2 = [
-            Point(5, 3), Point(6, 4), Point(5, 5), Point(4, 5)
-        ]
-
-        self.points_3 = [
-            Point(6, 6), Point(6, 7), Point(5, 6), Point(5, 7),
-            Point(4, 6), Point(4, 7), Point(3, 6), Point(3, 8),
-            Point(2, 6), Point(2, 7), Point(2, 8),
-        ]
-
-        self.points_4 = [
-            Point(7, 5), Point(7, 8), Point(8, 6), Point(8, 7)
-        ]
-
-        self.points_5 = [
-            Point(6, 2), Point(7, 2), Point(8, 3), Point(8, 4), 
-        ]
-
-        self.points_6 = [Point(4, 1), Point(5, 1)]
-        self.points_7 = [Point(2, 1), Point(1, 2)]
-        self.points_8 = [
-            Point(8, 9), Point(9, 9), Point(9, 6), Point(10, 7), Point(10, 8),
-        ]
-        self.points_9 = [
-            Point(9, 2), Point(9, 3), Point(10, 2), Point(10, 3), Point(10, 4), Point(10, 5),
-        ]
-
-        self.full_points_set = [
-            *self.points_1, *self.points_2, *self.points_3, *self.points_4,
-            *self.points_5, *self.points_6, *self.points_7, *self.points_8,
-            *self.points_9
-        ]
-
-        self.enemies = [
-            Point(3, 7), # Point(3, 3), Point(5, 2), Point(4, 4), Point(9, 8)
-        ]
-
-    def test_full(self):
-        self.field = Field.add_player(self.field, 1)
-        self.field = Field.add_player(self.field, 2)
-
-        for point in self.enemies:
-            self.field = Core.process_point(self.field, point, 2)
-
-        for point in self.full_points_set:
-            self.field = Core.process_point(self.field, point, 1)
-
-            if self.field.new_loops or self.field.new_houses:
-                pass
-                
+              
 
 class ApiCoreTestNewHomes(TestCase):
     def setUp(self):
@@ -638,6 +607,13 @@ class ApiCoreBuildAllLoops(TestCase):
             Point(x=2, y=3), Point(x=1, y=2), Point(x=2, y=1), Point(x=3, y=2)
         ]
 
+    def test_simple(self):
+        data = self.data["test_simple"]
+        for p in tuple_to_point(data['points']):
+            self.field = Core.process_point(self.field, p, 1)
+        #import bpdb; bpdb.set_trace()
+        pass
+
     def test_rombus(self):
         for p in tuple_to_point(self.data['points_1']):
             Core.process_point(self.field, p, 1)
@@ -646,7 +622,7 @@ class ApiCoreBuildAllLoops(TestCase):
         self.assertEqual(len(self.field.new_loops), 0)
 
         loop = self.field.new_houses[0]['path']
-        self.assertTrue(self.loops_are_equal(loop, self.result_loop_1))
+        self.assertTrue(loops_are_equal(loop, self.result_loop_1))
 
     def test_two_loops(self):
         for p in tuple_to_point(self.data['points_1']):
@@ -679,45 +655,56 @@ class ApiCoreBuildAllLoops(TestCase):
         for p in r:
             self.assertEqual(p[0], p[1])
 
-    def test_loops_comparison(self):
-        loop_1 = [Point(2, 1), Point(1, 2), Point(2, 3), Point(3, 2)]
-        loop_2 = [Point(1, 2), Point(2, 3), Point(3, 2), Point(2, 1)]
-        loop_3 = [Point(1, 2), Point(2, 3), Point(3, 2), Point(2, 2)]
 
-        self.assertFalse(self.loops_are_equal(loop_1, []))
-        self.assertFalse(self.loops_are_equal(loop_1, [*loop_1, loop_1[0]]))
-        self.assertFalse(self.loops_are_equal(loop_1, loop_3))
-                
-        self.assertTrue(self.loops_are_equal(loop_1, loop_1))
-        self.assertTrue(self.loops_are_equal(loop_1, loop_2))
-        self.assertTrue(self.loops_are_equal(loop_1, list(reversed(loop_1))))
-        self.assertTrue(self.loops_are_equal(loop_1, list(reversed(loop_2))))
+class TestIsNeigbors(TestCase):
+    def setUp(self):
+        self.loop = [
+            Point(1, 1), Point(2, 2), Point(2, 3), Point(3, 4), Point(
+                3, 3), Point(3, 2), Point(3, 1), Point(2, 1)
+        ]
 
-        self.assertFalse(self.loops_are_equal(loop_1, sorted(loop_1)))
+        self.not_a_loop = [
+            Point(1, 1), Point(2, 5), Point(3, 2), Point(3, 1), Point(5, 1)
+        ]
 
-    def loops_are_equal(self, expected, actual):
-        if len(expected) != len(actual):
-            return False
+    def test_chain(self):
+        self.assertTrue(Core.is_neighbours(self.loop))
+        self.assertFalse(Core.is_neighbours(self.not_a_loop))
 
-        if set(expected) != set(actual):
-            return False
 
-        common_start = cycle(actual)
-        while next(common_start) != expected[-1]:
+class TestFreezing(TestCase):
+    def setUp(self):
+        with open('django-dots/api/fixtures/field_and_points.json') as file:
+            self.data = json.load(file)
+            self.data = self.data['TestFreezing']
+        self.field = prepare_field(self.data)
+
+    def test_freeze(self):
+        for _ in range(15 * 15):
+            self.field.field[randint(1, 30)][randint(1, 30)].owner = 1
+
+        random_points = [Point(randint(1, 30), randint(1, 30))
+                         for _ in range(30)]
+        for p in random_points:
+            self.field = Core.process_point(self.field, p, 1)
+
+
+class TestFilterRandomLoops(TestCase):
+    def setUp(self):
+        with open('django-dots/api/fixtures/field_and_points.json') as file:
+            self.data = json.load(file)
+            self.data = self.data['TestFilterRandomLoops']
+        self.field = prepare_field(self.data)
+
+    def test_5_loops(self):
+        points = self.data['points_1']
+        for p in tuple_to_point(points):
+            Core.process_point(self.field, p, 1)
+
+        cycle_results = cycle([tuple_to_point(x) for x in self.data['result_loops']])
+        while len(next(cycle_results)) != len(self.field.new_houses[-1]['path']):
             pass
 
-        all_equal = all(
-            point_1 == point_2
-            for point_1, point_2 in zip(common_start, expected)
-        )
-
-        reversed_expected = list(reversed(expected))
-        while next(common_start) != reversed_expected[-1]:
-            pass
-
-        reversed_all_equal = all(
-            point_1 == point_2
-            for point_1, point_2 in zip(common_start, reversed_expected)
-        )
-
-        return all_equal or reversed_all_equal
+        results = list(zip(cycle_results, self.field.new_houses))
+        for r in results:
+            self.assertTrue(loops_are_equal(r[0], r[1]['path']))

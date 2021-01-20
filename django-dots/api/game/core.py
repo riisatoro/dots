@@ -49,7 +49,8 @@ class Field:
     @staticmethod
     def add_player_to_score(field: GameField, player: int):
         if not field.players or player not in field.players:
-            raise ValueError("Can't add player to the score table - invalid player ID")
+            raise ValueError(
+                "Can't add player to the score table - invalid player ID")
 
         if field.score:
             field.score[player] = 0
@@ -82,9 +83,11 @@ class Core:
     @staticmethod
     def process_point(field: GameField, point: Point, owner: int):
         field = Field.change_owner(field, point, owner)
-    
-        all_paths = Core.build_all_loops(field.field, point, owner)
 
+        from .draw import draw_field
+        draw_field(field)
+
+        all_paths = Core.build_all_loops(field.field, point, owner)
         path_stats = [
             {
                 'path': path,
@@ -96,8 +99,21 @@ class Core:
 
         normal_paths = [
             x for x in path_stats
-            if x['stats']['empty'] or x['stats']['enemy']
+            if Core.is_neighbours(x['path'])
+            and x['stats']['empty']
+            or x['stats']['enemy']
         ]
+
+        for index, loop in enumerate(normal_paths):
+            for index_2, loop_2 in enumerate(normal_paths):
+                if index != index_2:
+                    if Core.loops_are_equal(loop['path'], loop_2['path'])\
+                            or set(loop['path']).issubset(set(loop_2['path'])):
+                        normal_paths.pop(index_2)
+
+        if point == Point(4, 7):
+            #import bpdb; bpdb.set_trace()
+            pass
 
         loops = [
             p for p in normal_paths
@@ -125,7 +141,6 @@ class Core:
         possible_houses = [*old_houses, *empty_loops]
         field = Core.add_houses(field, possible_houses)
 
-        # from .draw import draw_field; draw_field(field)
         return field
 
     @staticmethod
@@ -141,7 +156,7 @@ class Core:
 
         game_field.new_loops.append({'owner': owner, 'path': path})
         return game_field
-    
+
     @staticmethod
     def add_houses(game_field, houses):
         captured_empty_points = set()
@@ -163,7 +178,7 @@ class Core:
             game_field.new_houses.append({
                 'owner': owner, 'path': path
             })
-        
+
         for house in houses:
             add_new_house(house['path'], house['owner'])
 
@@ -192,15 +207,15 @@ class Core:
             return [
                 *build_path(parents[point], root),
                 point,
-            ] 
+            ]
 
         def do_dfs(point):
             neighbors = [
                 Point(x, y)
                 for x in range(point.x-1, point.x+2)
-                for y in range(point.y-1, point.y+2) 
+                for y in range(point.y-1, point.y+2)
             ]
-            
+
             related_neighbors = [
                 p for p in neighbors
                 if p != point
@@ -211,8 +226,9 @@ class Core:
             parent = parents.get(point)
             for neigbor in related_neighbors:
                 neigbor_parent = parents.get(neigbor)
+                #import bpdb; bpdb.set_trace()
                 if neigbor_parent and neigbor_parent != point:
-                    path = build_path(neigbor, starting_point)
+                    path = build_path(neigbor, point)
                     if len(path) > 3:
                         loops.append(path)
                     continue
@@ -220,6 +236,20 @@ class Core:
                 parents[neigbor] = point
                 do_dfs(neigbor)
                 parents.pop(neigbor)
+
+        neighbors = [
+            Point(x, y)
+            for x in range(starting_point.x-1, starting_point.x+2)
+            for y in range(starting_point.y-1, starting_point.y+2)
+        ]
+        related_neighbors = [
+            p for p in neighbors
+            if p != starting_point
+            and not field[p.y][p.x].is_captured
+            and field[p.y][p.x].owner == owner
+        ]
+        if len(related_neighbors) < 2:
+            return []
 
         do_dfs(starting_point)
         return loops
@@ -268,3 +298,38 @@ class Core:
         vertical = abs(point_1[1] - point_2[1]) < 2
         diagonal = (horisontal - vertical) <= 2
         return not equals and horisontal and vertical and diagonal
+
+    @staticmethod
+    def is_neighbours(path):
+        for i in range(1, len(path)):
+            if not Core.is_neighbour(path[i-1], path[i]):
+                return False
+        return True
+
+    @staticmethod
+    def loops_are_equal(expected, actual):
+        if len(expected) != len(actual):
+            return False
+
+        if set(expected) != set(actual):
+            return False
+
+        common_start = itertools.cycle(actual)
+        while next(common_start) != expected[-1]:
+            pass
+
+        all_equal = all(
+            point_1 == point_2
+            for point_1, point_2 in zip(common_start, expected)
+        )
+
+        reversed_expected = list(reversed(expected))
+        while next(common_start) != reversed_expected[-1]:
+            pass
+
+        reversed_all_equal = all(
+            point_1 == point_2
+            for point_1, point_2 in zip(common_start, reversed_expected)
+        )
+
+        return all_equal or reversed_all_equal

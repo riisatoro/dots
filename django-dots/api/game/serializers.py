@@ -3,6 +3,7 @@ from dataclasses import asdict
 
 from .structure import GamePoint, Point
 from .core import Field
+from .draw import draw_field
 
 
 class GameFieldSerializer:
@@ -45,7 +46,6 @@ class GameFieldSerializer:
         data.loops = []
         for x in data.new_loops:
             data.loops.append(x['path'])
-            print(x["path"])
 
         client_data = asdict(data)
         if pop_values:
