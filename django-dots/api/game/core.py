@@ -85,8 +85,10 @@ class Core:
         field = Field.change_owner(field, point, owner)
 
         
+        from .draw import draw_field
+        draw_field(field)
 
-        all_paths = Core.build_all_loops(field.field, point, owner)
+        all_paths = Core.build_loops_cached(field.field, point, owner)
 
         # get statistic for all paths
         path_stats = [
@@ -128,8 +130,7 @@ class Core:
             field = Core.add_new_loop(
                 field,
                 possible_loop['path'],
-                possible_loop['owner'],
-                old_houses
+                possible_loop['owner']
             )
 
         field.new_houses = []
@@ -139,14 +140,10 @@ class Core:
             if not p['stats']['enemy']
         ]
         
-        empty_loops.sort(key = lambda x: len(x['path']))
-        
         possible_houses = [*old_houses, *empty_loops]
+        possible_houses.sort(key = lambda x: len(x['path']))
+
         field = Core.add_houses(field, possible_houses)
-
-        from .draw import draw_field
-        draw_field(field)
-
         return field
 
     @staticmethod
@@ -202,6 +199,57 @@ class Core:
         return dict(result)
 
     @staticmethod
+    def build_loops_cached(field, starting_point, owner):
+        cached_paths = {}
+        loops = []
+
+        def generate_neighbors(point):
+            neighbors = [
+                Point(x, y)
+                for x in range(point.x-1, point.x+2)
+                for y in range(point.y-1, point.y+2)
+            ]
+
+            related_neighbors = [
+                p for p in neighbors
+                if p != point
+                and not field[p.y][p.x].is_captured
+                and field[p.y][p.x].owner == owner
+            ]
+            return related_neighbors
+
+        def dfs(point, parents):
+            if point in cached_paths:
+                return cached_paths[point]
+
+            parent_point = parents[0] if len(parents) > 0 else None
+
+            neighbors = generate_neighbors(point)
+            related_neighbors = [
+                p for p in neighbors
+                if p != parent_point
+                and len(generate_neighbors(p)) < 8
+            ]
+            new_parents = [point] + parents
+
+            cached_paths[point] = []
+            for neighbor in related_neighbors:
+                if neighbor in parents:
+                    cached_paths[point].append((neighbor, point))
+                else:
+                    for path in dfs(neighbor, new_parents):
+                        if path[0] == point:
+                            if len(path) > 3:
+                                loops.append(path)
+                        else:
+                            cached_paths[point].append(path + (point,))
+
+            return cached_paths[point]
+
+        dfs(starting_point, [])
+        return loops
+
+    @staticmethod
     def build_all_loops(field, starting_point, owner):
         path_root = "ROOT"
         parents = {starting_point: path_root}
@@ -232,7 +280,6 @@ class Core:
             parent = parents.get(point)
             for neigbor in related_neighbors:
                 neigbor_parent = parents.get(neigbor)
-                #import bpdb; bpdb.set_trace()
                 if neigbor_parent and neigbor_parent != point:
                     path = build_path(neigbor, point)
                     if len(path) > 3:

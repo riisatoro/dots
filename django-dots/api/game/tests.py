@@ -679,7 +679,7 @@ class TestFreezing(TestCase):
             self.data = self.data['TestFreezing']
         self.field = prepare_field(self.data)
 
-    def test_freeze(self):
+    """def test_freeze(self):
         for _ in range(15 * 15):
             self.field.field[randint(1, 30)][randint(1, 30)].owner = 1
 
@@ -687,14 +687,15 @@ class TestFreezing(TestCase):
                          for _ in range(30)]
         for p in random_points:
             self.field = Core.process_point(self.field, p, 1)
-
+"""
     def fill_all(self):
-        self.field = Field.create_field(5, 5)
+        self.field = Field.create_field(7, 7)
         for y, row in enumerate(self.field.field):
             for x, point in enumerate(row):
-                if not point.border and y < 4:
+                if not point.border:
                     point.owner = 1
-        print(len(Core.build_all_loops(self.field.field, Point(1, 1), 1)))
+        loops = Core.build_loops_cached(self.field.field, Point(1, 1), 1)
+        print(len(loops))
 
 
 class TestFilterRandomLoops(TestCase):
