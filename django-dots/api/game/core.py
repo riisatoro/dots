@@ -104,6 +104,8 @@ class Core:
             or x['stats']['enemy']
         ]
 
+        # drop duplicates
+
         for index, loop in enumerate(normal_paths):
             for index_2, loop_2 in enumerate(normal_paths):
                 if index != index_2:
@@ -111,9 +113,12 @@ class Core:
                             or set(loop['path']).issubset(set(loop_2['path'])):
                         normal_paths.pop(index_2)
 
-        if point == Point(4, 7):
-            #import bpdb; bpdb.set_trace()
-            pass
+        for index, x in enumerate(normal_paths):
+            if x['stats']['own'] and not x['stats']['path_captured']:
+                normal_paths.remove(x)
+
+        if point == Point(4, 8):
+            pass # import bpdb; bpdb.set_trace()
 
         loops = [
             p for p in normal_paths

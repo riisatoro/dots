@@ -688,6 +688,14 @@ class TestFreezing(TestCase):
         for p in random_points:
             self.field = Core.process_point(self.field, p, 1)
 
+    def fill_all(self):
+        self.field = Field.create_field(5, 5)
+        for y, row in enumerate(self.field.field):
+            for x, point in enumerate(row):
+                if not point.border and y < 4:
+                    point.owner = 1
+        print(len(Core.build_all_loops(self.field.field, Point(1, 1), 1)))
+
 
 class TestFilterRandomLoops(TestCase):
     def setUp(self):
@@ -708,3 +716,4 @@ class TestFilterRandomLoops(TestCase):
         results = list(zip(cycle_results, self.field.new_houses))
         for r in results:
             self.assertTrue(loops_are_equal(r[0], r[1]['path']))
+
