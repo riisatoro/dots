@@ -7,7 +7,6 @@ Point = namedtuple("Point", ["x", "y"])
 @dataclass
 class GamePoint:
     owner: int = None
-    captured: list = None
     border: bool = False
     captured_by: list = field(default_factory=list)
 

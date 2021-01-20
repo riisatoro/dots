@@ -717,3 +717,19 @@ class TestFilterRandomLoops(TestCase):
         for r in results:
             self.assertTrue(loops_are_equal(r[0], r[1]['path']))
 
+class TestTwoPlayesCapture(TestCase):
+    def setUp(self):
+        with open('django-dots/api/fixtures/field_and_points.json') as file:
+            self.data = json.load(file)
+            self.data = self.data['TestTwoPlayesCapture']
+        self.field = prepare_field(self.data)
+        self.points_1 = tuple_to_point(self.data['points_1'])
+        self.points_2 = tuple_to_point(self.data['points_2'])
+
+    def test_two_rhombus(self):
+        player_moves = list(zip(self.points_1, self.points_2))
+        for point in player_moves:
+            self.field = Core.process_point(self.field, point[0], 1)
+            self.field = Core.process_point(self.field, point[1], 2)
+
+        import bpdb; bpdb.set_trace()

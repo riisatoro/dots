@@ -74,7 +74,7 @@ class Field:
     def is_full_field(field: GameField):
         for row in field.field:
             for point in row:
-                if point.owner is None and point.captured is None and not point.border:
+                if not point.owner and not point.is_captured and not point.border:
                     return False
         return True
 
@@ -84,19 +84,21 @@ class Core:
     def process_point(field: GameField, point: Point, owner: int):
         field = Field.change_owner(field, point, owner)
 
-        from .draw import draw_field
-        draw_field(field)
+        
 
         all_paths = Core.build_all_loops(field.field, point, owner)
+
+        # get statistic for all paths
         path_stats = [
             {
                 'path': path,
                 'owner': owner,
                 'stats': Core.prepare_loop_stats(field.field, path, owner)
             }
-            for path in all_paths if Core.is_neighbour(path[0], path[-1])
+            for path in all_paths if Core.is_neighbours(path)
         ]
 
+        # get all paths that can be loops or houses
         normal_paths = [
             x for x in path_stats
             if Core.is_neighbours(x['path'])
@@ -104,37 +106,30 @@ class Core:
             or x['stats']['enemy']
         ]
 
-        # drop duplicates
-
-        for index, loop in enumerate(normal_paths):
-            for index_2, loop_2 in enumerate(normal_paths):
-                if index != index_2:
-                    if Core.loops_are_equal(loop['path'], loop_2['path'])\
-                            or set(loop['path']).issubset(set(loop_2['path'])):
-                        normal_paths.pop(index_2)
-
-        for index, x in enumerate(normal_paths):
-            if x['stats']['own'] and not x['stats']['path_captured']:
-                normal_paths.remove(x)
-
-        if point == Point(4, 8):
-            pass # import bpdb; bpdb.set_trace()
-
+        
         loops = [
             p for p in normal_paths
             if p['stats']['enemy']
         ]
+        loops.sort(key = lambda x: len(x['path']))
 
         for loop in loops:
             field = Core.add_new_loop(field, loop['path'], owner)
 
+        # process houses
+        # get already found houses from the prev moves
         old_houses = field.new_houses
 
+        if point == Point(2, 3):
+            pass #import bpdb; bpdb.set_trace()
+
+        # check if old houses now a loop with an enemy point
         for possible_loop in old_houses:
             field = Core.add_new_loop(
                 field,
                 possible_loop['path'],
-                possible_loop['owner']
+                possible_loop['owner'],
+                old_houses
             )
 
         field.new_houses = []
@@ -143,8 +138,14 @@ class Core:
             p for p in normal_paths
             if not p['stats']['enemy']
         ]
+        
+        empty_loops.sort(key = lambda x: len(x['path']))
+        
         possible_houses = [*old_houses, *empty_loops]
         field = Core.add_houses(field, possible_houses)
+
+        from .draw import draw_field
+        draw_field(field)
 
         return field
 
@@ -171,7 +172,7 @@ class Core:
             if stats['enemy'] or stats['path_captured']:
                 return
 
-            all_points_processed = any(
+            all_points_processed = all(
                 p in captured_empty_points for p in stats['empty']
             )
             if all_points_processed:
@@ -284,7 +285,7 @@ class Core:
 
         for point, point_data in points:
             if polygon.contains(shapePoint(point)):
-                if point_data.is_captured:
+                if point_data.is_captured and point_data.captured_by[-1] == owner:
                     result['captured'].append(point)
                 elif point_data.owner == owner:
                     result['own'].append(point)

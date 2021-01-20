@@ -57,9 +57,8 @@ function createLoopFigure(field, loops, cellSize, playerColors) {
   };
 
   const jsxLoop = [];
-  Object.keys(loops).forEach((key) => {
-    const loop = loops[key];
-    const { owner } = field[loop[0][0]][loop[0][1]];
+  loops.forEach((loop) => {
+    const { owner } = field[loop[0][1]][loop[0][0]];
     const color = colorTable[playerColors[owner]];
     const chainPoints = [];
     loop.forEach((point) => {

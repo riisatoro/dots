@@ -117,6 +117,7 @@ export default function updateState(state = initialState, action) {
 
     case TYPES.PLAYER_SET_DOT: {
       const { data } = action.payload;
+      console.log(data);
       if (data.is_full) {
         return {
           ...state,
