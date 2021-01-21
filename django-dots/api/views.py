@@ -97,8 +97,9 @@ class GameRoomView(APIView):
         if already_waiting:
             return Response(
                 {"error": True, "message": "Unexpected color or user already created a room."},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        # ---
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
+
         field = Field.add_player(Field.create_field(size, size), request.user.id)
         room = models.GameRoom(field=GameFieldSerializer().to_database(field), size=size)
 
@@ -108,10 +109,18 @@ class GameRoomView(APIView):
         except ValidationError:
             return Response(
                 {"error": True, "message": "Unexpected field size."},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
         user_game.save()
+
+        data = models.UserGame.objects.filter(game_room__id=room.id).all()
+        colors = {}
+        score = {}
+        for color in data:
+            colors[color.user.id] = color.color
+            score[color.user.id] = 0
 
         return Response({
             "error": False,
@@ -119,7 +128,9 @@ class GameRoomView(APIView):
             "room_id": room.id,
             "field": room.field,
             "field_size": room.size,
-            "turn": request.user.id,
+            "turn": int(request.user.id),
+            "colors": colors,
+            "score": score
         })
 
 
@@ -164,7 +175,23 @@ class GameRoomJoin(APIView):
         owner.turn = True
         room.save()
         owner.save()
-        return Response({"error": False, "field": room.field, "field_size": room.size, "room_id": room_id, "turn": False})
+
+        data = models.UserGame.objects.filter(game_room__id=room.id).all()
+        colors = {}
+        score = {}
+        for color in data:
+            colors[color.user.id] = color.color
+            score[color.user.id] = 0
+
+        return Response({
+            "error": False,
+            "field": room.field,
+            "field_size": room.size,
+            "room_id": room_id,
+            "turn": int(data[0].user.id),
+            "colors": colors,
+            "score": score
+        })
 
 
 class GameRoomLeave(APIView):

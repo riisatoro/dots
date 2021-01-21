@@ -122,7 +122,7 @@ GameField.propTypes = {
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
   turn: PropTypes.number,
-  loops: PropTypes.object,
+  loops: PropTypes.array,
   gameResults: PropTypes.bool.isRequired,
   cellSize: PropTypes.number.isRequired,
   playerColors: PropTypes.object.isRequired,
@@ -131,8 +131,8 @@ GameField.propTypes = {
 };
 
 GameField.defaultProps = {
-  turn: '',
-  loops: {},
+  turn: -1,
+  loops: [],
 };
 
 const mapStateToProps = (state) => {

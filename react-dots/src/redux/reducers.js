@@ -1,6 +1,6 @@
 import TYPES from './types';
 
-import loadState from './local_state';
+import { loadState, setInitial } from './local_state';
 
 const initialState = loadState();
 const colorTitle = ['O', 'R', 'B', 'Y', 'G'];
@@ -49,11 +49,10 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.SEND_LOGOUT_REQUEST: {
+      localStorage.clear();
+      const clearState = setInitial();
       return {
-        ...state,
-        user: { auth: false, token: '' },
-        components: { },
-        game_end: false,
+        ...clearState,
       };
     }
 
@@ -79,8 +78,10 @@ export default function updateState(state = initialState, action) {
           socket: socketData,
           components: { gameField: true },
           field: reply.field.field,
-          turn: state.user.username,
+          turn: reply.turn,
+          playerColors: reply.colors,
           gameStarted: true,
+          score: reply.score,
           loops: [],
         };
       }
@@ -108,7 +109,9 @@ export default function updateState(state = initialState, action) {
           components: { gameField: true },
           field: reply.field.field,
           turn: reply.turn,
+          playerColors: reply.colors,
           gameStarted: true,
+          score: reply.score,
           loops: [],
         };
       }

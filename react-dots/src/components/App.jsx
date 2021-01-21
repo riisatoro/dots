@@ -19,6 +19,7 @@ function App(props) {
     <section className="App">
       <Router>
         <Header />
+        { !authorized ? <Redirect to="/auth" /> : ''}
         <Switch>
 
           <Route path="/auth">

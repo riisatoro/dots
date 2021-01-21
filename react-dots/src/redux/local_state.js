@@ -16,7 +16,7 @@ const setInitial = () => (
     game_end: false,
     gameResults: false,
 
-    playerColor: 'Black',
+    playerColor: '',
     playerScore: 0,
 
     loops: [],
@@ -28,6 +28,8 @@ const setInitial = () => (
     leaders: [],
     gameInterrupted: false,
     gameStarted: false,
+
+    components: { },
   }
 );
 
@@ -41,4 +43,4 @@ const loadState = () => {
   return state;
 };
 
-export default loadState;
+export { loadState, setInitial };

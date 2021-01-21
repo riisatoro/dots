@@ -74,17 +74,15 @@ Results.propTypes = {
   userID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
-  loops: PropTypes.object,
-  gameResults: PropTypes.bool.isRequired,
+  loops: PropTypes.array,
   cellSize: PropTypes.number.isRequired,
   playerColors: PropTypes.object.isRequired,
   score: PropTypes.object.isRequired,
   closeResults: PropTypes.func.isRequired,
-  turn: PropTypes.number.isRequired,
 };
 
 Results.defaultProps = {
-  loops: {},
+  loops: [],
 };
 
 const mapStateToProps = (state) => {
