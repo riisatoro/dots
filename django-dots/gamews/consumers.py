@@ -2,6 +2,7 @@ import json
 from . import types
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from django.db import transaction
 
 from api.models import GameRoom, UserGame
 from api.game.core import Core, Field
@@ -63,11 +64,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 new_field = field
                 try:
                     new_field = Core.process_point(field, point, user_id)
-                    await self.update_field(
-                        GameFieldSerializer().to_database(new_field),
-                        room_id
-                    )
-                    await self.change_player_turn(room_id)
+                    await self.save_field_and_change_turn(room_id, new_field)
+
                 except Exception as e:
                     print("EXCEPTION", e)
 
@@ -114,21 +112,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return colors
 
     @database_sync_to_async
-    def update_field(self, field, room_id):
-        GameRoom.objects.filter(id=room_id).update(field=field)
-
-    @database_sync_to_async
-    def change_player_turn(self, room_id):
-        user1, user2 = UserGame.objects.filter(game_room=room_id).all()
-        user1.turn = not user1.turn
-        user2.turn = not user2.turn
-        user1.save()
-        user2.save()
-        if user1.turn:
-            return user1.user.username
-        return user2.user.username
-
-    @database_sync_to_async
     def close_current_game(self, room_id):
         is_room = GameRoom.objects.filter(id=room_id)
         if is_room.exists():
@@ -147,3 +130,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_who_has_turn(self, room_id):
         return UserGame.objects.get(game_room_id=room_id, turn=True).user.id
+
+    @database_sync_to_async
+    def save_field_and_change_turn(self, room, field):
+        with transaction.atomic():
+            GameRoom.objects.filter(id=room).update(
+                field=GameFieldSerializer().to_database(field)
+            )
+            
+            user1, user2 = UserGame.objects.filter(game_room=room).all()
+            user1.turn = not user1.turn
+            user2.turn = not user2.turn
+            user1.save()
+            user2.save()
+            if user1.turn:
+                return user1.user.username
+            return user2.user.username

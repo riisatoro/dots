@@ -194,9 +194,7 @@ class GameRoomLeave(APIView):
         return Response()
 
     def post(self, request):
-        room = models.UserGame.objects.filter(
-            user=request.user, game_room__is_started=True, game_room__is_ended=False)\
-            .get().game_room
-        room.is_ended = True
-        room.save()
+        models.UserGame.objects.filter(
+            user=request.user, game_room__is_started=True, game_room__is_ended=False
+        ).update(room__is_ended=True)
         return Response()
