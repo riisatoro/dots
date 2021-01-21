@@ -72,7 +72,10 @@ class GameField extends Component {
     const userColorKey = playerColors[userID];
 
     const userColor = `Your points are ${humanTextColor[userColorKey]}`;
-    const textTurn = `Now is ${humanTextColor[colorKey]} turn`;
+    let textTurn = 'Now is NOT YOUR turn';
+    if (colorKey === userColorKey) {
+      textTurn = 'Now is YOUR turn';
+    }
 
     let textScore = '';
     Object.keys(score).forEach((key) => {
