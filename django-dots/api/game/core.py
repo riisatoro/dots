@@ -112,7 +112,6 @@ class Core:
 
         possible_houses = [*old_houses, *empty_loops]
         possible_houses.sort(key=lambda x: len(x['path']))
-        possible_houses.sort(key=lambda x: len(x['stats']['own']))
 
         field = Core.add_houses(field, possible_houses)
 

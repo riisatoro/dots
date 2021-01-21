@@ -1,6 +1,5 @@
 import json
 from . import types
-from django.contrib.auth.models import AnonymousUser
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 
@@ -83,9 +82,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
             await self.channel_layer.group_discard(room_group_name, self.channel_name)
 
-        else:
-            self.response = {"TYPE": "UNKNOWN", "error": True, "message": "This action is not allowed!"}
-
         await self.channel_layer.group_send(
             'game_room_' + room_id,
             {
@@ -104,12 +100,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return GameRoom.objects.get(id=room_id).size
 
     @database_sync_to_async
-    def user_is_auth(self, user):
-        if user == AnonymousUser:
-            return False
-        return True
-
-    @database_sync_to_async
     def get_game_field(self, room_id, user_id):
         game = UserGame.objects.filter(user=user_id, game_room=room_id)
         if game.exists():
@@ -125,9 +115,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def update_field(self, field, room_id):
-        db_field = GameRoom.objects.get(id=room_id)
-        db_field.field = field
-        db_field.save()
+        GameRoom.objects.filter(id=room_id).update(field=field)
 
     @database_sync_to_async
     def change_player_turn(self, room_id):
@@ -155,10 +143,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def is_allowed_to_set_point(self, user_id, room_id):
         data = UserGame.objects.filter(user=user_id, game_room=room_id).values_list('game_room__is_started', 'turn').get()
         return data[0] and data[1]
-
-    @database_sync_to_async
-    def allow_join_room(self, room_id):
-        return GameRoom.objects.filter(id=room_id, is_started=False).exists()
 
     @database_sync_to_async
     def get_who_has_turn(self, room_id):
