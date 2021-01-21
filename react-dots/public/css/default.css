@@ -40,3 +40,7 @@
     padding: 0;
     margin: auto;
 }
+
+.const-width {
+	height: 20px;
+}

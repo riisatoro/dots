@@ -133,12 +133,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_field_and_change_turn(self, room, field):
+        user1, user2 = UserGame.objects.filter(game_room=room).all()
         with transaction.atomic():
             GameRoom.objects.filter(id=room).update(
                 field=GameFieldSerializer().to_database(field)
             )
-
-            user1, user2 = UserGame.objects.filter(game_room=room).all()
             user1.turn = not user1.turn
             user2.turn = not user2.turn
             user1.save()

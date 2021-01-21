@@ -72,9 +72,9 @@ class GameField extends Component {
     const userColorKey = playerColors[userID];
 
     const userColor = `Your points are ${humanTextColor[userColorKey]}`;
-    let textTurn = 'Now is NOT YOUR turn';
-    if (colorKey === userColorKey) {
-      textTurn = 'Now is YOUR turn';
+    let textTurn = 'Now is your turn';
+    if (colorKey !== userColorKey) {
+      textTurn = ' ';
     }
 
     let textScore = '';
@@ -87,7 +87,7 @@ class GameField extends Component {
         { gameResults && <Redirect to="/game_result" /> }
         <div className="game-info align-center">
           <p>{userColor}</p>
-          <p>{textTurn}</p>
+          <p className="const-width">{textTurn}</p>
         </div>
         <hr />
         <div className="gameCanvas" style={{ width: fieldSize * cellSize + cellSize * 2 }}>

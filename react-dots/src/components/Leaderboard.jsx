@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import TYPES from '../redux/types';
 
-import '../../public/css/leaderboard.css';
+import { Table } from 'react-bootstrap';
+
+import TYPES from '../redux/types';
 
 class Leaderboard extends Component {
   componentDidMount() {
@@ -14,22 +15,37 @@ class Leaderboard extends Component {
 
   render() {
     const { matches } = this.props;
-    const results = matches.map((item, index) => (
-      <div key={index.toString()}>
-        { item[0].score === item[1].score ? <p>No winners here!</p> : ''}
-        { item[0].score > item[1].score ? <p>{`${item[0].user.username} wins!`}</p> : <p>{`${item[1].user.username} wins!`}</p>}
-        <p>{`Players ${item[0].user.username} and ${item[1].user.username}`}</p>
-        <p>{`${item[0].user.username} captured ${item[0].score} points`}</p>
-        <p>{`${item[1].user.username} captured ${item[1].score} points`}</p>
-        <hr />
-      </div>
-    ));
+    const tableHead = (
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Color</th>
+          <th>Captured</th>
+        </tr>
+      </thead>
+    );
 
     return (
       <section className="leaderboard">
-        <div>
-          {results}
-        </div>
+        {
+          matches.map((match) => (
+            <Table striped bordered hover size="sm" className="w-50">
+              {tableHead}
+              <tbody>
+                {
+                  match.map((data) => (
+                    <tr>
+                      <th className="font-weight-normal">{data.player}</th>
+                      <th className="font-weight-normal">{data.color}</th>
+                      <th className="font-weight-normal">{data.captured}</th>
+                    </tr>
+                  ))
+                }
+              </tbody>
+
+            </Table>
+          ))
+        }
       </section>
     );
   }
@@ -38,7 +54,7 @@ class Leaderboard extends Component {
 Leaderboard.propTypes = {
   token: PropTypes.string.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  matches: PropTypes.array.isRequired,
+  matches: PropTypes.array,
   getLeaderboard: PropTypes.func.isRequired,
 };
 
@@ -48,6 +64,10 @@ const mapStateToProps = (state) => {
     matches: state.leaders,
   };
   return data;
+};
+
+Leaderboard.defaultProps = {
+  matches: [],
 };
 
 export default connect(

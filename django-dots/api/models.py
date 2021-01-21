@@ -26,3 +26,6 @@ class UserGame(models.Model):
 
     def __str__(self):
         return f"{self.game_room}"
+
+# UserGame.objects.filter(user=1)
+# UserGame.objects.filter(user=1)

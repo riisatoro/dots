@@ -14,8 +14,21 @@ from .game.core import Field
 from .game.serializers import GameFieldSerializer
 
 
+def group_player_score(games):
+    all_games_id = set([x.game_room for x in games])
+    result = [[
+        {
+            "player": data.user.username,
+            "color": data.color,
+            "captured": data.score
+        } for data in games if data.game_room == ID
+    ] for ID in all_games_id]
+    return result
+
+
 class Register(APIView):
     """Registration"""
+
     def get(self, request):
         return Response({"error": True, "message": "Can't create user from the GET request."})
 
@@ -38,6 +51,7 @@ class Register(APIView):
 
 class Logout(APIView):
     """Logout user"""
+
     def get(self, request):
         logout(request)
         return Response({"error": False})
@@ -49,6 +63,7 @@ class Logout(APIView):
 
 class Login(APIView):
     """Login user by username and passwords; returns token"""
+
     def post(self, request):
         body = request.data
         user = authenticate(
@@ -67,15 +82,13 @@ class MatchViewSet(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        rooms = models.GameRoom.objects.filter(players=request.user).values_list("id", flat=True)
-        games = models.UserGame.objects.filter(game_room__id__in=rooms)
-
-        data = serializers.UserGameSerializer(games, many=True).data
-        grouped_data = []
-        for i in range(1, len(data), 2):
-            grouped_data.append([data[i-1], data[i]])
-
-        return Response({"error": False, "data": grouped_data})
+        score = group_player_score(
+            models.UserGame.objects.filter(
+                game_room__in=models.UserGame.objects.filter(
+                    user=1).values("game_room")
+            ).all()
+        )
+        return Response({"error": False, "data": score})
 
     def post(self, request):
         return Response({"error": True, "message": "Deprecated"})
@@ -86,22 +99,26 @@ class GameRoomView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        free_rooms = models.UserGame.objects.filter(game_room__is_started=False)
+        free_rooms = models.UserGame.objects.filter(
+            game_room__is_started=False)
         return Response(
             {"free_room": serializers.UserGameSerializer(free_rooms, many=True).data})
 
     def post(self, request):
         data = request.data
         size = data["size"]
-        already_waiting = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
+        already_waiting = models.GameRoom.objects.filter(
+            players=request.user, is_ended=False).exists()
         if already_waiting:
             return Response(
                 {"error": True, "message": "Unexpected color or user already created a room."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY
             )
 
-        field = Field.add_player(Field.create_field(size, size), request.user.id)
-        room = models.GameRoom(field=GameFieldSerializer().to_database(field), size=size)
+        field = Field.add_player(
+            Field.create_field(size, size), request.user.id)
+        room = models.GameRoom(
+            field=GameFieldSerializer().to_database(field), size=size)
 
         try:
             room.full_clean()
@@ -112,7 +129,8 @@ class GameRoomView(APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY
             )
 
-        user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
+        user_game = models.UserGame(
+            user=request.user, game_room=room, color=data["color"])
         user_game.save()
 
         return Response({
@@ -135,7 +153,8 @@ class GameRoomJoin(APIView):
         return Response()
 
     def post(self, request):
-        already_joined = models.GameRoom.objects.filter(players=request.user, is_ended=False).exists()
+        already_joined = models.GameRoom.objects.filter(
+            players=request.user, is_ended=False).exists()
 
         if already_joined:
             return Response(
@@ -158,12 +177,14 @@ class GameRoomJoin(APIView):
         owner = owner.get()
         room = room.get()
 
-        user_game = models.UserGame(user=request.user, game_room=room, color=request.data["color"])
+        user_game = models.UserGame(
+            user=request.user, game_room=room, color=request.data["color"])
         user_game.save()
 
         room.is_started = True
         room.field = GameFieldSerializer().to_database(
-            Field.add_player(GameFieldSerializer().from_database(room.field, room.size, room.size), request.user.id)
+            Field.add_player(GameFieldSerializer().from_database(
+                room.field, room.size, room.size), request.user.id)
         )
         owner.turn = True
         room.save()
