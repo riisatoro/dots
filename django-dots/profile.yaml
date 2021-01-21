@@ -25,7 +25,7 @@ pylint:
   run: true
   disable: 
     - W0221
-    - R0913
+    - R0912
 
 pyflakes:
   run: true

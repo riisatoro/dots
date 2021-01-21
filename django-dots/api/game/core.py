@@ -1,16 +1,11 @@
 import itertools
-from collections import Counter, defaultdict
+from collections import Counter
 from shapely.geometry import Point as shapePoint
 from shapely.geometry import Polygon as shapePolygon
 from .structure import Point, GamePoint, GameField
-import pprint
 
 
 min_field_size = 5
-
-DFS_WHITE = "WHITE"
-DFS_GRAY = "GRAY"
-DFS_BLACK = "BLACK"
 
 
 class Field:
@@ -32,7 +27,6 @@ class Field:
                     tmp_row.append(GamePoint())
             field.append(tmp_row)
         field.append(border)
-
         return GameField(field)
 
     @staticmethod
@@ -42,20 +36,6 @@ class Field:
                 field.players.append(player)
         else:
             field.players = [player]
-
-        field = Field.add_player_to_score(field, player)
-        return field
-
-    @staticmethod
-    def add_player_to_score(field: GameField, player: int):
-        if not field.players or player not in field.players:
-            raise ValueError(
-                "Can't add player to the score table - invalid player ID")
-
-        if field.score:
-            field.score[player] = 0
-        else:
-            field.score = {player: 0}
         return field
 
     @staticmethod
@@ -81,7 +61,10 @@ class Field:
 
 class Core:
     @staticmethod
-    def process_point(field: GameField, point: Point, owner: int):
+    def process_point(field: GameField, point: Point, owner: int) -> GameField:
+        """
+        Update point state and all loops in the game
+        """
         field = Field.change_owner(field, point, owner)
 
         all_paths = Core.build_loops_cached(field.field, point, owner)
@@ -141,7 +124,10 @@ class Core:
         return field
 
     @staticmethod
-    def add_new_loop(game_field, path, owner):
+    def add_new_loop(game_field: GameField, path: list, owner: int) -> GameField:
+        """
+        Add a new loops that is captured at least one enemy point
+        """
         stats = Core.prepare_loop_stats(game_field.field, path, owner)
         if not stats['enemy'] or stats['path_captured']:
             return game_field
@@ -155,7 +141,10 @@ class Core:
         return game_field
 
     @staticmethod
-    def add_houses(game_field, houses):
+    def add_houses(game_field: GameField, houses: list) -> GameField:
+        """
+        Add houses with the minimal length to the GameField
+        """
         captured_empty_points = set()
 
         def add_new_house(path, owner):
@@ -182,13 +171,16 @@ class Core:
         return game_field
 
     @staticmethod
-    def get_game_stats(field):
+    def get_game_stats(field: GameField) -> dict:
+        """
+        Calc all captured points by all users
+        """
         captured_points = [
             p.captured_by[-1]
             for row in field.field
             for p in row
             if p.is_captured
-            and p.owner != None
+            and p.owner is not None
             and p.owner != p.captured_by[-1]
 
         ]
@@ -196,36 +188,41 @@ class Core:
         return dict(result)
 
     @staticmethod
-    def build_loops_cached(field, starting_point, owner):
+    def generate_neighbors(field: [[Point]], point: Point, owner: int) -> [Point]:
+        """ Find all neighbors for the current point and owner """
+        neighbors = [
+            Point(x, y)
+            for x in range(point.x-1, point.x+2)
+            for y in range(point.y-1, point.y+2)
+        ]
+        related_neighbors = [
+            p for p in neighbors
+            if p != point
+            and not field[p.y][p.x].is_captured
+            and field[p.y][p.x].owner == owner
+        ]
+        return related_neighbors
+
+    @staticmethod
+    def build_loops_cached(field: [[Point]], starting_point: Point, owner: int) -> list:
+        """
+        Build all loops in the game field from the stratring point; cache all pathes
+        """
         cached_paths = {}
         loops = []
 
-        def generate_neighbors(point):
-            neighbors = [
-                Point(x, y)
-                for x in range(point.x-1, point.x+2)
-                for y in range(point.y-1, point.y+2)
-            ]
-
-            related_neighbors = [
-                p for p in neighbors
-                if p != point
-                and not field[p.y][p.x].is_captured
-                and field[p.y][p.x].owner == owner
-            ]
-            return related_neighbors
-
-        def dfs(point, parents):
+        def dfs(point: Point, parents):
+            """ Recursively cached all paths and find loops from starting point """
             if point in cached_paths:
                 return cached_paths[point]
 
             parent_point = parents[0] if len(parents) > 0 else None
 
-            neighbors = generate_neighbors(point)
+            neighbors = Core.generate_neighbors(field, point, owner)
             related_neighbors = [
                 p for p in neighbors
                 if p != parent_point
-                and len(generate_neighbors(p)) < 8
+                and len(Core.generate_neighbors(field, p, owner)) < 8
             ]
             new_parents = [point] + parents
 
@@ -243,69 +240,17 @@ class Core:
 
             return cached_paths[point]
 
+        if len(Core.generate_neighbors(field, starting_point, owner)) < 2:
+            return loops
+
         dfs(starting_point, [])
         return loops
 
     @staticmethod
-    def build_all_loops(field, starting_point, owner):
-        path_root = "ROOT"
-        parents = {starting_point: path_root}
-        loops = []
-
-        def build_path(point, root):
-            if point == root or point == path_root:
-                return [starting_point if root == path_root else root]
-            return [
-                *build_path(parents[point], root),
-                point,
-            ]
-
-        def do_dfs(point):
-            neighbors = [
-                Point(x, y)
-                for x in range(point.x-1, point.x+2)
-                for y in range(point.y-1, point.y+2)
-            ]
-
-            related_neighbors = [
-                p for p in neighbors
-                if p != point
-                and not field[p.y][p.x].is_captured
-                and field[p.y][p.x].owner == owner
-            ]
-
-            parent = parents.get(point)
-            for neigbor in related_neighbors:
-                neigbor_parent = parents.get(neigbor)
-                if neigbor_parent and neigbor_parent != point:
-                    path = build_path(neigbor, point)
-                    if len(path) > 3:
-                        loops.append(path)
-                    continue
-
-                parents[neigbor] = point
-                do_dfs(neigbor)
-                parents.pop(neigbor)
-
-        neighbors = [
-            Point(x, y)
-            for x in range(starting_point.x-1, starting_point.x+2)
-            for y in range(starting_point.y-1, starting_point.y+2)
-        ]
-        related_neighbors = [
-            p for p in neighbors
-            if p != starting_point
-            and not field[p.y][p.x].is_captured
-            and field[p.y][p.x].owner == owner
-        ]
-        if len(related_neighbors) < 2:
-            return []
-
-        do_dfs(starting_point)
-        return loops
-
-    @staticmethod
-    def prepare_loop_stats(field, path, owner):
+    def prepare_loop_stats(field: GameField, path: [Point], owner: int) -> dict:
+        """
+        Find all points that belong to the path and return all of them, sorted by type
+        """
         polygon = shapePolygon([
             shapePoint(point.x, point.y)
             for point in path
@@ -342,7 +287,8 @@ class Core:
         return result
 
     @staticmethod
-    def is_neighbour(point_1, point_2):
+    def is_neighbour(point_1: Point, point_2: Point) -> bool:
+        """ Check if two points are neighbors """
         equals = point_1 == point_2
         horisontal = abs(point_1[0] - point_2[0]) < 2
         vertical = abs(point_1[1] - point_2[1]) < 2
@@ -350,36 +296,9 @@ class Core:
         return not equals and horisontal and vertical and diagonal
 
     @staticmethod
-    def is_neighbours(path):
+    def is_neighbours(path: [Point]) -> bool:
+        """ Check if each point has 2 neighbor """
         for i in range(1, len(path)):
             if not Core.is_neighbour(path[i-1], path[i]):
                 return False
         return True
-
-    @staticmethod
-    def loops_are_equal(expected, actual):
-        if len(expected) != len(actual):
-            return False
-
-        if set(expected) != set(actual):
-            return False
-
-        common_start = itertools.cycle(actual)
-        while next(common_start) != expected[-1]:
-            pass
-
-        all_equal = all(
-            point_1 == point_2
-            for point_1, point_2 in zip(common_start, expected)
-        )
-
-        reversed_expected = list(reversed(expected))
-        while next(common_start) != reversed_expected[-1]:
-            pass
-
-        reversed_all_equal = all(
-            point_1 == point_2
-            for point_1, point_2 in zip(common_start, reversed_expected)
-        )
-
-        return all_equal or reversed_all_equal

@@ -1,13 +1,10 @@
-
 from dataclasses import asdict
 
 from .structure import GamePoint, Point
 from .core import Field
-from .draw import draw_field
 
 
 class GameFieldSerializer:
-
     def path_serialize(self, path):
         return [Point(x, y) for x, y in path]
 

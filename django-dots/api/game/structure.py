@@ -14,6 +14,7 @@ class GamePoint:
     def is_captured(self):
         return bool(self.captured_by)
 
+
 @dataclass
 class GameField:
     field: [[GamePoint]]

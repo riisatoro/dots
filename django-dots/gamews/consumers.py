@@ -63,9 +63,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
                 new_field = field
                 try:
-                    #new_field = Core.player_set_point(field, point, user_id)
                     new_field = Core.process_point(field, point, user_id)
-                    
                     await self.update_field(
                         GameFieldSerializer().to_database(new_field),
                         room_id
