@@ -90,7 +90,7 @@ class GameField extends Component {
           <p>{textTurn}</p>
         </div>
         <hr />
-        <div className="gameCanvas">
+        <div className="gameCanvas" style={{ width: fieldSize * cellSize + cellSize * 2 }}>
           <Stage
             width={fieldSize * cellSize + cellSize * 2}
             height={fieldSize * cellSize + cellSize * 2}

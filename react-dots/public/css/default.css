@@ -35,3 +35,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr
 }
+
+.gameCanvas {
+    padding: 0;
+    margin: auto;
+}
