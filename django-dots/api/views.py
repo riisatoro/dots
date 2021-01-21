@@ -115,22 +115,15 @@ class GameRoomView(APIView):
         user_game = models.UserGame(user=request.user, game_room=room, color=data["color"])
         user_game.save()
 
-        data = models.UserGame.objects.filter(game_room__id=room.id).all()
-        colors = {}
-        score = {}
-        for color in data:
-            colors[color.user.id] = color.color
-            score[color.user.id] = 0
-
         return Response({
             "error": False,
             "message": "Room was created!",
             "room_id": room.id,
             "field": room.field,
             "field_size": room.size,
-            "turn": int(request.user.id),
-            "colors": colors,
-            "score": score
+            "turn": request.user.id,
+            "colors": {request.user.id: data["color"]},
+            "score": {request.user.id: 0}
         })
 
 
@@ -188,7 +181,7 @@ class GameRoomJoin(APIView):
             "field": room.field,
             "field_size": room.size,
             "room_id": room_id,
-            "turn": int(data[0].user.id),
+            "turn": data[0].user.id,
             "colors": colors,
             "score": score
         })

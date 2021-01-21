@@ -1,0 +1,34 @@
+[
+    [
+        {
+            "color": "SYSTEM",
+            "part_of_loop": false,
+            "loop_id": null,
+            "captured": false
+        },
+        {
+            "color": "RED",
+            "part_of_loop": true,
+            "loop_id": [
+                1
+            ],
+            "captured": false
+        }
+    ],
+    [
+        {
+            "color": "EMPTY",
+            "part_of_loop": false,
+            "loop_id": null,
+            "captured": true
+        },
+        {
+            "color": "BLUE",
+            "part_of_loop": true,
+            "loop_id": [
+                1, 2, 3
+            ],
+            "captured": false
+        }
+    ]
+]

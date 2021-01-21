@@ -89,7 +89,6 @@ class Core:
             if p['stats']['enemy']
         ]
         loops.sort(key=lambda x: len(x['path']))
-        # loops.sort(key=lambda x: len(x['stats']['own']))
 
         for loop in loops:
             field = Core.add_new_loop(field, loop['path'], owner)
