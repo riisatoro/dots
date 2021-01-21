@@ -84,13 +84,7 @@ class Core:
     def process_point(field: GameField, point: Point, owner: int):
         field = Field.change_owner(field, point, owner)
 
-        
-        from .draw import draw_field
-        draw_field(field)
-
         all_paths = Core.build_loops_cached(field.field, point, owner)
-
-        # get statistic for all paths
         path_stats = [
             {
                 'path': path,
@@ -100,7 +94,6 @@ class Core:
             for path in all_paths if Core.is_neighbours(path)
         ]
 
-        # get all paths that can be loops or houses
         normal_paths = [
             x for x in path_stats
             if Core.is_neighbours(x['path'])
@@ -108,24 +101,18 @@ class Core:
             or x['stats']['enemy']
         ]
 
-        
         loops = [
             p for p in normal_paths
             if p['stats']['enemy']
         ]
-        loops.sort(key = lambda x: len(x['path']))
+        loops.sort(key=lambda x: len(x['path']))
+        loops.sort(key=lambda x: len(x['stats']['own']))
 
         for loop in loops:
             field = Core.add_new_loop(field, loop['path'], owner)
 
-        # process houses
-        # get already found houses from the prev moves
         old_houses = field.new_houses
 
-        if point == Point(2, 3):
-            pass #import bpdb; bpdb.set_trace()
-
-        # check if old houses now a loop with an enemy point
         for possible_loop in old_houses:
             field = Core.add_new_loop(
                 field,
@@ -139,11 +126,18 @@ class Core:
             p for p in normal_paths
             if not p['stats']['enemy']
         ]
-        
+
         possible_houses = [*old_houses, *empty_loops]
-        possible_houses.sort(key = lambda x: len(x['path']))
+        possible_houses.sort(key=lambda x: len(x['path']))
+        possible_houses.sort(key=lambda x: len(x['stats']['own']))
 
         field = Core.add_houses(field, possible_houses)
+
+        result = {x: 0 for x in field.players}
+        for key, value in Core.get_game_stats(field).items():
+            result[key] = value
+
+        field.score = result
         return field
 
     @staticmethod
@@ -192,8 +186,11 @@ class Core:
         captured_points = [
             p.captured_by[-1]
             for row in field.field
-            for p in row if
-            p.is_captured
+            for p in row
+            if p.is_captured
+            and p.owner != None
+            and p.owner != p.captured_by[-1]
+
         ]
         result = Counter(captured_points)
         return dict(result)
