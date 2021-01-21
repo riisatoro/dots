@@ -137,7 +137,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             GameRoom.objects.filter(id=room).update(
                 field=GameFieldSerializer().to_database(field)
             )
-            
+
             user1, user2 = UserGame.objects.filter(game_room=room).all()
             user1.turn = not user1.turn
             user2.turn = not user2.turn
