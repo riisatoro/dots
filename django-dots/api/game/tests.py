@@ -2,9 +2,8 @@ import json
 from itertools import cycle
 from django.test import TestCase
 
-from random import randint, shuffle
 from .core import Field, Core
-from .structure import Point, GamePoint
+from .structure import Point
 
 
 def open_data(key):
@@ -150,7 +149,8 @@ class TestFilterRandomLoops(TestCase):
         for p in tuple_to_point(points):
             Core.process_point(self.field, p, 1)
 
-        cycle_results = cycle([tuple_to_point(x) for x in self.data['result_loops']])
+        cycle_results = cycle([tuple_to_point(x)
+                               for x in self.data['result_loops']])
         while len(next(cycle_results)) != len(self.field.new_houses[-1]['path']):
             pass
 
@@ -237,7 +237,7 @@ class ApiCoreFindCapturedPoints(TestCase):
             self.assertEqual(
                 self.field.field[p.y][p.x].owner, 1
             )
-        
+
         for p in self.points_2:
             self.assertEqual(
                 len(self.field.field[p.y][p.x].captured_by), 1
