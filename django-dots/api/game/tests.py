@@ -338,15 +338,3 @@ class ApiCoreBuildAllLoops(TestCase):
         self.assertTrue(
             loops_are_equal(expected_2, self.field.new_houses[1]["path"])
         )
-
-
-"""
-class TestFreezing(TestCase):
-    def fill_all(self):
-        self.field = Field.create_field(7, 7)
-        for y, row in enumerate(self.field.field):
-            for x, point in enumerate(row):
-                if not point.border:
-                    point.owner = 1
-        loops = Core.build_loops_cached(self.field.field, Point(1, 1), 1)
-"""
