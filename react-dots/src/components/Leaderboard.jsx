@@ -16,7 +16,7 @@ class Leaderboard extends Component {
   render() {
     const { matches } = this.props;
     const tableHead = (
-      <thead>
+      <thead className="thead-dark">
         <tr>
           <th>Player</th>
           <th>Color</th>

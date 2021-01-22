@@ -15,7 +15,7 @@ from .game.serializers import GameFieldSerializer
 
 
 def group_player_score(games):
-    all_games_id = set([x.game_room for x in games])
+    all_games_id = {x.game_room for x in games}
     result = [
         [
             {"player": data.user.username, "color": data.color, "captured": data.score}
