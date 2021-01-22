@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { Container, Row, Col } from 'react-bootstrap';
 import TYPES from '../redux/types';
+
+import logo from '../../public/img/logo.png';
 
 class Header extends Component {
   onOpenLeaders() {
@@ -22,39 +25,39 @@ class Header extends Component {
     let navigation = [];
     if (isAuth) {
       navigation = [
-        <div className="col-sm-8 col-md-3 new-ga me" key="new-game">
+        <div className="m-auto" key="new-game">
           <a href="/new_game">New game</a>
         </div>,
-        <div className="col-sm-8 col-md-3" key="leaders">
+        <div className="m-auto" key="leaders">
           <a href="/leaderboards">Leaderboards</a>
         </div>,
-        <div className="col-sm-8 col-md-3" key="logout">
+        <div className="m-auto" key="logout">
           <button type="button" className="btn btn-primary" onClick={this.logoutUser.bind(this)}>Logout</button>
         </div>,
       ];
     } else {
       navigation = [
-        <div className="col-6 align-center" key="login">
-          <a href="/auth">Login or Register</a>
+        <div className="m-auto" key="login">
+          <a href="/auth">Register</a>
         </div>,
+        <div className="m-auto" key="login">
+        <a href="/auth">Login</a>
+      </div>,
       ];
     }
 
     return (
-      <section className="header">
-        <div className="container-fluid">
-
-          <div className="row">
-            <h1 className="container align-center">Dots game</h1>
-          </div>
-
-          <div className="row justify-content-center">
-            { !isAuth && <Redirect to="/logout" /> }
+      <Container>
+        { !isAuth && <Redirect to="/logout" /> }
+        <Row>
+          <Col xs={7} className="p-3">
+            <a href="/" className="text-dark"><h1 className="">Dots game</h1></a>
+          </Col>
+          <Col className="d-flex justify-content-center align-items-center">
             {navigation}
-          </div>
-
-        </div>
-      </section>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }

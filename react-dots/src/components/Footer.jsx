@@ -6,7 +6,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 class Footer extends Component {
   render() {
     return (
-      <Container className="pt-4 my-md-3 pt-md-3 border-top">
+      <Container className="pt-4 my-md-3 pt-md-3 border-top fixed-bottom">
         <Row>
           <Col className="text-center">
             <h3>Thanks for playing!</h3>
