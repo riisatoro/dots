@@ -29,7 +29,7 @@ function MainPage(props) {
 
       <p className="p-20" />
       <div className="text-center">
-        <Button variant="success" className="w-50">Lets play a game</Button>
+        <Button variant="success" className="w-50" href="/new_game">Lets play a game</Button>
       </div>
     </Container>
   );
