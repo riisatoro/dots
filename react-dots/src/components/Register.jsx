@@ -13,16 +13,13 @@ function Register(props) {
     register, handleSubmit, errors, watch,
   } = useForm();
 
-  const password = useRef({});
-  password.current = watch('password', '');
-
-  const username = useRef({});
-  username.current = watch('username', '');
+  const passwordWatch = useRef({});
+  passwordWatch.current = watch('password', '');
 
   const containsSpaces = (value) => value.indexOf(' ') >= 0;
 
-  const onSubmitForm = handleSubmit(({ username, password }) => {
-    props.sendRegisterForm({ username, password });
+  const onSubmitForm = handleSubmit(({ username, email, password }) => {
+    props.sendRegisterForm({ username, email, password });
   });
 
   return (
@@ -96,7 +93,7 @@ function Register(props) {
                   required: true,
                   minLength: 5,
                   pattern: /^[a-zA-Zа-яА-Я0-9_@!#$%^]/,
-                  validate: (value) => value === password.current || 'The passwords do not match',
+                  validate: (value) => value === passwordWatch.current || 'The passwords do not match',
                 })}
               />
               <Form.Control.Feedback type="invalid">
