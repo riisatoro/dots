@@ -24,8 +24,8 @@ function App(props) {
 
   const mainPage = (
     <Container>
-      <h2 className="text-center">Welcome to the dots game!</h2>
-      <Row className="">
+      <h2 className="text-center mb-5">Welcome to the dots game!</h2>
+      <Row className="mb-5">
         <ul className="list-group d-flex m-auto mt-50">
           <li className="list-group-item text-center font-weight-bold">Rules are simple</li>
           <li className="list-group-item">Place the dots on the game field</li>
