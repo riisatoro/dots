@@ -1,52 +1,64 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
 import { connect } from 'react-redux';
+import {
+  Form, Button, Container, Col,
+} from 'react-bootstrap';
 import TYPES from '../redux/types';
 
 function Login(props) {
-  const { register, handleSubmit, errors } = useForm();
+  const {
+    register, handleSubmit, errors,
+  } = useForm();
 
-  const onSubmitLogin = (data) => {
-    props.sendLoginForm(data);
-  };
+  const onSubmitForm = handleSubmit(({ username, password }) => {
+    props.sendLoginForm({ username, password });
+  });
 
   return (
     <section>
-      <div className="space-around">
-        <form onSubmit={handleSubmit(onSubmitLogin)}>
+      <Container>
+        <Form onSubmit={onSubmitForm}>
+          <Form.Row>
+            <Form.Group as={Col} controlId="username">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                name="username"
+                placeholder="Username"
+                isInvalid={errors.username}
+                ref={register({
+                  required: true,
+                  minLength: 3,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Username must be 3 or more characters
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <div className="col-1" />
-          <div className="form-group col-10" key="username-login">
-            <input
-              className="form-control input-space"
-              type="text"
-              name="username"
-              placeholder="Username"
-              autoComplete="off"
-              ref={register({ required: true, maxLength: 20, pattern: /^[A-za-z0–9]/ })}
-            />
-            {errors.username && <div className="alert alert-danger input-space">This field required</div>}
-          </div>
-
-          <div className="col-1" />
-          <div className="form-group col-10" key="password-login">
-            <input
-              className="form-control input-space"
-              type="password"
-              name="password"
-              placeholder="Password"
-              ref={register({ required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ })}
-            />
-            {errors.username && <div className="alert alert-danger input-space">This field required</div>}
-          </div>
-
-          <div className="align-center">
-            <button type="submit" className="btn btn-primary">Login</button>
-          </div>
-        </form>
-      </div>
+            <Form.Group as={Col} controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Password"
+                isInvalid={errors.password}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Password should be 5 or more characters and number
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+          <Button type="submit">Log in</Button>
+        </Form>
+      </Container>
     </section>
   );
 }

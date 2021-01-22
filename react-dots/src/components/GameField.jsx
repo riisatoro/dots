@@ -84,7 +84,6 @@ class GameField extends Component {
 
     return (
       <section className="field">
-        { gameResults && <Redirect to="/game_result" /> }
         <div className="game-info align-center">
           <p>{userColor}</p>
           <p className="const-width">{textTurn}</p>

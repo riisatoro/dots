@@ -6,18 +6,15 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import {
-  Container, Row, Button, Col,
-} from 'react-bootstrap';
 import Header from './Header';
 import Leaderboard from './Leaderboard';
 import Settings from './Settings';
-import Auth from './Auth';
 import Results from './Results';
 import GameField from './GameField';
 import Footer from './Footer';
 import MainPage from './MainPage';
-import '../../public/css/default.css';
+import Login from './Login';
+import Register from './Register';
 
 function App(props) {
   const { authorized, gameStarted } = props;
@@ -26,28 +23,31 @@ function App(props) {
     <section className="App">
       <Router>
         <Header />
-        { !authorized ? <Redirect to="/auth" /> : ''}
-        <Switch>
 
+        <Switch>
           <Route exact path="/">
-            { authorized ? <Redirect to="/main" /> : <Redirect to="/auth" /> }
+            { authorized ? <Redirect to="/main" /> : ''}
+          </Route>
+
+          <Route path="/register">
+            <Register />
+          </Route>
+
+          <Route path="/login">
+            <Login />
           </Route>
 
           <Route path="/main">
-            { authorized ? <MainPage /> : <Auth /> }
-          </Route>
-
-          <Route path="/auth">
-            { authorized ? <Redirect to="/main" /> : <Auth /> }
+            { authorized ? <MainPage /> : '' }
           </Route>
 
           <Route path="/new_game">
-            { authorized ? <Settings /> : <Redirect to="/" /> }
+            { authorized ? <Settings /> : <Redirect to="/login" /> }
             { authorized && gameStarted ? <Redirect to="/game" /> : ''}
           </Route>
 
           <Route path="/leaderboards">
-            { authorized ? <Leaderboard /> : <Redirect to="/" /> }
+            { authorized ? <Leaderboard /> : <Redirect to="/login" /> }
           </Route>
 
           <Route path="/game">
@@ -55,11 +55,11 @@ function App(props) {
           </Route>
 
           <Route path="/game_result">
-            { authorized ? <Results /> : <Redirect to="/" /> }
+            { authorized ? <Results /> : <Redirect to="/login" /> }
           </Route>
 
           <Route path="/logout">
-            <Redirect to="/auth" />
+            <Redirect to="/login" />
           </Route>
 
         </Switch>

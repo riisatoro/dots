@@ -37,17 +37,16 @@ class Header extends Component {
     } else {
       navigation = [
         <div className="m-auto border" key="register">
-          <a href="/auth/register">Register</a>
+          <a href="/register">Register</a>
         </div>,
         <div className="m-auto" key="login">
-          <a href="/auth">Login</a>
+          <a href="/login">Login</a>
         </div>,
       ];
     }
 
     return (
       <Container className="border-bottom mb-5">
-        { !isAuth && <Redirect to="/logout" /> }
         <Row>
           <Col xs={7} className="p-3">
             <a href="/main" className="text-dark"><h1>Dots game</h1></a>

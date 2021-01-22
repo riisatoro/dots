@@ -14,6 +14,7 @@ class Footer extends Component {
 
           <Col className="list-group text-right col-2">
             <h6>Navigation</h6>
+            <a href="/register">Register</a>
             <a href="/login">Login</a>
             <a href="/new_game">New game</a>
             <a href="/leaderboard">Leaderboards</a>
