@@ -1,58 +1,107 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { Form, Button, Container, Col } from 'react-bootstrap';
+import {
+  Form, Button, Container, Col,
+} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TYPES from '../redux/types';
 
 function Register(props) {
-  const onSubmitRegister = (data) => {
-    if (data.password === data.password2) {
-      props.sendRegisterForm(data);
-    }
-  };
+  const {
+    register, handleSubmit, errors, watch,
+  } = useForm();
+
+  const password = useRef({});
+  password.current = watch('password', '');
+
+  const username = useRef({});
+  username.current = watch('username', '');
+
+  const containsSpaces = (value) => value.indexOf(' ') >= 0;
+
+  const onSubmitForm = handleSubmit(({ username, password }) => {
+    props.sendRegisterForm({ username, password });
+  });
 
   return (
     <section>
       <Container>
-        <Form>
+        <Form onSubmit={onSubmitForm}>
           <Form.Row>
-            <Form.Group as={Col} controlId="formUsername">
+            <Form.Group as={Col} controlId="username">
               <Form.Label>Username</Form.Label>
               <Form.Control
-                required
                 type="text"
                 placeholder="Username"
+                name="username"
+                isInvalid={errors.username}
+                ref={register({
+                  required: true,
+                  minLength: 3,
+                  pattern: /^(?!\s)[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                  validate: (value) => !containsSpaces(value) || 'Spaces are not allowed',
+                })}
               />
+              <Form.Control.Feedback type="invalid">
+                Username should be 5 or more characters, numbers, or sybmpols _ @ ! # $ % ^
+              </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} controlId="formEmail">
+            <Form.Group as={Col} controlId="email">
               <Form.Label>Email</Form.Label>
               <Form.Control
-                required
                 type="email"
                 placeholder="Email"
+                name="email"
+                isInvalid={errors.email}
+                ref={register({
+                  required: true,
+                })}
               />
+              <Form.Control.Feedback type="invalid">
+                Invalid email
+              </Form.Control.Feedback>
             </Form.Group>
           </Form.Row>
 
           <Form.Row>
-            <Form.Group as={Col} controlId="formPassword">
+            <Form.Group as={Col} controlId="password">
               <Form.Label>Password</Form.Label>
               <Form.Control
-                required
                 type="password"
                 placeholder="Password"
+                name="password"
+                isInvalid={errors.password}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                  pattern: /^[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                })}
               />
+              <Form.Control.Feedback type="invalid">
+                Password required 5 or more characters, numbers or symbols
+              </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} controlId="formPassword2">
+            <Form.Group as={Col} controlId="passwordRepeat">
               <Form.Label>Confirm password</Form.Label>
               <Form.Control
-                required
                 type="password"
                 placeholder="Confirm password"
+                name="passwordRepeat"
+                isInvalid={errors.passwordRepeat}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                  pattern: /^[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                  validate: (value) => value === password.current || 'The passwords do not match',
+                })}
               />
+              <Form.Control.Feedback type="invalid">
+                The passwords do not match
+              </Form.Control.Feedback>
             </Form.Group>
           </Form.Row>
           <Button type="submit">Log in</Button>
