@@ -30,15 +30,17 @@ function App(props) {
           </Route>
 
           <Route path="/register">
+            { authorized ? <Redirect to="/main" /> : '' }
             <Register />
           </Route>
 
           <Route path="/login">
+            { authorized ? <Redirect to="/main" /> : '' }
             <Login />
           </Route>
 
           <Route path="/main">
-            { authorized ? <MainPage /> : '' }
+            <MainPage />
           </Route>
 
           <Route path="/new_game">
