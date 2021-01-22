@@ -1,9 +1,14 @@
 import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  BrowserRouter as Router, Switch, Route, Redirect,
+} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import {
+  Container, Row, Button, Col,
+} from 'react-bootstrap';
 import Header from './Header';
 import Leaderboard from './Leaderboard';
 import Settings from './Settings';
@@ -15,6 +20,32 @@ import '../../public/css/default.css';
 
 function App(props) {
   const { authorized, gameStarted } = props;
+  const wikiLink = 'https://en.wikipedia.org/wiki/Dots_(game)';
+
+  const mainPage = (
+    <Container>
+      <h2 className="text-center">Welcome to the dots game!</h2>
+      <Row className="">
+        <ul className="list-group d-flex m-auto mt-50">
+          <li className="list-group-item text-center font-weight-bold">Rules are simple</li>
+          <li className="list-group-item">Place the dots on the game field</li>
+          <li className="list-group-item">Capture enemy points by creating a &quot;loop&quot; from your points</li>
+          <li className="list-group-item">Try to catch as much points as you can</li>
+          <li className="list-group-item">Have fun</li>
+          <li className="list-group-item">
+            Additional info can be found on the&nbsp;
+            <a href={wikiLink} target="_blank" rel="noopener noreferrer">wiki</a>
+              &nbsp;page.
+          </li>
+        </ul>
+      </Row>
+
+      <p className="p-20" />
+      <div className="text-center">
+        <Button variant="success" className="w-50">Lets play a game</Button>
+      </div>
+    </Container>
+  );
 
   return (
     <section className="App">
@@ -49,8 +80,12 @@ function App(props) {
           </Route>
 
         </Switch>
+
+        { authorized ? mainPage : ''}
+
         <Footer />
       </Router>
+
     </section>
   );
 }

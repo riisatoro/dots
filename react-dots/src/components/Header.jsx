@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
@@ -5,8 +6,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
 import TYPES from '../redux/types';
-
-import logo from '../../public/img/logo.png';
 
 class Header extends Component {
   onOpenLeaders() {
@@ -32,17 +31,17 @@ class Header extends Component {
           <a href="/leaderboards">Leaderboards</a>
         </div>,
         <div className="m-auto" key="logout">
-          <button type="button" className="btn btn-primary" onClick={this.logoutUser.bind(this)}>Logout</button>
+          <a href="#" onClick={this.logoutUser.bind(this)}>Logout</a>
         </div>,
       ];
     } else {
       navigation = [
-        <div className="m-auto" key="register">
+        <div className="m-auto border" key="register">
           <a href="/auth/register">Register</a>
         </div>,
         <div className="m-auto" key="login">
-        <a href="/auth">Login</a>
-      </div>,
+          <a href="/auth">Login</a>
+        </div>,
       ];
     }
 
@@ -51,9 +50,9 @@ class Header extends Component {
         { !isAuth && <Redirect to="/logout" /> }
         <Row>
           <Col xs={7} className="p-3">
-            <a href="/" className="text-dark"><h1 className="">Dots game</h1></a>
+            <a href="/" className="text-dark"><h1>Dots game</h1></a>
           </Col>
-          <Col className="d-flex justify-content-center align-items-center">
+          <Col className="d-flex justify-content-center align-items-center m-auto">
             {navigation}
           </Col>
         </Row>
