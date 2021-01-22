@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
-import { Table } from 'react-bootstrap';
+import { Container, Row, Table } from 'react-bootstrap';
 
 import TYPES from '../redux/types';
 
@@ -15,37 +15,49 @@ class Leaderboard extends Component {
 
   render() {
     const { matches } = this.props;
+    const humanColos = {
+      R: 'Red',
+      G: 'Green',
+      B: 'Blue',
+      O: 'Orange',
+      Y: 'Yellow',
+    };
     const tableHead = (
       <thead className="thead-dark">
-        <tr>
+          <th className="xs">Game</th>
           <th>Player</th>
           <th>Color</th>
           <th>Captured</th>
-        </tr>
       </thead>
     );
 
     return (
       <section className="leaderboard">
-        {
-          matches.map((match) => (
-            <Table striped bordered hover size="sm" className="w-50">
+        <Container>
+          <Row className="justify-content-md-center">
+            <Table hover size="sm" className="text-center">
               {tableHead}
-              <tbody>
-                {
-                  match.map((data) => (
-                    <tr>
-                      <th className="font-weight-normal">{data.player}</th>
-                      <th className="font-weight-normal">{data.color}</th>
-                      <th className="font-weight-normal">{data.captured}</th>
-                    </tr>
-                  ))
-                }
-              </tbody>
+              {matches.map((match) => (
 
+                <tbody>
+                  <tr>
+                    <td className="table-gray">{matches.findIndex((m) => m === match) + 1}</td>
+                  </tr>
+                  {
+                      match.map((data) => (
+                        <tr>
+                          <td />
+                          <td>{data.player}</td>
+                          <td>{humanColos[data.color]}</td>
+                          <td>{data.captured}</td>
+                        </tr>
+                      ))
+                    }
+                </tbody>
+              ))}
             </Table>
-          ))
-        }
+          </Row>
+        </Container>
       </section>
     );
   }
