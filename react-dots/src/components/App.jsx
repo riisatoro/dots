@@ -10,6 +10,7 @@ import Settings from './Settings';
 import Auth from './Auth';
 import Results from './Results';
 import GameField from './GameField';
+import Footer from './Footer';
 import '../../public/css/default.css';
 
 function App(props) {
@@ -48,6 +49,7 @@ function App(props) {
           </Route>
 
         </Switch>
+        <Footer />
       </Router>
     </section>
   );
