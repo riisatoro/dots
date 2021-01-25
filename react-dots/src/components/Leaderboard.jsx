@@ -47,7 +47,10 @@ class Leaderboard extends Component {
                         <tr key={data.player}>
                           { index === 0 && <td rowSpan={array.length} className="align-middle">{gameIndex + 1}</td>}
                           <td>{data.player}</td>
-                          <td>{humanColos[data.color]}</td>
+                          <td>
+                            <div className="leaderboard-color-block m-auto" style={{backgroundColor: humanColos[data.color]}}>
+                            </div>
+                          </td>
                           <td>{data.captured}</td>
                         </tr>
                       ))

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
 
-import '../../public/css/settings.css';
+import '../../public/css/default.css';
 
 class Settings extends Component {
   componentDidMount() {
@@ -155,19 +155,40 @@ class Settings extends Component {
           </div>
         </div>
         <hr />
+
         <Container>
           <Row>
-            { rooms.map((room, index)=> ()) }
-            <div className="col-sm-4 mt-4">
-              <div className="card" style={{backgroundColor: '#e35e05'}}>
-                <div className="card-body">
-                  <h5 className="card-title">Special title treatment</h5>
-                  <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                  <a href="#" className="btn btn-primary">Go somewhere</a>
+            { rooms.map((room, index) => (
+              <div className="col-sm-4 mt-4" key={index.toString()}>
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">{room.user.username}</h5>
+                    <div className="d-flex">
+                      <p className="card-text">Color: </p>
+                      <div style={{ backgroundColor: room.color }} className="games-color-block m-auto" />
+                      <Form>
+                        <Form.Group as={Col} controlId="color">
+                          <Form.Control
+                            type="color"
+                            className="games-color-block m-auto"
+                          />
+                        </Form.Group>
+                      </Form>
+                    </div>
+                    <p className="card-text">{`Field size: ${room.game_room.size} x ${room.game_room.size}`}</p>
+                    <button
+                      type="button"
+                      id={room.game_room.id}
+                      className="btn btn-primary"
+                      onClick={this.onPlayerJoinGame.bind(this)}
+                    >
+                      Join
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            </Row>
+            ))}
+          </Row>
         </Container>
       </section>
     );
