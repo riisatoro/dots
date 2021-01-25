@@ -1,29 +1,49 @@
 import TYPES from './types';
 
-import { loadState, setInitial } from './local_state';
+import {
+  loadState,
+  setInitial,
+} from './local_state';
 
 const initialState = loadState();
-const colorTitle = ['O', 'R', 'B', 'Y', 'G'];
 
 export default function updateState(state = initialState, action) {
   switch (action.type) {
     case TYPES.RECEIVE_AUTH_REPLY: {
       if (action.payload.status === 200) {
-        const { data } = action.payload;
+        const {
+          data,
+        } = action.payload;
         if (data.error) {
-          return { ...state, reply: { error: data.error, message: data.message } };
+          return {
+            ...state,
+            reply: {
+              error: data.error,
+              message: data.message,
+            },
+          };
         }
         return {
           ...state,
-          reply: { error: false, message: '' },
-          user: {
-            auth: true, username: data.username, token: data.token, userID: data.id,
+          reply: {
+            error: false,
+            message: '',
           },
-          components: { },
+          user: {
+            auth: true,
+            username: data.username,
+            token: data.token,
+            userID: data.id,
+          },
+          components: {},
         };
       }
       return {
-        ...state, reply: { error: true, message: 'Server connection error. Try later.' },
+        ...state,
+        reply: {
+          error: true,
+          message: 'Server connection error. Try later.',
+        },
       };
     }
 
@@ -32,20 +52,31 @@ export default function updateState(state = initialState, action) {
         return {
           ...state,
           leaders: action.payload.data.data,
-          components: { showLeaders: true },
+          components: {
+            showLeaders: true,
+          },
           game_end: false,
         };
       }
-      return { ...state, leaders: [] };
+      return {
+        ...state,
+        leaders: [],
+      };
     }
 
     case TYPES.COLOR_CHOOSED: {
-      return { ...state, playerColor: colorTitle[action.payload.color] };
+      return {
+        ...state,
+        playerColor: action.payload.color,
+      };
     }
 
     case TYPES.FIELD_SIZE_CHANGED: {
       const newSize = action.payload.size;
-      return { ...state, field_size: parseInt(newSize, 10) };
+      return {
+        ...state,
+        field_size: parseInt(newSize, 10),
+      };
     }
 
     case TYPES.SEND_LOGOUT_REQUEST: {
@@ -58,9 +89,15 @@ export default function updateState(state = initialState, action) {
 
     case TYPES.UPDATE_GAME_ROOMS: {
       if (action.payload.status === 200) {
-        return { ...state, rooms: action.payload.data.free_room };
+        return {
+          ...state,
+          rooms: action.payload.data.free_room,
+        };
       }
-      return { ...state, rooms: [] };
+      return {
+        ...state,
+        rooms: [],
+      };
     }
 
     case TYPES.NEW_ROOM_CREATED: {
@@ -76,7 +113,9 @@ export default function updateState(state = initialState, action) {
         return {
           ...state,
           socket: socketData,
-          components: { gameField: true },
+          components: {
+            gameField: true,
+          },
           field: reply.field.field,
           turn: reply.turn,
           playerColors: reply.colors,
@@ -106,7 +145,9 @@ export default function updateState(state = initialState, action) {
         return {
           ...state,
           socket: socketData,
-          components: { gameField: true },
+          components: {
+            gameField: true,
+          },
           field: reply.field.field,
           turn: reply.turn,
           playerColors: reply.colors,
@@ -115,11 +156,15 @@ export default function updateState(state = initialState, action) {
           loops: [],
         };
       }
-      return { ...state };
+      return {
+        ...state,
+      };
     }
 
     case TYPES.PLAYER_SET_DOT: {
-      const { data } = action.payload;
+      const {
+        data,
+      } = action.payload;
       if (data.is_full) {
         return {
           ...state,
@@ -131,7 +176,9 @@ export default function updateState(state = initialState, action) {
           playerColors: data.colors,
           score: data.score,
 
-          components: { gameField: false },
+          components: {
+            gameField: false,
+          },
           gameStarted: false,
           gameResults: true,
         };
@@ -149,13 +196,18 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.WS_MESSAGE_UPDATE: {
-      return { ...state, wsMessage: action.payload };
+      return {
+        ...state,
+        wsMessage: action.payload,
+      };
     }
 
     case TYPES.SOCKET_DISCONNECT: {
       return {
         ...state,
-        components: { gameField: false },
+        components: {
+          gameField: false,
+        },
         game_end: true,
         gameStarted: false,
         gameResults: true,
@@ -165,7 +217,9 @@ export default function updateState(state = initialState, action) {
     case TYPES.INTERRUPT_GAME_COMPONENT: {
       return {
         ...state,
-        components: { gameField: false },
+        components: {
+          gameField: false,
+        },
         game_end: true,
         gameStarted: false,
         gameResults: true,
@@ -182,6 +236,8 @@ export default function updateState(state = initialState, action) {
     }
 
     default:
-      return { ...state };
+      return {
+        ...state,
+      };
   }
 }

@@ -15,13 +15,6 @@ class Leaderboard extends Component {
 
   render() {
     const { matches } = this.props;
-    const humanColos = {
-      R: 'Red',
-      G: 'Green',
-      B: 'Blue',
-      O: 'Orange',
-      Y: 'Yellow',
-    };
     const tableHead = (
       <thead className="thead-dark">
         <tr>
@@ -48,7 +41,7 @@ class Leaderboard extends Component {
                           { index === 0 && <td rowSpan={array.length} className="align-middle">{gameIndex + 1}</td>}
                           <td>{data.player}</td>
                           <td>
-                            <div className="leaderboard-color-block m-auto" style={{backgroundColor: humanColos[data.color]}}>
+                            <div className="leaderboard-color-block m-auto" style={{backgroundColor: data.color}}>
                             </div>
                           </td>
                           <td>{data.captured}</td>

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Col, Row,
+  Form, Button, Container, Row, Col,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -54,136 +54,85 @@ class Settings extends Component {
     }
   }
 
+  changePickedColor(e) {
+    const { setPlayerColor } = this.props;
+    setPlayerColor(e.target.value);
+  }
+
   render() {
     const {
-      rooms, colors, colorTable, fieldSize, playerColor,
+      rooms, playerColor,
     } = this.props;
 
     return (
       <section className="field">
-        <h2 className="">Create the room</h2>
-        <div className="alert alert-primary col-5 block-margin" role="alert">Choose a color. Colors can&apos;t be the same</div>
-
-        <form>
-          <div className="row justify-content-center width-90">
-            {colors.map((color, index) => (
-              <div className="col-2" key={index.toString()}>
-                <input
-                  className="block-margin"
-                  type="radio"
-                  key={index.toString()}
-                  id={index}
-                  checked={playerColor === color[0].toUpperCase()}
-                  onChange={this.onColorChanged.bind(this)}
-                  name="color1"
+        <Container className="mb-5">
+          <h2>Create the room</h2>
+          <Form onSubmit={this.onCreateNewRoom}>
+            <Row>
+              <Form.Group as={Col} sm={12} lg={6} controlId="color">
+                <Form.Label>Click to choose your color:</Form.Label>
+                <Form.Control
+                  type="color"
+                  className="games-color-block m-auto"
+                  value={playerColor}
+                  onChange={this.changePickedColor.bind(this)}
                 />
-                <div className={color}> </div>
-              </div>
-            ))}
-          </div>
+                <Form.Control.Feedback type="invalid">
+                  Username must be 3 or more characters
+                </Form.Control.Feedback>
+              </Form.Group>
 
-          <div className="row justify-content-center width-90">
-            <div className="form-group col-8" key="username">
-              <input
-                className="form-control space-around"
-                type="number"
-                key="field_size"
-                name="size"
-                placeholder="Field size"
-                value={fieldSize}
-                onChange={(number) => this.newFieldSize(number)}
-              />
-            </div>
-          </div>
+              <Form.Group as={Col} sm={12} lg={6} controlId="password">
+                <Form.Label>Choose the field size (6-15)</Form.Label>
+                <Form.Control
+                  type="number"
+                />
+                <Form.Control.Feedback type="invalid">
+                  Password should be 5 or more characters and number
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+            <Row>
+              <Button as={Col} xs="auto" type="submit" className="btn-success col-sm-4 col-lg-4 m-auto">Create new game</Button>
+            </Row>
+          </Form>
+        </Container>
 
-          <div className="align-center">
-            <button type="button" className="btn btn-success" onClick={this.onCreateNewRoom.bind(this)}>New room</button>
-          </div>
-
-        </form>
-
-        <hr />
-        <hr />
-
-        <h2 className="">Join the room</h2>
-        <p>Pick up a color</p>
-        <div className="row justify-content-center width-90">
-          {colors.map((color, index) => (
-            <div className="col-2" key={index.toString()}>
-              <input
-                className="block-margin"
-                type="radio"
-                key={index.toString()}
-                id={index}
-                checked={playerColor === color[0].toUpperCase()}
-                onChange={this.onColorChanged.bind(this)}
-                name="color1"
-              />
-              <div className={color}> </div>
-            </div>
-          ))}
-        </div>
-        <hr />
-        <div className="container">
-          <div className="join-room room_grid">
-            {
-                rooms.map((element, index) => (
-                  <div key={`${index.toString()}`} className="">
-                    <p>
-                      Player:
-                      {element.user.username}
-                    </p>
-                    <p>
-                      Field:
-                      {element.game_room.size}
-                      *
-                      {element.game_room.size}
-                    </p>
-                    <p>Color:</p>
-                    <div className={colorTable[element.color]}> </div>
-                    <button
-                      type="button"
-                      id={element.game_room.id}
-                      className="btn btn-primary"
-                      onClick={this.onPlayerJoinGame.bind(this)}
-                    >
-                      Join
-                    </button>
-                  </div>
-                ))
-            }
-          </div>
-        </div>
-        <hr />
+        <Container><hr /></Container>
 
         <Container>
+          <h2>Join new room</h2>
           <Row>
             { rooms.map((room, index) => (
-              <div className="col-sm-4 mt-4" key={index.toString()}>
+              <div className="col-sm-4 mb-5" key={index.toString()}>
                 <div className="card">
                   <div className="card-body">
                     <h5 className="card-title">{room.user.username}</h5>
-                    <div className="d-flex">
-                      <p className="card-text">Color: </p>
-                      <div style={{ backgroundColor: room.color }} className="games-color-block m-auto" />
-                      <Form>
-                        <Form.Group as={Col} controlId="color">
-                          <Form.Control
-                            type="color"
-                            className="games-color-block m-auto"
-                          />
-                        </Form.Group>
-                      </Form>
+                    <div className="row">
+                      <p className="card-text col-6">Player color:</p>
+                      <div className="col-6">
+                        <div style={{ backgroundColor: room.color }} className="games-color-block mb-2" />
+                      </div>
+                      <p className="card-text col-6">Click to choose your color:</p>
+                      <div className="col-6">
+                        <Form.Control
+                          type="color"
+                          className="games-color-block"
+                          value={playerColor}
+                          onChange={this.changePickedColor.bind(this)}
+                        />
+                      </div>
                     </div>
                     <p className="card-text">{`Field size: ${room.game_room.size} x ${room.game_room.size}`}</p>
-                    <button
+                    <Button
                       type="button"
                       id={room.game_room.id}
                       className="btn btn-primary"
                       onClick={this.onPlayerJoinGame.bind(this)}
                     >
                       Join
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -203,8 +152,6 @@ Settings.propTypes = {
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
-  colors: PropTypes.array.isRequired,
-  colorTable: PropTypes.object.isRequired,
   rooms: PropTypes.array,
   onJoinGameRoom: PropTypes.func.isRequired,
 };
@@ -222,8 +169,6 @@ const mapStateToProps = (state) => {
     username: state.user.username,
     players: state.players,
     rooms: state.rooms,
-    colors: state.colors,
-    colorTable: state.colorTable,
     gameInterrupted: state.gameInterrupted,
   };
   return data;
