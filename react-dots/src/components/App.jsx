@@ -26,7 +26,7 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            { authorized ? <Redirect to="/main" /> : ''}
+            <Redirect to="/main" />
           </Route>
 
           <Route path="/register">
@@ -65,7 +65,6 @@ function App(props) {
           </Route>
 
         </Switch>
-        <Footer />
       </Router>
 
     </section>

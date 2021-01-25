@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -24,10 +24,12 @@ class Leaderboard extends Component {
     };
     const tableHead = (
       <thead className="thead-dark">
+        <tr>
           <th className="xs">Game</th>
           <th>Player</th>
           <th>Color</th>
           <th>Captured</th>
+        </tr>
       </thead>
     );
 
@@ -35,26 +37,24 @@ class Leaderboard extends Component {
       <section className="leaderboard">
         <Container>
           <Row className="justify-content-md-center">
-            <Table hover size="sm" className="text-center">
+            <Table striped bordered hover size="sm" className="text-center">
               {tableHead}
-              {matches.map((match) => (
-
-                <tbody>
-                  <tr>
-                    <td className="table-gray">{matches.findIndex((m) => m === match) + 1}</td>
-                  </tr>
-                  {
-                      match.map((data) => (
-                        <tr>
-                          <td />
+              <tbody>
+                {matches.map((match, gameIndex) => (
+                  <>
+                    {
+                      match.map((data, index, array) => (
+                        <tr key={data.player}>
+                          { index === 0 && <td rowSpan={array.length} className="align-middle">{gameIndex + 1}</td>}
                           <td>{data.player}</td>
                           <td>{humanColos[data.color]}</td>
                           <td>{data.captured}</td>
                         </tr>
                       ))
                     }
-                </tbody>
-              ))}
+                  </>
+                ))}
+              </tbody>
             </Table>
           </Row>
         </Container>
