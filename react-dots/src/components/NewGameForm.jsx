@@ -15,21 +15,16 @@ function NewGameForm(props) {
   } = useForm();
 
   const changePickedColor = (e) => {
-    const { setPlayerColor } = props;
-    setPlayerColor(e.target.value);
+    props.setPlayerColor(e.target.value);
   };
 
-  const onCreateNewRoom = () => {
-    const {
-      createNewRoom, token, playerColor, fieldSize,
-    } = props;
-    if (playerColor !== '') {
-      createNewRoom(token, fieldSize, playerColor);
-    }
-  };
+  const onCreateNewRoom = handleSubmit(({ fieldSize }) => {
+    const { token } = props;
+    props.createNewRoom(token, fieldSize, playerColor);
+  });
 
   return (
-    <Form onSubmit={handleSubmit(onCreateNewRoom)}>
+    <Form onSubmit={onCreateNewRoom}>
       <Form.Row className="mb-3">
         <Form.Group as={Col} sm={12} lg={6} controlId="color" className="m-auto">
           <Form.Label>Click to choose your color:</Form.Label>
@@ -73,31 +68,16 @@ function NewGameForm(props) {
 }
 
 NewGameForm.propTypes = {
-  fieldSize: PropTypes.number,
   playerColor: PropTypes.string.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
-  changeFieldSize: PropTypes.func.isRequired,
-  getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
-  rooms: PropTypes.array,
-  onJoinGameRoom: PropTypes.func.isRequired,
-};
-
-NewGameForm.defaultProps = {
-  fieldSize: 10,
-  rooms: [],
 };
 
 const mapStateToProps = (state) => {
   const data = {
-    fieldSize: state.field_size,
     playerColor: state.playerColor,
     token: state.user.token,
-    username: state.user.username,
-    players: state.players,
-    rooms: state.rooms,
-    gameInterrupted: state.gameInterrupted,
   };
   return data;
 };
@@ -107,21 +87,6 @@ export default connect(
   (dispatch) => ({
     setPlayerColor: (color) => {
       dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
-    },
-
-    changeFieldSize: (size) => {
-      dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
-    },
-
-    getGameRooms: (token) => {
-      const gameRoomRequest = () => {
-        axios({
-          method: 'get',
-          headers: { Authorization: `Token ${token}` },
-          url: '/api/v2/rooms/',
-        }).then((response) => { dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: response }); });
-      };
-      gameRoomRequest();
     },
 
     createNewRoom: (token, fieldSize, gameColor) => {
@@ -137,21 +102,6 @@ export default connect(
         });
       };
       newRoomRequest();
-    },
-
-    onJoinGameRoom: (token, roomId, playerColor) => {
-      const joinGameRoom = () => {
-        const data = { room_id: roomId, color: playerColor };
-        axios({
-          method: 'post',
-          headers: { Authorization: `Token ${token}` },
-          url: '/api/v2/join/',
-          data,
-        }).then((response) => {
-          dispatch({ type: TYPES.PLAYER_JOIN_ROOM, payload: response });
-        });
-      };
-      joinGameRoom();
     },
   }),
 )(NewGameForm);
