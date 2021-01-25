@@ -67,14 +67,14 @@ class Settings extends Component {
     return (
       <section className="field">
         <Container className="mb-5">
-          <h2>Create the room</h2>
+          <h2 className="text-center">Create new game room</h2>
           <Form onSubmit={this.onCreateNewRoom}>
-            <Row>
-              <Form.Group as={Col} sm={12} lg={6} controlId="color">
+            <Form.Row className="mb-3">
+              <Form.Group as={Col} sm={12} lg={6} controlId="color" className="m-auto">
                 <Form.Label>Click to choose your color:</Form.Label>
                 <Form.Control
                   type="color"
-                  className="games-color-block m-auto"
+                  className="games-color-block"
                   value={playerColor}
                   onChange={this.changePickedColor.bind(this)}
                 />
@@ -82,9 +82,11 @@ class Settings extends Component {
                   Username must be 3 or more characters
                 </Form.Control.Feedback>
               </Form.Group>
+            </Form.Row>
 
-              <Form.Group as={Col} sm={12} lg={6} controlId="password">
-                <Form.Label>Choose the field size (6-15)</Form.Label>
+            <Form.Row className="mb-3">
+              <Form.Group as={Col} sm={12} lg={6} controlId="size" className="m-auto">
+                <Form.Label>Choose the field size (6-15):</Form.Label>
                 <Form.Control
                   type="number"
                 />
@@ -92,10 +94,10 @@ class Settings extends Component {
                   Password should be 5 or more characters and number
                 </Form.Control.Feedback>
               </Form.Group>
-            </Row>
-            <Row>
-              <Button as={Col} xs="auto" type="submit" className="btn-success col-sm-4 col-lg-4 m-auto">Create new game</Button>
-            </Row>
+            </Form.Row>
+            <Form.Row className="mb-3">
+              <Button as={Col} xs="auto" type="submit" className="btn-success m-auto">Create new game</Button>
+            </Form.Row>
           </Form>
         </Container>
 
