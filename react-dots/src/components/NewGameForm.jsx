@@ -20,7 +20,7 @@ function NewGameForm(props) {
 
   const onCreateNewRoom = handleSubmit(({ fieldSize }) => {
     const { token } = props;
-    props.createNewRoom(token, fieldSize, playerColor);
+    props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
   });
 
   return (

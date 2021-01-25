@@ -21,9 +21,6 @@ function getCanvasGrid(amount, size) {
 
 function getCircleCoords(field, size, playerColors) {
   const circle = [];
-  const colorTable = {
-    O: 'orange', R: 'red', B: 'blue', Y: 'khaki', G: 'green',
-  };
   for (let i = 1; i < field.length - 1; i += 1) {
     for (let j = 1; j < field[0].length - 1; j += 1) {
       if (field[i][j].owner != null) {
@@ -41,7 +38,7 @@ function getCircleCoords(field, size, playerColors) {
             y: 0,
           }}
           fillRadialGradientEndRadius={5}
-          fillRadialGradientColorStops={[0, 'white', 1, colorTable[playerColors[field[i][j].owner]]]}
+          fillRadialGradientColorStops={[0, 'white', 1, playerColors[field[i][j].owner]]}
         />);
       }
     }
@@ -52,14 +49,10 @@ function getCircleCoords(field, size, playerColors) {
 function createLoopFigure(field, loops, cellSize, playerColors) {
   if (loops == null) return [];
 
-  const colorTable = {
-    O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
-  };
-
   const jsxLoop = [];
   loops.forEach((loop) => {
     const { owner } = field[loop[0][1]][loop[0][0]];
-    const color = colorTable[playerColors[owner]];
+    const color = playerColors[owner];
     const chainPoints = [];
     loop.forEach((point) => {
       chainPoints.push((point[0] - 1) * cellSize);

@@ -24,7 +24,12 @@ class Settings extends Component {
     } = this.props;
     const index = e.target.id;
     const contrast = isContrast(playerColor, rooms[index].color, 1.8);
-    setModal(contrast)
+    console.log("NOB");
+    setModal(contrast);
+    if (contrast) {
+      console.log("HOB");
+      onJoinGameRoom(token, rooms[index].game_room.id, playerColor);
+    }
   }
 
   newFieldSize(e) {
@@ -37,7 +42,6 @@ class Settings extends Component {
 
   changePickedColor(e) {
     const { setPlayerColor } = this.props;
-
     setPlayerColor(e.target.value);
   }
 
@@ -48,7 +52,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, playerColor, modal, setModal
+      rooms, playerColor, modal,
     } = this.props;
 
     const modalWindow = (
