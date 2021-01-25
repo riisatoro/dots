@@ -1,25 +1,14 @@
 function luminanace(r, g, b) {
-  const a = [r, g, b].map((v) => {
-    v /= 255;
-    return v <= 0.03928 ?
-      v / 12.92 :
-      Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-}
-
-function componentToHex(c) {
-  const hex = c.toString(16);
-  return hex.length === 1 ? `0${hex}` : hex;
+  return (r / 255) * 0.2126 + (g / 255) * 0.7152 + (b / 255) * 0.0722;
 }
 
 function contrast(rgb1, rgb2) {
-  const lum1 = luminanace(rgb1[0], rgb1[1], rgb1[2]);
-  const lum2 = luminanace(rgb2[0], rgb2[1], rgb2[2]);
+  const lum1 = luminanace(rgb1.r, rgb1.g, rgb1.b);
+  const lum2 = luminanace(rgb2.r, rgb2.g, rgb2.b);
   const brightest = Math.max(lum1, lum2);
   const darkest = Math.min(lum1, lum2);
-  return (brightest + 0.05) /
-    (darkest + 0.05);
+  return (brightest + 0.05)
+    / (darkest + 0.05);
 }
 
 function hexToRgb(hex) {
@@ -31,6 +20,11 @@ function hexToRgb(hex) {
   } : null;
 }
 
-function rgbToHex(r, g, b) {
-  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+function isContrast(hex1, hex2, ratio) {
+  const rgb1 = hexToRgb(hex1);
+  const rgb2 = hexToRgb(hex2);
+  const contrastValue = contrast(rgb1, rgb2);
+  return contrastValue >= ratio;
 }
+
+export default isContrast;

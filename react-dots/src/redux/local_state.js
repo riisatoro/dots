@@ -30,6 +30,7 @@ const setInitial = () => (
     gameStarted: false,
 
     components: { },
+    modal: false,
   }
 );
 

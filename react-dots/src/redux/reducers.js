@@ -235,6 +235,10 @@ export default function updateState(state = initialState, action) {
       };
     }
 
+    case TYPES.SET_MODAL: {
+      return { ...state, modal: !action.payload };
+    }
+
     default:
       return {
         ...state,

@@ -2,12 +2,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Row,
+  Form, Button, Container, Row, Modal,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
 import NewGameForm from './NewGameForm';
+import isContrast from '../actions/findContrast';
 
 import '../../public/css/default.css';
 
@@ -19,18 +20,11 @@ class Settings extends Component {
 
   onPlayerJoinGame(e) {
     const {
-      onJoinGameRoom, token, playerColor, rooms,
+      onJoinGameRoom, token, playerColor, rooms, setModal,
     } = this.props;
-    const roomID = e.target.id;
-    if (playerColor !== '') {
-      rooms.forEach((element) => {
-        if (element.game_room.id.toString() === e.target.id) {
-          if (element.color !== playerColor) {
-            onJoinGameRoom(token, roomID, playerColor);
-          }
-        }
-      });
-    }
+    const index = e.target.id;
+    const contrast = isContrast(playerColor, rooms[index].color, 1.8);
+    setModal(contrast)
   }
 
   newFieldSize(e) {
@@ -43,16 +37,44 @@ class Settings extends Component {
 
   changePickedColor(e) {
     const { setPlayerColor } = this.props;
+
     setPlayerColor(e.target.value);
+  }
+
+  closeModal() {
+    const { setModal } = this.props;
+    setModal(true);
   }
 
   render() {
     const {
-      rooms, playerColor,
+      rooms, playerColor, modal, setModal
     } = this.props;
+
+    const modalWindow = (
+      <>
+        <Modal show={modal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Colors are too common!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            This color is too simmilar to the choosen one!
+            Please, choose another, more contrast color.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeModal.bind(this)}>
+              OK
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
 
     return (
       <section className="field">
+
+        {modalWindow}
+
         <Container className="mb-5">
           <h2 className="text-center">Create new game room</h2>
           <NewGameForm />
@@ -86,7 +108,7 @@ class Settings extends Component {
                     <p className="card-text">{`Field size: ${room.game_room.size} x ${room.game_room.size}`}</p>
                     <Button
                       type="button"
-                      id={room.game_room.id}
+                      id={index}
                       className="btn btn-primary"
                       onClick={this.onPlayerJoinGame.bind(this)}
                     >
@@ -104,31 +126,28 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
-  fieldSize: PropTypes.number,
   playerColor: PropTypes.string.isRequired,
-  createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
   rooms: PropTypes.array,
   onJoinGameRoom: PropTypes.func.isRequired,
+  modal: PropTypes.bool,
+  setModal: PropTypes.func.isRequired,
 };
 
 Settings.defaultProps = {
-  fieldSize: 10,
   rooms: [],
+  modal: false,
 };
 
 const mapStateToProps = (state) => {
   const data = {
-    fieldSize: state.field_size,
     playerColor: state.playerColor,
     token: state.user.token,
-    username: state.user.username,
-    players: state.players,
     rooms: state.rooms,
-    gameInterrupted: state.gameInterrupted,
+    modal: state.modal,
   };
   return data;
 };
@@ -183,6 +202,10 @@ export default connect(
         });
       };
       joinGameRoom();
+    },
+
+    setModal: (value) => {
+      dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }),
 )(Settings);
