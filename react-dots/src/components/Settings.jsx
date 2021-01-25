@@ -1,6 +1,9 @@
 /* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {
+  Form, Button, Container, Col, Row,
+} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
@@ -53,7 +56,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, colors, colorTable, fieldSize, playerColor
+      rooms, colors, colorTable, fieldSize, playerColor,
     } = this.props;
 
     return (
@@ -151,6 +154,21 @@ class Settings extends Component {
             }
           </div>
         </div>
+        <hr />
+        <Container>
+          <Row>
+            { rooms.map((room, index)=> ()) }
+            <div className="col-sm-4 mt-4">
+              <div className="card" style={{backgroundColor: '#e35e05'}}>
+                <div className="card-body">
+                  <h5 className="card-title">Special title treatment</h5>
+                  <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <a href="#" className="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div>
+            </Row>
+        </Container>
       </section>
     );
   }
