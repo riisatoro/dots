@@ -29,7 +29,6 @@ function Login(props) {
       </Toast>
     </Row>
   );
-  console.log(toast);
 
   return (
     <Container className="h-100">

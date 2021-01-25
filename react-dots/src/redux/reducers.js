@@ -38,11 +38,14 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.LOGIN_ERROR: {
-      console.log(action.payload.message);
+      let message = 'Server error. Try later';
+      if (action.payload.message !== undefined) {
+        message = action.payload.message;
+      }
       return {
         ...state,
         toast: true,
-        toastMessage: action.payload.message,
+        toastMessage: message,
       };
     }
 
