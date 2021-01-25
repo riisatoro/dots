@@ -101,18 +101,3 @@ export default connect(
     },
   }),
 )(Header);
-
-/*
-
-      <Container className="border-bottom mb-5">
-        <Row>
-          <Col xs={7} className="p-3">
-            <a href="/main" className="text-dark"><h1>Dots game</h1></a>
-          </Col>
-          <Col className="d-flex justify-content-center align-items-center m-auto">
-            {navigation}
-          </Col>
-        </Row>
-      </Container>
-
-*/

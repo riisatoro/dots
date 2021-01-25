@@ -11,18 +11,7 @@ export default function updateState(state = initialState, action) {
   switch (action.type) {
     case TYPES.RECEIVE_AUTH_REPLY: {
       if (action.payload.status === 200) {
-        const {
-          data,
-        } = action.payload;
-        if (data.error) {
-          return {
-            ...state,
-            reply: {
-              error: data.error,
-              message: data.message,
-            },
-          };
-        }
+        const { data } = action.payload;
         return {
           ...state,
           reply: {
@@ -42,8 +31,25 @@ export default function updateState(state = initialState, action) {
         ...state,
         reply: {
           error: true,
-          message: 'Server connection error. Try later.',
+          toast: true,
+          toastMessage: 'Server connection error. Try later.',
         },
+      };
+    }
+
+    case TYPES.LOGIN_ERROR: {
+      console.log(action.payload.message);
+      return {
+        ...state,
+        toast: true,
+        toastMessage: action.payload.message,
+      };
+    }
+
+    case TYPES.SERVER_TOAST: {
+      return {
+        ...state,
+        toast: false,
       };
     }
 
