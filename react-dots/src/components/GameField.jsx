@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Stage, Layer } from 'react-konva';
-import { Container, Row } from 'react-bootstrap';
+import { Container, Row, Modal, Button } from 'react-bootstrap';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
@@ -43,6 +43,11 @@ class GameField extends Component {
     this.socket.send(JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }));
   }
 
+  closeModal() {
+    const { setModal } = this.props;
+    setModal(false);
+  }
+
   render() {
     const {
       field,
@@ -54,6 +59,8 @@ class GameField extends Component {
       userID,
       score,
       playerColor,
+      modal,
+      setModal,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
@@ -108,9 +115,9 @@ class GameField extends Component {
               </div>
             ))}
           </Row>
-          <div className="text-center">
+          <div className="text-center mb-5">
             <a href="/game_result">
-              <button type="button" className="btn btn-danger space-around" onClick={this.onPlayerGiveUp.bind(this)}>Give up</button>
+              <Button variant="danger" onClick={this.onPlayerGiveUp.bind(this)}>Give up</Button>
             </a>
           </div>
         </Container>
@@ -120,6 +127,7 @@ class GameField extends Component {
 }
 
 GameField.propTypes = {
+  setModal: PropTypes.func.isRequired,
   userID: PropTypes.number.isRequired,
   roomID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
@@ -131,11 +139,13 @@ GameField.propTypes = {
   playerColor: PropTypes.string.isRequired,
   receiveReply: PropTypes.func.isRequired,
   score: PropTypes.object.isRequired,
+  modal: PropTypes.bool,
 };
 
 GameField.defaultProps = {
   turn: -1,
   loops: [],
+  modal: false,
 };
 
 const mapStateToProps = (state) => {
@@ -154,6 +164,7 @@ const mapStateToProps = (state) => {
     cellSize: state.cellSize,
     playerColors: state.playerColors,
     score: state.score,
+    modal: state.modal,
   };
   return data;
 };
@@ -169,6 +180,9 @@ export default connect(
     },
     closeResults: () => {
       dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
+    },
+    setModal: (value) => {
+      dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }
   ),
