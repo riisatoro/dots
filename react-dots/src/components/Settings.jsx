@@ -2,11 +2,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Row, Col,
+  Form, Button, Container, Row,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
+import NewGameForm from './NewGameForm';
 
 import '../../public/css/default.css';
 
@@ -14,15 +15,6 @@ class Settings extends Component {
   componentDidMount() {
     const { getGameRooms, token } = this.props;
     getGameRooms(token);
-  }
-
-  onCreateNewRoom() {
-    const {
-      createNewRoom, token, playerColor, fieldSize,
-    } = this.props;
-    if (playerColor !== '') {
-      createNewRoom(token, fieldSize, playerColor);
-    }
   }
 
   onPlayerJoinGame(e) {
@@ -39,11 +31,6 @@ class Settings extends Component {
         }
       });
     }
-  }
-
-  onColorChanged(e) {
-    const { setPlayerColor } = this.props;
-    setPlayerColor(e.target.id);
   }
 
   newFieldSize(e) {
@@ -68,37 +55,7 @@ class Settings extends Component {
       <section className="field">
         <Container className="mb-5">
           <h2 className="text-center">Create new game room</h2>
-          <Form onSubmit={this.onCreateNewRoom}>
-            <Form.Row className="mb-3">
-              <Form.Group as={Col} sm={12} lg={6} controlId="color" className="m-auto">
-                <Form.Label>Click to choose your color:</Form.Label>
-                <Form.Control
-                  type="color"
-                  className="games-color-block"
-                  value={playerColor}
-                  onChange={this.changePickedColor.bind(this)}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Username must be 3 or more characters
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Form.Row>
-
-            <Form.Row className="mb-3">
-              <Form.Group as={Col} sm={12} lg={6} controlId="size" className="m-auto">
-                <Form.Label>Choose the field size (6-15):</Form.Label>
-                <Form.Control
-                  type="number"
-                />
-                <Form.Control.Feedback type="invalid">
-                  Password should be 5 or more characters and number
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row className="mb-3">
-              <Button as={Col} xs="auto" type="submit" className="btn-success m-auto">Create new game</Button>
-            </Form.Row>
-          </Form>
+          <NewGameForm />
         </Container>
 
         <Container><hr /></Container>

@@ -11,7 +11,6 @@ import Leaderboard from './Leaderboard';
 import Settings from './Settings';
 import Results from './Results';
 import GameField from './GameField';
-import Footer from './Footer';
 import MainPage from './MainPage';
 import Login from './Login';
 import Register from './Register';
