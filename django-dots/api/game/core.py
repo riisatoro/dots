@@ -11,7 +11,7 @@ min_field_size = 5
 class Field:
     @staticmethod
     def create_field(height: int, width: int) -> GameField:
-        if height < min_field_size or width < min_field_size:
+        if height <= min_field_size or width <= min_field_size:
             raise ValueError("Field height or width must be bigger than 5")
 
         field = []
