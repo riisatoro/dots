@@ -178,6 +178,7 @@ export default function updateState(state = initialState, action) {
           loops: data.loops,
           playerColors: data.colors,
           score: data.score,
+          modal: true,
 
           components: {
             gameField: false,

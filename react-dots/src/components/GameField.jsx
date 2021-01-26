@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Stage, Layer } from 'react-konva';
-import { Container, Row, Button } from 'react-bootstrap';
+import {
+  Container, Row, Button, Modal,
+} from 'react-bootstrap';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
@@ -71,18 +73,46 @@ class GameField extends Component {
     const colorKey = playerColors[turn];
     const userColorKey = playerColors[userID];
 
-    let textTurn = 'Now is your turn';
-    if (colorKey !== userColorKey) {
-      textTurn = ' ';
+    let textTurn = '';
+    if (colorKey === userColorKey) {
+      textTurn = 'Now is your turn';
     }
-
     const textScore = [];
     Object.keys(score).forEach((key) => {
       textScore.push([playerColors[key], `captured ${score[key]} points`]);
     });
 
+    const modalBlock = (
+      <Modal
+        show={modal}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Modal heading
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Centered Modal</h4>
+          {textScore.map((item, index) => (
+            <div key={index.toString()}>
+              <div className="game-color-block" style={{ border: `10px solid ${item[0]}` }}>
+                <p>{item[1]}</p>
+              </div>
+            </div>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={setModal}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+    
     return (
       <>
+        {modalBlock}
         <Container className="text-center">
           <p>Your points color:</p>
           <div className="game-color-block" style={{ backgroundColor: playerColor }} />
