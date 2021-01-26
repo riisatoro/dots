@@ -30,29 +30,34 @@ class Header extends Component {
     if (isAuth) {
       navigation = (
         <>
-          <Nav className="mr-auto">
+          <Nav className="ml-auto">
             <Nav.Link href="/main" to="/main" className={homeClass}>Home</Nav.Link>
             <Nav.Link href="/new_game" className={newGameClass}>New game</Nav.Link>
             <Nav.Link href="/leaderboards" className={leaderboardsClass}>Leaderboards</Nav.Link>
+            <Button variant="outline-info" onClick={this.logoutUser.bind(this)}>Logout</Button>
           </Nav>
-          <Button variant="outline-info" onClick={this.logoutUser.bind(this)}>Logout</Button>
         </>
       );
     } else {
       navigation = (
         <>
-          <Nav className="ml-auto" />
-          <Button variant="primary" href="/login" className="mr-2">Log in</Button>
-          <Button variant="outline-info" href="/register" className="mr-2">Register</Button>
+          <Nav className="ml-auto">
+            <Button variant="primary" href="/login" className="mr-2">Log in</Button>
+            <Button variant="outline-info" href="/register" className="mr-2">Register</Button>
+          </Nav>
         </>
       );
     }
 
     return (
       <>
-        <Navbar bg="dark" variant="dark" className="mb-5">
+
+        <Navbar bg="light" expand="lg" className="mb-5">
           <Navbar.Brand href="/main">Dots game</Navbar.Brand>
-          {navigation}
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            {navigation}
+          </Navbar.Collapse>
         </Navbar>
       </>
     );

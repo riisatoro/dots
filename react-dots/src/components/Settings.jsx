@@ -24,10 +24,10 @@ class Settings extends Component {
     } = this.props;
     const index = e.target.id;
     const contrast = isContrast(playerColor, rooms[index].color, 1.8);
-    console.log("NOB");
+    console.log('NOB');
     setModal(contrast);
     if (contrast) {
-      console.log("HOB");
+      console.log('HOB');
       onJoinGameRoom(token, rooms[index].game_room.id, playerColor);
     }
   }
@@ -74,6 +74,47 @@ class Settings extends Component {
       </>
     );
 
+    const newRoomList = (
+      <Container>
+        <h2>Join new room</h2>
+        <Row>
+          { rooms.map((room, index) => (
+            <div className="col-sm-4 mb-5" key={index.toString()}>
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">{room.user.username}</h5>
+                  <div className="row">
+                    <p className="card-text col-6">Player color:</p>
+                    <div className="col-6">
+                      <div style={{ backgroundColor: room.color }} className="games-color-block mb-2" />
+                    </div>
+                    <p className="card-text col-6">Click to choose your color:</p>
+                    <div className="col-6">
+                      <Form.Control
+                        type="color"
+                        className="games-color-block"
+                        value={playerColor}
+                        onChange={this.changePickedColor.bind(this)}
+                      />
+                    </div>
+                  </div>
+                  <p className="card-text">{`Field size: ${room.game_room.size} x ${room.game_room.size}`}</p>
+                  <Button
+                    type="button"
+                    id={index}
+                    className="btn btn-primary"
+                    onClick={this.onPlayerJoinGame.bind(this)}
+                  >
+                    Join
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Row>
+      </Container>
+    );
+
     return (
       <section className="field">
 
@@ -85,9 +126,9 @@ class Settings extends Component {
         </Container>
 
         <Container><hr /></Container>
-
         <Container>
           <h2>Join new room</h2>
+          {rooms.lenth === 0 && <p>There is no free rooms (</p>}
           <Row>
             { rooms.map((room, index) => (
               <div className="col-sm-4 mb-5" key={index.toString()}>
@@ -124,6 +165,7 @@ class Settings extends Component {
             ))}
           </Row>
         </Container>
+
       </section>
     );
   }
