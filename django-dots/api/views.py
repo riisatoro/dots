@@ -8,8 +8,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
-from . import serializers
-from . import models
+from . import serializers, models, senders
 from .game.core import Field
 from .game.serializers import GameFieldSerializer
 
@@ -155,6 +154,8 @@ class GameRoomView(APIView):
         )
         user_game.save()
 
+        senders.NewGameSender().send_signal()
+
         return Response(
             {
                 "error": False,
@@ -226,6 +227,7 @@ class GameRoomJoin(APIView):
             colors[color.user.id] = color.color
             score[color.user.id] = 0
 
+        senders.NewGameSender().send_signal()
         return Response(
             {
                 "error": False,

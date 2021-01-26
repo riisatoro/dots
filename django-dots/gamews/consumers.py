@@ -13,6 +13,7 @@ from api.models import GameRoom, UserGame
 from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
+from api.senders import NewGameSender, new_game
 
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
@@ -152,6 +153,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return user2.user.username
 
 
+#@receiver(signals.post_save, sender=NewGameSender)
+def send_updated_rooms(sender, **kwargs):
+    print("Message on the way!")
+    layer = channels.layers.get_channel_layer()
+    async_to_sync(layer.group_send)(
+        "all-games",
+        {
+            'type': 'chat_message',
+            'message': 'Offer received',
+        })
+
+new_game.connect(send_updated_rooms)
+
 class ListGamesConsumer(AsyncWebsocketConsumer):
     groups = ["all-games"]
     async def connect(self):
@@ -161,7 +175,6 @@ class ListGamesConsumer(AsyncWebsocketConsumer):
             await self.close()
 
     async def disconnect(self, code):
-        print("Close")
         return super().disconnect(code)
 
     async def receive(self):
@@ -184,15 +197,3 @@ class ListGamesConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_new_rooms(self):
         return "hello"
-
-@staticmethod
-@receiver(signals.post_save, sender=GameRoom)
-def send_updated_rooms(sender, instance, **kwargs):
-    print("DB UPDATED")
-    layer = channels.layers.get_channel_layer()
-    async_to_sync(layer.group_send)(
-        "all-games",
-        {
-            'type': 'chat_message',
-            'message': 'Offer received',
-        })
