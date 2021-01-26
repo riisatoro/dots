@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  Form, Button, Container, Col,
+  Form, Button, Container, Col, Row, Toast,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TYPES from '../redux/types';
@@ -22,9 +22,23 @@ function Register(props) {
     props.sendRegisterForm({ username, email, password });
   });
 
+  const { toast, toastMessage, closeToast } = props;
+  const toastWindow = (
+    <Row className="mb-5" style={{ height: '50px' }}>
+      <Toast onClose={closeToast} show={toast} delay={5000} autohide className="ml-auto">
+        <Toast.Header>
+          <strong className="mr-auto text-danger">Error!</strong>
+          <small>Error</small>
+        </Toast.Header>
+        <Toast.Body>{toastMessage}</Toast.Body>
+      </Toast>
+    </Row>
+  );
+
   return (
     <section>
-      <Container>
+      <Container className="h-100">
+        {toastWindow}
         <Form onSubmit={onSubmitForm}>
           <Form.Row>
             <Form.Group as={Col} controlId="username">
@@ -101,7 +115,7 @@ function Register(props) {
               </Form.Control.Feedback>
             </Form.Group>
           </Form.Row>
-          <Button type="submit">Log in</Button>
+          <Button type="submit">Register</Button>
         </Form>
       </Container>
     </section>
@@ -110,11 +124,31 @@ function Register(props) {
 
 Register.propTypes = {
   sendRegisterForm: PropTypes.func.isRequired,
+  toast: PropTypes.bool,
+  toastMessage: PropTypes.string,
+  closeToast: PropTypes.func.isRequired,
+};
+
+Register.defaultProps = {
+  toast: false,
+  toastMessage: '',
+};
+
+const mapStateToProps = (state) => {
+  const data = {
+    toast: state.toast,
+    toastMessage: state.toastMessage,
+  };
+  return data;
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   (dispatch) => ({
+    closeToast: () => {
+      dispatch({ type: TYPES.SERVER_TOAST, payload: false });
+    },
+
     sendRegisterForm: (data) => {
       const registerFormRequest = () => {
         axios.post(
@@ -123,6 +157,10 @@ export default connect(
         ).then(
           (response) => {
             dispatch({ type: TYPES.RECEIVE_AUTH_REPLY, payload: response });
+          },
+        ).catch(
+          (error) => {
+            dispatch({ type: TYPES.LOGIN_ERROR, payload: error.response.data });
           },
         );
       };

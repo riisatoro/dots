@@ -29,26 +29,26 @@ def group_player_score(games):
 
 class Register(APIView):
     """Registration"""
-
-    def get(self, request):
-        return Response(
-            {"error": True, "message": "Can't create user from the GET request."}
-        )
-
     def post(self, request):
+        email = request.data["email"]
         username = request.data["username"]
         password = request.data["password"]
-        email = request.data["email"]
 
-        username_exists = User.objects.filter(username=username).exists()
-        email_exists = User.objects.filter(email=email).exists()
-        if email_exists:
-            return Response(
-                {"error": True, "message": "This email already registered."}
+        
+        
+        if User.objects.filter(username=username).exists():
+            return Response({
+                "error": True,
+                "message": "This username already registered."
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
-        if username_exists:
-            return Response(
-                {"error": True, "message": "This username already registered."}
+        if User.objects.filter(email=email).exists():
+            return Response({
+                "error": True,
+                "message": "This email already registered.",
+                },
+                status=status.HTTP_403_FORBIDDEN
             )
 
         user = User.objects.create_user(username, email, password)
