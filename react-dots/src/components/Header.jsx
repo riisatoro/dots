@@ -51,7 +51,6 @@ class Header extends Component {
 
     return (
       <>
-
         <Navbar bg="light" expand="lg" className="mb-5">
           <Navbar.Brand href="/main">Dots game</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
