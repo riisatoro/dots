@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Stage, Layer } from 'react-konva';
-import { Container, Row, Modal, Button } from 'react-bootstrap';
+import { Container, Row, Button } from 'react-bootstrap';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';

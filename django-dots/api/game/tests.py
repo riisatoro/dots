@@ -338,3 +338,24 @@ class ApiCoreBuildAllLoops(TestCase):
         self.assertTrue(
             loops_are_equal(expected_2, self.field.new_houses[1]["path"])
         )
+
+class ApiCoreSetOfSides(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        self.field = Field.add_player(self.field, 1)
+        self.points = [Point(2, 1), Point(3, 2), Point(3, 3)]
+
+    def test_simple(self):
+        for point in self.points:
+            self.field.field[point.y][point.x].owner = 1
+
+        sides = Core.get_all_sides(self.field.field, Point(3, 2))
+        self.assertEqual(len(sides), 2)
+
+    def test_three(self):
+        self.points.append(Point(4, 1))
+        for point in self.points:
+            self.field.field[point.y][point.x].owner = 1
+
+        sides = Core.get_all_sides(self.field.field, Point(3, 2))
+        self.assertEqual(len(sides), 3)

@@ -97,15 +97,9 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.UPDATE_GAME_ROOMS: {
-      if (action.payload.status === 200) {
-        return {
-          ...state,
-          rooms: action.payload.data.free_room,
-        };
-      }
       return {
         ...state,
-        rooms: [],
+        rooms: action.payload.rooms,
       };
     }
 

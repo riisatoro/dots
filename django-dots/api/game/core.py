@@ -300,3 +300,39 @@ class Core:
             if not Core.is_neighbour(path[i-1], path[i]):
                 return False
         return True
+
+    @staticmethod
+    def get_all_sides(field, point):
+        list_of_sides = []
+        list_of_neigbors = [
+            Point(0, -1), Point(1, -1), Point(1, 0), Point(1, 1), 
+            Point(0, 1), Point(-1, 1), Point(-1, 0), Point(-1, -1)
+        ]
+
+        for index in range(1, len(list_of_neigbors)+1):
+            this = list_of_neigbors[index-1]
+            neigbor = list_of_neigbors[index%len(list_of_neigbors)]
+            
+            this_point = Point(point.x+this.x, point.y+this.y)
+            neigbor_point = Point(point.x+neigbor.x, point.y+neigbor.y)
+
+            points_set = set()
+            
+            if field[this_point.y][this_point.x].owner is None and not field[this_point.y][this_point.x].is_captured:
+                points_set.add(this_point)
+            if field[neigbor_point.y][neigbor_point.x].owner is None and not field[neigbor_point.y][neigbor_point.x].is_captured:
+                points_set.add(neigbor_point)
+
+            if list_of_sides:
+                for index, item in enumerate(list_of_sides):
+                    if item & set([this_point, neigbor_point]):
+                        list_of_sides[index] = item.union(points_set)
+                        break
+                else:
+                    if points_set:
+                        list_of_sides.append(points_set)
+            else:
+                if points_set:
+                    list_of_sides = [points_set]
+
+        return list_of_sides
