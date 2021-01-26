@@ -12,7 +12,7 @@ class Field:
     @staticmethod
     def create_field(height: int, width: int) -> GameField:
         if height < min_field_size or width < min_field_size:
-            raise ValueError("Field height or width must be bigger than 5")
+            raise ValueError("Field height or width must be 5 or bigger")
 
         field = []
         border = [GamePoint(border=True)] * (width + 2)
@@ -67,7 +67,9 @@ class Core:
         """
         field = Field.change_owner(field, point, owner)
 
-        all_paths = Core.build_loops_cached(field.field, point, owner)
+        #all_paths = Core.build_loops_cached(field.field, point, owner)
+        all_paths = Core.build_loops(field.field, point, owner)
+
         path_stats = [
             {
                 'path': path,
@@ -202,6 +204,41 @@ class Core:
         return related_neighbors
 
     @staticmethod
+    def build_loops(field, starting_point, owner):
+        loops = []
+        path = []
+
+        def dfs(point, path, segment):
+            neighbors = Core.generate_neighbors(field, point, owner)
+            related_neigbors = [
+                p for p in neighbors
+                if p not in path
+                and len(Core.generate_neighbors(field, p, owner)) < 8
+            ]
+
+            for neighbor in related_neigbors:
+                segments = Core.get_all_segments(field, neighbor, owner)
+                for seg in segments:
+                    if seg & segment:
+                        path.append(neighbor)
+                        if len(path) > 3 and Core.is_neighbour(neighbor, starting_point):
+                            loops.append(path.copy())
+                            path.pop()
+                            continue
+                        else:
+                            dfs(neighbor, path, seg | segment)
+                        path.pop()
+
+
+
+        segments = Core.get_all_segments(field, starting_point, owner)
+        path.append(starting_point)
+        for segment in segments:
+            dfs(starting_point, path, segment)
+
+        return loops
+
+    @staticmethod
     def build_loops_cached(field: [[Point]], starting_point: Point, owner: int) -> list:
         """
         Build all loops in the game field from the stratring point; cache all pathes
@@ -302,7 +339,7 @@ class Core:
         return True
 
     @staticmethod
-    def get_all_sides(field, point):
+    def get_all_segments(field, point, owner):
         list_of_sides = []
         list_of_neigbors = [
             Point(0, -1), Point(1, -1), Point(1, 0), Point(1, 1), 
@@ -318,9 +355,9 @@ class Core:
 
             points_set = set()
             
-            if field[this_point.y][this_point.x].owner is None and not field[this_point.y][this_point.x].is_captured:
+            if field[this_point.y][this_point.x].owner != owner and not field[this_point.y][this_point.x].is_captured:
                 points_set.add(this_point)
-            if field[neigbor_point.y][neigbor_point.x].owner is None and not field[neigbor_point.y][neigbor_point.x].is_captured:
+            if field[neigbor_point.y][neigbor_point.x].owner != owner and not field[neigbor_point.y][neigbor_point.x].is_captured:
                 points_set.add(neigbor_point)
 
             if list_of_sides:
