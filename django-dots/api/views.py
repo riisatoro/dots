@@ -8,9 +8,10 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
-from . import serializers, models, senders
+from . import serializers, models
 from .game.core import Field
 from .game.serializers import GameFieldSerializer
+from gamews.consumers import send_updated_rooms
 
 
 def group_player_score(games):
@@ -154,7 +155,12 @@ class GameRoomView(APIView):
         )
         user_game.save()
 
-        senders.NewGameSender().send_signal()
+        send_updated_rooms(
+            serializers.UserGameSerializer(
+                models.UserGame.objects.filter(game_room__is_started=False), 
+                many=True
+            ).data
+        )
 
         return Response(
             {
@@ -227,7 +233,13 @@ class GameRoomJoin(APIView):
             colors[color.user.id] = color.color
             score[color.user.id] = 0
 
-        senders.NewGameSender().send_signal()
+        send_updated_rooms(
+            serializers.UserGameSerializer(
+                models.UserGame.objects.filter(game_room__is_started=False), 
+                many=True
+            ).data
+        )
+
         return Response(
             {
                 "error": False,

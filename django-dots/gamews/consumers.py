@@ -13,7 +13,6 @@ from api.models import GameRoom, UserGame
 from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
-from api.senders import NewGameSender, new_game
 
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
@@ -153,15 +152,14 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return user2.user.username
 
 
-@receiver(new_game, sender=NewGameSender)
-def send_updated_rooms(sender, **kwargs):
+def send_updated_rooms(rooms):
     print("Message on the way!")
     layer = channels.layers.get_channel_layer()
     async_to_sync(layer.group_send)(
         "all-games",
         {
             'type': 'chat_message',
-            'message': kwargs.get('rooms')
+            'message': rooms
         })
 
 
