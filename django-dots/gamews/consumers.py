@@ -153,7 +153,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return user2.user.username
 
 
-#@receiver(signals.post_save, sender=NewGameSender)
+@receiver(new_game, sender=NewGameSender)
 def send_updated_rooms(sender, **kwargs):
     print("Message on the way!")
     layer = channels.layers.get_channel_layer()
@@ -161,10 +161,9 @@ def send_updated_rooms(sender, **kwargs):
         "all-games",
         {
             'type': 'chat_message',
-            'message': 'Offer received',
+            'message': kwargs.get('rooms')
         })
 
-new_game.connect(send_updated_rooms)
 
 class ListGamesConsumer(AsyncWebsocketConsumer):
     groups = ["all-games"]
