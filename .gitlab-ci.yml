@@ -5,11 +5,16 @@ variables:
   POSTGRES_DB: dots
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
+cache:
+  paths:
+    - venv
 
 test-linter-react:
   stage: test
   image: node:latest
+  cache: {}
   script:
     - cd react-dots/
     - npm install
@@ -18,8 +23,12 @@ test-linter-react:
 
 test-linter-django:
   stage: test
+  before_script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r django-dots/requirements.txt
   script:
-    - pip install django djangorestframework channels prospector[with_everything]
+    - pip install prospector[with_everything]
     - prospector --profile django-dots/profile.yaml
 
     
@@ -27,6 +36,9 @@ test-backend:
   services:  
     - postgres:latest
   stage: test
-  script:
+  before_script:
+    - python -m venv venv
+    - source venv/bin/activate
     - pip install -r django-dots/requirements.txt
+  script:
     - python django-dots/manage.py test api

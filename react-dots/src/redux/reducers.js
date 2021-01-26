@@ -1,13 +1,12 @@
 import TYPES from './types';
 
-import loadState from './local_state';
+import { loadState, setInitial } from './local_state';
 
 const initialState = loadState();
 const colorTitle = ['O', 'R', 'B', 'Y', 'G'];
 
 export default function updateState(state = initialState, action) {
   switch (action.type) {
-    /* OK */
     case TYPES.RECEIVE_AUTH_REPLY: {
       if (action.payload.status === 200) {
         const { data } = action.payload;
@@ -17,7 +16,9 @@ export default function updateState(state = initialState, action) {
         return {
           ...state,
           reply: { error: false, message: '' },
-          user: { auth: true, username: data.username, token: data.token },
+          user: {
+            auth: true, username: data.username, token: data.token, userID: data.id,
+          },
           components: { },
         };
       }
@@ -25,7 +26,7 @@ export default function updateState(state = initialState, action) {
         ...state, reply: { error: true, message: 'Server connection error. Try later.' },
       };
     }
-    /* OK */
+
     case TYPES.RECEIVE_LEADERS: {
       if (action.payload.status === 200) {
         return {
@@ -37,25 +38,24 @@ export default function updateState(state = initialState, action) {
       }
       return { ...state, leaders: [] };
     }
-    /* OK */
+
     case TYPES.COLOR_CHOOSED: {
       return { ...state, playerColor: colorTitle[action.payload.color] };
     }
-    /* OK */
+
     case TYPES.FIELD_SIZE_CHANGED: {
       const newSize = action.payload.size;
       return { ...state, field_size: parseInt(newSize, 10) };
     }
-    /* OK */
+
     case TYPES.SEND_LOGOUT_REQUEST: {
+      localStorage.clear();
+      const clearState = setInitial();
       return {
-        ...state,
-        user: { auth: false, token: '' },
-        components: { },
-        game_end: false,
+        ...clearState,
       };
     }
-    /* OK */
+
     case TYPES.UPDATE_GAME_ROOMS: {
       if (action.payload.status === 200) {
         return { ...state, rooms: action.payload.data.free_room };
@@ -63,7 +63,6 @@ export default function updateState(state = initialState, action) {
       return { ...state, rooms: [] };
     }
 
-    /* OK */
     case TYPES.NEW_ROOM_CREATED: {
       if (action.payload.status === 200) {
         const reply = action.payload.data;
@@ -78,9 +77,11 @@ export default function updateState(state = initialState, action) {
           ...state,
           socket: socketData,
           components: { gameField: true },
-          field: reply.field,
-          turn: state.user.username,
+          field: reply.field.field,
+          turn: reply.turn,
+          playerColors: reply.colors,
           gameStarted: true,
+          score: reply.score,
           loops: [],
         };
       }
@@ -92,7 +93,6 @@ export default function updateState(state = initialState, action) {
       };
     }
 
-    /* OK */
     case TYPES.PLAYER_JOIN_ROOM: {
       if (action.payload.status === 200) {
         const reply = action.payload.data;
@@ -107,9 +107,11 @@ export default function updateState(state = initialState, action) {
           ...state,
           socket: socketData,
           components: { gameField: true },
-          field: reply.field,
-          turn: 'NaN',
+          field: reply.field.field,
+          turn: reply.turn,
+          playerColors: reply.colors,
           gameStarted: true,
+          score: reply.score,
           loops: [],
         };
       }
@@ -117,26 +119,32 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.PLAYER_SET_DOT: {
-      if (action.payload.data.is_full) {
+      const { data } = action.payload;
+      if (data.is_full) {
         return {
           ...state,
-          field: action.payload.data.field,
-          captured: action.payload.data.captured,
-          turn: action.payload.data.turn,
-          gameEnd: action.payload.data.is_full,
+          field: data.field,
+          players: data.players,
+          turn: data.turn,
+          gameEnd: data.is_full,
+          loops: data.loops,
+          playerColors: data.colors,
+          score: data.score,
+
           components: { gameField: false },
           gameStarted: false,
           gameResults: true,
-          loops: action.payload.data.loops,
         };
       }
       return {
         ...state,
-        field: action.payload.data.field,
-        captured: action.payload.data.captured,
-        turn: action.payload.data.turn,
-        gameEnd: action.payload.data.is_full,
-        loops: action.payload.data.loops,
+        field: data.field,
+        players: data.players,
+        turn: data.turn,
+        gameEnd: data.is_full,
+        loops: data.loops,
+        playerColors: data.colors,
+        score: data.score,
       };
     }
 

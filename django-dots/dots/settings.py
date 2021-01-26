@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'api',
     'gamews',
     'channels',
-    
 ]
 
 MIDDLEWARE = [

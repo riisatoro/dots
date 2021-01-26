@@ -3,7 +3,9 @@ import TYPES from './types';
 const setInitial = () => (
   {
     reply: { error: false, message: '' },
-    user: { auth: false, userName: '', token: '' },
+    user: {
+      auth: false, userName: '', token: '', userID: null,
+    },
     socket: {
       connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
     },
@@ -14,7 +16,7 @@ const setInitial = () => (
     game_end: false,
     gameResults: false,
 
-    playerColor: 'Black',
+    playerColor: '',
     playerScore: 0,
 
     loops: [],
@@ -26,6 +28,8 @@ const setInitial = () => (
     leaders: [],
     gameInterrupted: false,
     gameStarted: false,
+
+    components: { },
   }
 );
 
@@ -39,4 +43,4 @@ const loadState = () => {
   return state;
 };
 
-export default loadState;
+export { loadState, setInitial };

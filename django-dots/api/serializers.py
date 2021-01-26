@@ -7,7 +7,7 @@ from . import models
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', )
+        fields = ('id', 'username', )
 
 
 class GameRoomSerializer(serializers.ModelSerializer):
@@ -22,5 +22,5 @@ class UserGameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserGame
-        fields = ('color', 'turn', 'game_room', 'user', 'score')
+        fields = ('color', 'turn', 'game_room', 'user', 'score', )
         depth = 1

@@ -7,7 +7,9 @@ import { Stage, Layer } from 'react-konva';
 
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
-import { getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle } from '../actions/gameFieldDrawable';
+import {
+  getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle,
+} from '../actions/gameFieldDrawable';
 import '../../public/css/game_field.css';
 
 class GameField extends Component {
@@ -36,9 +38,9 @@ class GameField extends Component {
     const { cellSize } = this.props;
     const xAxis = e.evt.layerX - cellSize / 2;
     const yAxis = e.evt.layerY - cellSize / 2;
-    const xPoint = Math.floor(xAxis / cellSize);
-    const yPoint = Math.floor(yAxis / cellSize);
-    this.socket.send(JSON.stringify({ fieldPoint: [yPoint, xPoint], TYPE: TYPES.PLAYER_SET_DOT }));
+    const xPoint = Math.floor(xAxis / cellSize) + 1;
+    const yPoint = Math.floor(yAxis / cellSize) + 1;
+    this.socket.send(JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }));
   }
 
   render() {
@@ -49,47 +51,62 @@ class GameField extends Component {
       gameResults,
       loops,
       cellSize,
+      playerColors,
+      userID,
+      score,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
-    const circle = getCircleCoords(field, cellSize);
-    const loop1 = createLoopFigure(loops[0], cellSize);
-    const loop2 = createLoopFigure(loops[1], cellSize);
+    const circle = getCircleCoords(field, cellSize, playerColors);
     const emptyCircle = createEmptyCircle(field, cellSize);
+    const loop = createLoopFigure(field, loops, cellSize, playerColors);
 
-    let userTurn = '';
-    if (turn === 'NaN') {
-      userTurn = ' not your ';
-    } else {
-      userTurn = ` ${turn} `;
+    const humanTextColor = {
+      R: 'Red',
+      O: 'Orange',
+      G: 'Green',
+      B: 'Blue',
+      Y: 'Yellow',
+    };
+    const colorKey = playerColors[turn];
+    const userColorKey = playerColors[userID];
+
+    const userColor = `Your points are ${humanTextColor[userColorKey]}`;
+    let textTurn = 'Now is your turn';
+    if (colorKey !== userColorKey) {
+      textTurn = ' ';
     }
+
+    let textScore = '';
+    Object.keys(score).forEach((key) => {
+      textScore += `${humanTextColor[playerColors[key]]} captured ${score[key]} points `;
+    });
 
     return (
       <section className="field">
         { gameResults && <Redirect to="/game_result" /> }
-        <div>
-          <p>
-            Now is
-            {userTurn}
-            turn
-          </p>
+        <div className="game-info align-center">
+          <p>{userColor}</p>
+          <p className="const-width">{textTurn}</p>
         </div>
-
         <hr />
-        <div className="gameCanvas">
+        <div className="gameCanvas" style={{ width: fieldSize * cellSize + cellSize * 2 }}>
           <Stage
             width={fieldSize * cellSize + cellSize * 2}
             height={fieldSize * cellSize + cellSize * 2}
             onClick={this.gridClicked.bind(this)}
           >
             <Layer x={cellSize} y={cellSize}>
-              {loop1.map((l1) => l1)}
-              {loop2.map((l2) => l2)}
               {canvasGrid.map((line) => line)}
-              {circle.map((circ) => circ)}
               {emptyCircle.map((circl) => circl)}
+              {loop.map((l1) => l1)}
+              {circle.map((circ) => circ)}
             </Layer>
           </Stage>
+        </div>
+
+        <div className="align-center game-score">
+          <p>{textScore}</p>
         </div>
 
         <div className="align-center">
@@ -103,23 +120,27 @@ class GameField extends Component {
 }
 
 GameField.propTypes = {
+  userID: PropTypes.number.isRequired,
   roomID: PropTypes.number.isRequired,
   field: PropTypes.array.isRequired,
   fieldSize: PropTypes.number.isRequired,
-  turn: PropTypes.string,
-  loops: PropTypes.array.isRequired,
+  turn: PropTypes.number,
+  loops: PropTypes.array,
   gameResults: PropTypes.bool.isRequired,
   cellSize: PropTypes.number.isRequired,
-
+  playerColors: PropTypes.object.isRequired,
   receiveReply: PropTypes.func.isRequired,
+  score: PropTypes.object.isRequired,
 };
 
 GameField.defaultProps = {
-  turn: '',
+  turn: -1,
+  loops: [],
 };
 
 const mapStateToProps = (state) => {
   const data = {
+    userID: state.user.userID,
     roomID: state.socket.roomId,
     field: state.field,
     fieldSize: state.socket.fieldSize,
@@ -131,6 +152,8 @@ const mapStateToProps = (state) => {
     gameResults: state.gameResults,
     loops: state.loops,
     cellSize: state.cellSize,
+    playerColors: state.playerColors,
+    score: state.score,
   };
   return data;
 };

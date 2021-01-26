@@ -17,7 +17,7 @@ class Settings extends Component {
     const {
       createNewRoom, token, playerColor, fieldSize,
     } = this.props;
-    if (playerColor !== 'Black') {
+    if (playerColor !== '') {
       createNewRoom(token, fieldSize, playerColor);
     }
   }
@@ -27,7 +27,7 @@ class Settings extends Component {
       onJoinGameRoom, token, playerColor, rooms,
     } = this.props;
     const roomID = e.target.id;
-    if (playerColor !== 'Black') {
+    if (playerColor !== '') {
       rooms.forEach((element) => {
         if (element.game_room.id.toString() === e.target.id) {
           if (element.color !== playerColor) {
