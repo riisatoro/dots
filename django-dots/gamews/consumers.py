@@ -78,12 +78,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 try:
                     new_field = Core.process_point(field, point, user_id)
                     await self.save_field_and_change_turn(room_id, new_field)
-
+                    await self.save_score(room_id, new_field.score)
                 except Exception as e:
                     print("EXCEPTION", e)
 
                 is_full = Field.is_full_field(new_field)
-                await self.save_score(room_id, field.score)
                 new_field = GameFieldSerializer().to_client(new_field)
                 new_field["is_full"] = is_full
                 new_field["colors"] = await self.get_user_colors(room_id)
