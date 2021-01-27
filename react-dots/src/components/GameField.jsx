@@ -19,6 +19,7 @@ class GameField extends Component {
     const {
       roomID,
       receiveReply,
+      setModal,
     } = this.props;
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => {
@@ -30,7 +31,7 @@ class GameField extends Component {
       }
     };
     this.socket.onerror = () => { };
-    this.socket.onclose = () => { };
+    this.socket.onclose = () => { setModal(true); };
   }
 
   componentWillUnmount() {
@@ -45,11 +46,23 @@ class GameField extends Component {
 
   gridClicked(e) {
     const { cellSize } = this.props;
-    const xAxis = e.evt.layerX - cellSize / 2;
-    const yAxis = e.evt.layerY - cellSize / 2;
-    const xPoint = Math.floor(xAxis / cellSize) + 1;
-    const yPoint = Math.floor(yAxis / cellSize) + 1;
-    this.socket.send(JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }));
+    let xPoint = 0;
+    let yPoint = 0;
+    if (e.evt.layerX !== undefined) {
+      const xAxis = e.evt.layerX - cellSize / 2;
+      const yAxis = e.evt.layerY - cellSize / 2;
+      xPoint = Math.floor(xAxis / cellSize) + 1;
+      yPoint = Math.floor(yAxis / cellSize) + 1;
+    } else {
+      xPoint = e.target.attrs.x / cellSize + 1;
+      yPoint = e.target.attrs.y / cellSize + 1;
+    }
+
+    if (!(xPoint === undefined) || !(yPoint === undefined)) {
+      this.socket.send(
+        JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT })
+      );
+    }
   }
 
   closeModal() {
@@ -146,11 +159,12 @@ class GameField extends Component {
         </Container>
 
         <Container>
-          <div className="gameCanvas m-auto" style={{ width: fieldSize * cellSize + cellSize * 2 }}>
+          <div className="m-auto" style={{ width: fieldSize * cellSize + cellSize }}>
             <Stage
-              width={fieldSize * cellSize + cellSize * 2}
-              height={fieldSize * cellSize + cellSize * 2}
+              width={fieldSize * cellSize + cellSize}
+              height={fieldSize * cellSize + cellSize}
               onClick={this.gridClicked.bind(this)}
+              onTap={this.gridClicked.bind(this)}
             >
               <Layer x={cellSize} y={cellSize}>
 
