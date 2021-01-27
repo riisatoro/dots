@@ -66,8 +66,6 @@ class Core:
         Update point state and all loops in the game
         """
         field = Field.change_owner(field, point, owner)
-
-        #all_paths = Core.build_loops_cached(field.field, point, owner)
         all_paths = Core.build_loops(field.field, point, owner)
 
         path_stats = [
@@ -225,11 +223,9 @@ class Core:
                             loops.append(path.copy())
                             path.pop()
                             continue
-                        else:
-                            dfs(neighbor, path, seg | segment)
+
+                        dfs(neighbor, path, seg | segment)
                         path.pop()
-
-
 
         segments = Core.get_all_segments(field, starting_point, owner)
         path.append(starting_point)
@@ -342,19 +338,19 @@ class Core:
     def get_all_segments(field, point, owner):
         list_of_sides = []
         list_of_neigbors = [
-            Point(0, -1), Point(1, -1), Point(1, 0), Point(1, 1), 
+            Point(0, -1), Point(1, -1), Point(1, 0), Point(1, 1),
             Point(0, 1), Point(-1, 1), Point(-1, 0), Point(-1, -1)
         ]
 
         for index in range(1, len(list_of_neigbors)+1):
             this = list_of_neigbors[index-1]
-            neigbor = list_of_neigbors[index%len(list_of_neigbors)]
-            
+            neigbor = list_of_neigbors[index % len(list_of_neigbors)]
+
             this_point = Point(point.x+this.x, point.y+this.y)
             neigbor_point = Point(point.x+neigbor.x, point.y+neigbor.y)
 
             points_set = set()
-            
+
             if field[this_point.y][this_point.x].owner != owner and not field[this_point.y][this_point.x].is_captured:
                 points_set.add(this_point)
             if field[neigbor_point.y][neigbor_point.x].owner != owner and not field[neigbor_point.y][neigbor_point.x].is_captured:

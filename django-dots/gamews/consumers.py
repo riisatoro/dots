@@ -6,9 +6,6 @@ from channels.db import database_sync_to_async
 from django.db import transaction
 from asgiref.sync import async_to_sync
 
-from django.db.models import signals
-from django.dispatch import receiver
-
 from api.models import GameRoom, UserGame
 from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
@@ -176,6 +173,7 @@ def send_updated_rooms(rooms):
 
 class ListGamesConsumer(AsyncWebsocketConsumer):
     groups = ["all-games"]
+
     async def connect(self):
         if self.scope["user"].is_authenticated:
             await self.accept()

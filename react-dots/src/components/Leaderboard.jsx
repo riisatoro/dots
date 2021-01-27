@@ -15,7 +15,6 @@ class Leaderboard extends Component {
     getLeaderboard(token);
   }
 
-
   render() {
     const { matches, activeLeadersPage, setActivePagination } = this.props;
     const tableHead = (
@@ -60,9 +59,8 @@ class Leaderboard extends Component {
               {tableHead}
               <tbody>
                 {
-                (paginationMatches !== undefined && paginationMatches.length > 0) 
-                && 
-                paginationMatches.map((match, gameIndex) => (
+                (paginationMatches !== undefined && paginationMatches.length > 0)
+                && paginationMatches.map((match, gameIndex) => (
                   <React.Fragment key={gameIndex.toString()}>
                     {
                     match.map((data, index, array) => (
@@ -84,7 +82,8 @@ class Leaderboard extends Component {
                     ))
                   }
                   </React.Fragment>
-                ))}
+                ))
+}
               </tbody>
             </Table>
           </Row>

@@ -34,19 +34,19 @@ class Register(APIView):
         username = request.data["username"]
         password = request.data["password"]
 
-        
-        
         if User.objects.filter(username=username).exists():
-            return Response({
-                "error": True,
-                "message": "This username already registered."
+            return Response(
+                {
+                    "error": True,
+                    "message": "This username already registered."
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
         if User.objects.filter(email=email).exists():
-            return Response({
-                "error": True,
-                "message": "This email already registered.",
+            return Response(
+                {
+                    "error": True,
+                    "message": "This email already registered.",
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
@@ -157,7 +157,7 @@ class GameRoomView(APIView):
 
         send_updated_rooms(
             serializers.UserGameSerializer(
-                models.UserGame.objects.filter(game_room__is_started=False), 
+                models.UserGame.objects.filter(game_room__is_started=False),
                 many=True
             ).data
         )
@@ -235,7 +235,7 @@ class GameRoomJoin(APIView):
 
         send_updated_rooms(
             serializers.UserGameSerializer(
-                models.UserGame.objects.filter(game_room__is_started=False), 
+                models.UserGame.objects.filter(game_room__is_started=False),
                 many=True
             ).data
         )

@@ -339,6 +339,7 @@ class ApiCoreBuildAllLoops(TestCase):
             loops_are_equal(expected_2, self.field.new_houses[1]["path"])
         )
 
+
 class ApiCoreSetOfSides(TestCase):
     def setUp(self):
         self.field = Field.create_field(5, 5)
@@ -360,12 +361,13 @@ class ApiCoreSetOfSides(TestCase):
         sides = Core.get_all_segments(self.field.field, Point(3, 2), 1)
         self.assertEqual(len(sides), 3)
 
+
 class ApiCoreBuildLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)
         self.field = Field.add_player(self.field, 1)
         self.points = tuple_to_point([
-            [1, 1], [2, 1], [1, 2], [3, 2], [2, 3], 
+            [1, 1], [2, 1], [1, 2], [3, 2], [2, 3],
             [4, 3], [2, 4], [2, 5], [3, 6], [4, 5], [4, 4], [4, 3],
             [5, 4], [6, 4], [7, 5], [7, 6], [6, 7], [5, 7], [4, 7],
             [1, 6], [1, 7], [1, 8], [2, 9], [3, 10], [4, 10], [5, 9], [4, 8]
@@ -375,8 +377,5 @@ class ApiCoreBuildLoops(TestCase):
         for point in self.points:
             self.field.field[point.y][point.x].owner = 1
 
-        from .draw import draw_field; draw_field(self.field)
         loops = Core.build_loops(self.field.field, self.points[-1], 1)
-        
-        for l in loops:
-            print(l)
+        print(loops)
