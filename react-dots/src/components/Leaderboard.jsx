@@ -28,21 +28,22 @@ class Leaderboard extends Component {
       </thead>
     );
 
+    const splitBy = 8;
     const matchesList = [];
     const paginationItems = [];
 
-    for (let i = 0; i < matches.length; i += 5) {
+    for (let i = 0; i < matches.length; i += splitBy) {
       paginationItems.push(
         <Pagination.Item
-          key={i / 5}
-          id={i / 5}
-          active={i / 5 === activeLeadersPage - 1}
+          key={i / splitBy}
+          id={i / splitBy}
+          active={i / splitBy === activeLeadersPage - 1}
           onClick={setActivePagination}
         >
-          {(i / 5) + 1}
+          {(i / splitBy) + 1}
         </Pagination.Item>,
       );
-      matchesList.push(matches.slice(i, i + 5));
+      matchesList.push(matches.slice(i, i + splitBy));
     }
     const paginationMatches = matchesList[activeLeadersPage - 1];
 
@@ -61,7 +62,7 @@ class Leaderboard extends Component {
                         {
                           index === 0 && (
                           <td rowSpan={array.length} className="align-middle">
-                            {(activeLeadersPage - 1) * 5 + gameIndex + 1}
+                            {(activeLeadersPage - 1) * splitBy + gameIndex + 1}
                           </td>
                           )
                         }
