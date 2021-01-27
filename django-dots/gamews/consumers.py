@@ -93,7 +93,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
             await self.channel_layer.group_discard(room_group_name, self.channel_name)
 
-        
         await self.channel_layer.group_send(
             'game_room_' + room_id,
             {
