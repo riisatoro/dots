@@ -44,7 +44,7 @@ function App(props) {
 
           <Route path="/new_game">
             { authorized ? <Settings /> : <Redirect to="/login" /> }
-            { authorized && gameStarted ? <Redirect to="/game" /> : ''}
+            { authorized && gameStarted ? <Redirect to="/game" /> : <Redirect to="/new_game" />}
           </Route>
 
           <Route path="/leaderboards">

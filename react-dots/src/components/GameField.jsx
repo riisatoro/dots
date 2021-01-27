@@ -6,7 +6,7 @@ import { Stage, Layer } from 'react-konva';
 import {
   Container, Row, Button, Modal,
 } from 'react-bootstrap';
-
+import { Redirect } from 'react-router-dom';
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
 import {
@@ -63,6 +63,9 @@ class GameField extends Component {
       playerColor,
       modal,
       setModal,
+      closeGame,
+      gameStarted,
+      gameResults
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
@@ -82,25 +85,32 @@ class GameField extends Component {
       textScore.push([playerColors[key], `captured ${score[key]} points`]);
     });
 
+    const textScoreResult = [];
+    Object.keys(score).forEach((key) => {
+      textScoreResult.push([playerColors[key], `${score[key]} points`]);
+    });
+
     const modalBlock = (
       <Modal
         show={modal}
+        onHide={closeGame}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Modal heading
+            Game over
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Centered Modal</h4>
-          {textScore.map((item, index) => (
-            <div key={index.toString()}>
-              <div className="game-color-block" style={{ border: `10px solid ${item[0]}` }}>
-                <p>{item[1]}</p>
-              </div>
+          <h4 className="text-center">Check player score</h4>
+          {textScoreResult.map((item, index) => (
+            <div className="container" key={index.toString()}>
+              <Row className="align-middle mb-2">
+                <div className="game-color-block m-auto" style={{ backgroundColor: item[0] }} />
+                <p className="d-block m-auto">{item[1]}</p>
+              </Row>
             </div>
           ))}
         </Modal.Body>
@@ -109,9 +119,10 @@ class GameField extends Component {
         </Modal.Footer>
       </Modal>
     );
-    
+
     return (
       <>
+        { !gameStarted && !gameResults && <Redirect to="/leaderboards" />}
         {modalBlock}
         <Container className="text-center">
           <p>Your points color:</p>
@@ -170,6 +181,9 @@ GameField.propTypes = {
   receiveReply: PropTypes.func.isRequired,
   score: PropTypes.object.isRequired,
   modal: PropTypes.bool,
+  closeGame: PropTypes.func.isRequired,
+  gameStarted: PropTypes.bool.isRequired,
+  gameResults: PropTypes.bool.isRequired,
 };
 
 GameField.defaultProps = {
@@ -195,6 +209,8 @@ const mapStateToProps = (state) => {
     playerColors: state.playerColors,
     score: state.score,
     modal: state.modal,
+    gameStarted: state.gameStarted,
+    gameResults: state.gameResults,
   };
   return data;
 };
@@ -213,6 +229,10 @@ export default connect(
     },
     setModal: (value) => {
       dispatch({ type: TYPES.SET_MODAL, payload: value });
+    },
+
+    closeGame: () => {
+      dispatch({type: TYPES.CLOSE_RESULTS, payload: {} });
     },
   }
   ),
