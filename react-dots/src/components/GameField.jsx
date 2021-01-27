@@ -104,7 +104,7 @@ class GameField extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4 className="text-center">Check player score</h4>
+          <h4 className="text-center">Players score</h4>
           {textScoreResult.map((item, index) => (
             <div className="container" key={index.toString()}>
               <Row className="align-middle mb-2">
