@@ -28,6 +28,7 @@ class Leaderboard extends Component {
       </thead>
     );
 
+
     const matchesList = [];
     const paginationItems = [];
 
@@ -79,7 +80,9 @@ class Leaderboard extends Component {
               </tbody>
             </Table>
           </Row>
-          <Pagination className="text-center">{paginationItems}</Pagination>
+          <Row>
+            <Pagination className="m-auto">{paginationItems}</Pagination>
+          </Row>
         </Container>
       </section>
     );
