@@ -240,7 +240,13 @@ export default function updateState(state = initialState, action) {
     }
 
     case TYPES.SET_MODAL: {
-      return { ...state, modal: !action.payload };
+      return {
+        ...state,
+        modal: !action.payload,
+        gameResults: false,
+        gameStarted: false,
+        gameField: false,
+      };
     }
 
     default:
