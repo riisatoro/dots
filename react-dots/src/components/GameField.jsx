@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Stage, Layer } from 'react-konva';
 import {
-  Container, Row, Button, Modal,
+  Container, Row, Button, Modal, Spinner,
 } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import connectSocket from '../socket/socket';
@@ -84,7 +84,7 @@ class GameField extends Component {
     const userColorKey = playerColors[userID];
 
     let textTurn = '';
-    if (colorKey === userColorKey) {
+    if (Object.keys(playerColors).length > 1 && colorKey === userColorKey) {
       textTurn = 'Now is your turn';
     }
     const textScore = [];
@@ -96,6 +96,7 @@ class GameField extends Component {
     Object.keys(score).forEach((key) => {
       textScoreResult.push([playerColors[key], `${score[key]} points`]);
     });
+    const playerConnected = Object.keys(playerColors).length > 1;
 
     const modalBlock = (
       <Modal
@@ -135,6 +136,13 @@ class GameField extends Component {
           <p>Your points color:</p>
           <div className="game-color-block" style={{ backgroundColor: playerColor }} />
           <p className="text-center" style={{ height: '20px' }}>{textTurn}</p>
+          { !playerConnected
+           && (
+           <React.Fragment key="waiting">
+             <Spinner animation="border" variant="primary" />
+             <p className="text-center">Waiting for another player</p>
+           </React.Fragment>
+           )}
         </Container>
 
         <Container>
