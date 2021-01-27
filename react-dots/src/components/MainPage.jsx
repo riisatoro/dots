@@ -5,8 +5,7 @@ import {
   Container, Row, Button,
 } from 'react-bootstrap';
 
-
-function MainPage(props) {
+function MainPage() {
   const wikiLink = 'https://en.wikipedia.org/wiki/Dots_(game)';
 
   return (
@@ -29,12 +28,11 @@ function MainPage(props) {
 
       <p className="p-20" />
       <div className="text-center">
-        <Button variant="success" className="w-50" href="/new_game">Lets play a game</Button>
+        <Button variant="success" className="w-50 mb-5" href="/new_game">Lets play a game</Button>
       </div>
     </Container>
   );
 }
-
 
 export default hot(
   connect(

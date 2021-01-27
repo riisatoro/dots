@@ -16,7 +16,7 @@ const setInitial = () => (
     game_end: false,
     gameResults: false,
 
-    playerColor: '',
+    playerColor: '#AA00AA',
     playerScore: 0,
 
     loops: [],

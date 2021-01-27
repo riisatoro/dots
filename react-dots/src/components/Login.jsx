@@ -35,7 +35,7 @@ function Login(props) {
       {toastWindow}
       <Form onSubmit={onSubmitForm}>
         <Form.Row>
-          <Form.Group className="col-sm-12 col-md-6"  controlId="username">
+          <Form.Group className="col-sm-12 col-md-6" controlId="username">
             <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
@@ -52,7 +52,7 @@ function Login(props) {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="col-sm-12 col-md-6"  controlId="password">
+          <Form.Group className="col-sm-12 col-md-6" controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
@@ -69,7 +69,7 @@ function Login(props) {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Button type="submit" className="mb-5" >Log in</Button>
+        <Button type="submit" className="mb-5">Log in</Button>
       </Form>
     </Container>
   );

@@ -59,8 +59,10 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, playerColor, modal,
+      rooms, modal,
     } = this.props;
+
+    const { playerColor } = this.props;
 
     const modalWindow = (
       <>
@@ -94,7 +96,7 @@ class Settings extends Component {
         <Container><hr /></Container>
         <Container>
           <h2>Join new room</h2>
-          {rooms.lenth === 0 && <p>There is no free rooms (</p>}
+          {rooms.length === 0 && <p>There is no free rooms. Try to create one!</p>}
           <Row>
             { rooms.map((room, index) => (
               <div className="col-sm-4 mb-5" key={index.toString()}>
