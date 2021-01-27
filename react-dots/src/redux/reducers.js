@@ -70,6 +70,7 @@ export default function updateState(state = initialState, action) {
       return {
         ...state,
         leaders: [],
+        gameStarted: false,
       };
     }
 

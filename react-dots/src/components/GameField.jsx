@@ -30,8 +30,8 @@ class GameField extends Component {
         receiveReply(data);
       }
     };
-    this.socket.onerror = () => { };
-    this.socket.onclose = () => { setModal(true); };
+    this.socket.onerror = () => { setModal(false); };
+    this.socket.onclose = () => { setModal(false); };
   }
 
   componentWillUnmount() {
@@ -208,9 +208,7 @@ class GameField extends Component {
             ))}
           </Row>
           <div className="text-center mb-5">
-            <a href="/leaderboards" onClick={closeGame}>
-              <Button variant="danger">Give up</Button>
-              </a>
+            <Button variant="danger" onClick={this.closeModal.bind(this)}>Give up</Button>
           </div>
         </Container>
       </>
