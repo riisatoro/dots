@@ -42,8 +42,8 @@ class Header extends Component {
       navigation = (
         <>
           <Nav className="ml-auto">
-            <Button variant="primary" href="/login" className="mr-2">Log in</Button>
-            <Button variant="outline-info" href="/register" className="mr-2">Register</Button>
+            <Button variant="primary" href="/login" className="m-2">Log in</Button>
+            <Button variant="outline-info" href="/register" className="m-2">Register</Button>
           </Nav>
         </>
       );

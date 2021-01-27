@@ -24,7 +24,7 @@ function Register(props) {
 
   const { toast, toastMessage, closeToast } = props;
   const toastWindow = (
-    <Row className="mb-5" style={{ height: '50px' }}>
+    <Row className="mb-2" style={{ height: '30px' }}>
       <Toast onClose={closeToast} show={toast} delay={5000} autohide className="ml-auto">
         <Toast.Header>
           <strong className="mr-auto text-danger">Error!</strong>
@@ -41,7 +41,7 @@ function Register(props) {
         {toastWindow}
         <Form onSubmit={onSubmitForm}>
           <Form.Row>
-            <Form.Group as={Col} controlId="username">
+            <Form.Group className="col-sm-12 col-md-6" controlId="username">
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
@@ -60,7 +60,7 @@ function Register(props) {
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} controlId="email">
+            <Form.Group className="col-sm-12 col-md-6" controlId="email">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
@@ -78,7 +78,7 @@ function Register(props) {
           </Form.Row>
 
           <Form.Row>
-            <Form.Group as={Col} controlId="password">
+            <Form.Group className="col-sm-12 col-md-6" controlId="password">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
@@ -96,7 +96,7 @@ function Register(props) {
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} controlId="passwordRepeat">
+            <Form.Group className="col-sm-12 col-md-6" controlId="passwordRepeat">
               <Form.Label>Confirm password</Form.Label>
               <Form.Control
                 type="password"
@@ -115,7 +115,7 @@ function Register(props) {
               </Form.Control.Feedback>
             </Form.Group>
           </Form.Row>
-          <Button type="submit">Register</Button>
+          <Button type="submit" className="mb-5">Register</Button>
         </Form>
       </Container>
     </section>
