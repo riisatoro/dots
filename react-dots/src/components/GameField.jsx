@@ -21,7 +21,14 @@ class GameField extends Component {
       receiveReply,
     } = this.props;
     this.socket = connectSocket(roomID);
-    this.socket.onmessage = (msg) => { receiveReply(JSON.parse(msg.data)); };
+    this.socket.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      if (data.TYPE === TYPES.PLAYER_JOIN) {
+        this.socket.send(JSON.stringify({ fieldPoint: [0, 0], TYPE: TYPES.PLAYER_SET_DOT }));
+      } else {
+        receiveReply(data);
+      }
+    };
     this.socket.onerror = () => { };
     this.socket.onclose = () => { };
   }
@@ -104,7 +111,7 @@ class GameField extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4 className="text-center">Players score</h4>
+          <h4 className="text-center">Players captured</h4>
           {textScoreResult.map((item, index) => (
             <div className="container" key={index.toString()}>
               <Row className="align-middle mb-2">

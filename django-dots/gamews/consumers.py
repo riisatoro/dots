@@ -25,6 +25,17 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
+
+            await self.channel_layer.group_send(
+                'game_room_' + self.room_id,
+                {
+                    "type": "reply",
+                    "data": {
+                        "TYPE": types.PLAYER_JOIN,
+                    }
+                }
+            )
+
         else:
             await self.close()
 
