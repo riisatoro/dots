@@ -47,8 +47,7 @@ class Field:
 
         if field.field[y][x].owner is None and not field.field[y][x].border and not field.field[y][x].is_captured:
             field.field[y][x].owner = owner
-        else:
-            raise ValueError("This point is not allowed for changing the owner")
+            # raise ValueError("This point is not allowed for changing the owner")
 
         return field
 
