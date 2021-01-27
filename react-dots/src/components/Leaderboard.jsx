@@ -58,7 +58,14 @@ class Leaderboard extends Component {
                     {
                       match.map((data, index, array) => (
                         <tr key={data.player}>
-                          { index === 0 && <td rowSpan={array.length} className="align-middle">{gameIndex + 1}</td>}
+                          {
+                            index === 0 && (
+                            <td rowSpan={array.length} className="align-middle">
+                              {(activeLeadersPage - 1) * 5 + gameIndex + 1}
+                            </td>
+                            )
+                          }
+
                           <td>{data.player}</td>
                           <td>
                             <div className="leaderboard-color-block m-auto" style={{ backgroundColor: data.color }} />
