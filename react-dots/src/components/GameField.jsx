@@ -65,7 +65,7 @@ class GameField extends Component {
       setModal,
       closeGame,
       gameStarted,
-      gameResults
+      gameResults,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);

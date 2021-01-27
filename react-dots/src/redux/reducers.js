@@ -249,6 +249,13 @@ export default function updateState(state = initialState, action) {
       };
     }
 
+    case TYPES.SET_ACTIVE_PAGINATION: {
+      return {
+        ...state,
+        activeLeadersPage: action.payload.num,
+      };
+    }
+
     default:
       return {
         ...state,
