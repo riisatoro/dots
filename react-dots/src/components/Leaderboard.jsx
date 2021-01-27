@@ -28,7 +28,6 @@ class Leaderboard extends Component {
       </thead>
     );
 
-
     const matchesList = [];
     const paginationItems = [];
 
@@ -55,27 +54,27 @@ class Leaderboard extends Component {
               {tableHead}
               <tbody>
                 {paginationMatches.map((match, gameIndex) => (
-                  <>
+                  <React.Fragment key={gameIndex.toString()}>
                     {
-                      match.map((data, index, array) => (
-                        <tr key={data.player}>
-                          {
-                            index === 0 && (
-                            <td rowSpan={array.length} className="align-middle">
-                              {(activeLeadersPage - 1) * 5 + gameIndex + 1}
-                            </td>
-                            )
-                          }
-
-                          <td>{data.player}</td>
-                          <td>
-                            <div className="leaderboard-color-block m-auto" style={{ backgroundColor: data.color }} />
+                    match.map((data, index, array) => (
+                      <tr key={data.player}>
+                        {
+                          index === 0 && (
+                          <td rowSpan={array.length} className="align-middle">
+                            {(activeLeadersPage - 1) * 5 + gameIndex + 1}
                           </td>
-                          <td>{data.captured}</td>
-                        </tr>
-                      ))
-                    }
-                  </>
+                          )
+                        }
+
+                        <td>{data.player}</td>
+                        <td>
+                          <div className="leaderboard-color-block m-auto" style={{ backgroundColor: data.color }} />
+                        </td>
+                        <td>{data.captured}</td>
+                      </tr>
+                    ))
+                  }
+                  </React.Fragment>
                 ))}
               </tbody>
             </Table>

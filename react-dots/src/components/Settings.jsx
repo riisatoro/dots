@@ -183,7 +183,6 @@ export default connect(
           headers: { Authorization: `Token ${token}` },
           url: '/api/v2/rooms/',
         }).then((response) => {
-          console.log(response.data.free_room);
           dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: response.data.free_room } });
         });
       };
