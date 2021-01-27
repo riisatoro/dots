@@ -15,6 +15,7 @@ class Leaderboard extends Component {
     getLeaderboard(token);
   }
 
+
   render() {
     const { matches, activeLeadersPage, setActivePagination } = this.props;
     const tableHead = (
@@ -45,7 +46,11 @@ class Leaderboard extends Component {
       );
       matchesList.push(matches.slice(i, i + splitBy));
     }
-    const paginationMatches = matchesList[activeLeadersPage - 1];
+    let alp = activeLeadersPage;
+    if (alp > matchesList.length || alp < 1) {
+      alp = 1;
+    }
+    const paginationMatches = matchesList[alp - 1];
 
     return (
       <section className="leaderboard">
@@ -54,7 +59,10 @@ class Leaderboard extends Component {
             <Table striped bordered hover size="sm" className="text-center">
               {tableHead}
               <tbody>
-                {paginationMatches.map((match, gameIndex) => (
+                {
+                (paginationMatches !== undefined && paginationMatches.length > 0) 
+                && 
+                paginationMatches.map((match, gameIndex) => (
                   <React.Fragment key={gameIndex.toString()}>
                     {
                     match.map((data, index, array) => (
