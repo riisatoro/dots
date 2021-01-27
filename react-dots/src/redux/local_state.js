@@ -31,6 +31,7 @@ const setInitial = () => (
 
     components: { },
     modal: false,
+    activeLeadersPage: 0,
   }
 );
 
