@@ -138,10 +138,31 @@ class GameField extends Component {
               onClick={this.gridClicked.bind(this)}
             >
               <Layer x={cellSize} y={cellSize}>
-                {canvasGrid.map((line) => line)}
-                {emptyCircle.map((circl) => circl)}
-                {loop.map((l1) => l1)}
-                {circle.map((circ) => circ)}
+
+                {canvasGrid.map((line, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {line}
+                  </React.Fragment>
+                ))}
+
+                {emptyCircle.map((circl, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circl}
+                  </React.Fragment>
+                ))}
+
+                {loop.map((l1, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {l1}
+                  </React.Fragment>
+                ))}
+
+                {circle.map((circ, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circ}
+                  </React.Fragment>
+                ))}
+
               </Layer>
             </Stage>
           </div>
@@ -232,7 +253,7 @@ export default connect(
     },
 
     closeGame: () => {
-      dispatch({type: TYPES.CLOSE_RESULTS, payload: {} });
+      dispatch({ type: TYPES.CLOSE_RESULTS, payload: {} });
     },
   }
   ),
