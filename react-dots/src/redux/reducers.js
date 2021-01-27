@@ -184,7 +184,7 @@ export default function updateState(state = initialState, action) {
             gameField: false,
           },
           gameStarted: false,
-          gameResults: true,
+          gameResults: false,
         };
       }
       return {
@@ -214,7 +214,7 @@ export default function updateState(state = initialState, action) {
         },
         game_end: true,
         gameStarted: false,
-        gameResults: true,
+        gameResults: false,
         modal: true,
       };
     }
@@ -227,7 +227,7 @@ export default function updateState(state = initialState, action) {
         },
         game_end: true,
         gameStarted: false,
-        gameResults: true,
+        gameResults: false,
       };
     }
 

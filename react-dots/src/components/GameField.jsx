@@ -40,6 +40,8 @@ class GameField extends Component {
   }
 
   onPlayerGiveUp() {
+    const { setModal } = this.props;
+    setModal(true);
     this.socket.send(JSON.stringify({ TYPE: TYPES.PLAYER_GIVE_UP, data: {} }));
     this.socket.close();
   }
@@ -84,9 +86,6 @@ class GameField extends Component {
       modal,
       setModal,
       closeGame,
-      gameStarted,
-      gameResults,
-      openModal,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
@@ -137,8 +136,8 @@ class GameField extends Component {
           ))}
         </Modal.Body>
         <Modal.Footer>
-          <a href="/leaderboards">
-            <Button onClick={setModal}>Close</Button>
+          <a href="/leaderboards" onClick={setModal}>
+            <Button>Close</Button>
           </a>
         </Modal.Footer>
       </Modal>
@@ -209,7 +208,9 @@ class GameField extends Component {
             ))}
           </Row>
           <div className="text-center mb-5">
-            <Button variant="danger" onClick={openModal}>Give up</Button>
+            <a href="/leaderboards" onClick={closeGame}>
+              <Button variant="danger">Give up</Button>
+              </a>
           </div>
         </Container>
       </>
@@ -232,9 +233,6 @@ GameField.propTypes = {
   score: PropTypes.object.isRequired,
   modal: PropTypes.bool,
   closeGame: PropTypes.func.isRequired,
-  gameStarted: PropTypes.bool.isRequired,
-  gameResults: PropTypes.bool.isRequired,
-  openModal: PropTypes.func.isRequired,
 };
 
 GameField.defaultProps = {
@@ -279,10 +277,6 @@ export default connect(
     },
     setModal: (value) => {
       dispatch({ type: TYPES.SET_MODAL, payload: value });
-    },
-
-    openModal: () => {
-      dispatch({ type: TYPES.SET_MODAL, payload: false });
     },
 
     closeGame: () => {
