@@ -60,7 +60,7 @@ class GameField extends Component {
 
     if (!(xPoint === undefined) || !(yPoint === undefined)) {
       this.socket.send(
-        JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT })
+        JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }),
       );
     }
   }
@@ -86,6 +86,7 @@ class GameField extends Component {
       closeGame,
       gameStarted,
       gameResults,
+      openModal,
     } = this.props;
 
     const canvasGrid = getCanvasGrid(fieldSize, cellSize);
@@ -136,14 +137,15 @@ class GameField extends Component {
           ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={setModal}>Close</Button>
+          <a href="/leaderboards">
+            <Button onClick={setModal}>Close</Button>
+          </a>
         </Modal.Footer>
       </Modal>
     );
 
     return (
       <>
-        { !gameStarted && !gameResults && <Redirect to="/leaderboards" />}
         {modalBlock}
         <Container className="text-center">
           <p>Your points color:</p>
@@ -207,9 +209,7 @@ class GameField extends Component {
             ))}
           </Row>
           <div className="text-center mb-5">
-            <a href="/game_result">
-              <Button variant="danger" onClick={this.onPlayerGiveUp.bind(this)}>Give up</Button>
-            </a>
+            <Button variant="danger" onClick={openModal}>Give up</Button>
           </div>
         </Container>
       </>
@@ -234,6 +234,7 @@ GameField.propTypes = {
   closeGame: PropTypes.func.isRequired,
   gameStarted: PropTypes.bool.isRequired,
   gameResults: PropTypes.bool.isRequired,
+  openModal: PropTypes.func.isRequired,
 };
 
 GameField.defaultProps = {
@@ -260,7 +261,6 @@ const mapStateToProps = (state) => {
     score: state.score,
     modal: state.modal,
     gameStarted: state.gameStarted,
-    gameResults: state.gameResults,
   };
   return data;
 };
@@ -279,6 +279,10 @@ export default connect(
     },
     setModal: (value) => {
       dispatch({ type: TYPES.SET_MODAL, payload: value });
+    },
+
+    openModal: () => {
+      dispatch({ type: TYPES.SET_MODAL, payload: false });
     },
 
     closeGame: () => {

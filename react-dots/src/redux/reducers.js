@@ -215,6 +215,7 @@ export default function updateState(state = initialState, action) {
         game_end: true,
         gameStarted: false,
         gameResults: true,
+        modal: true,
       };
     }
 

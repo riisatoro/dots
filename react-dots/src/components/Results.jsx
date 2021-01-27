@@ -113,24 +113,3 @@ export default connect(
     },
   }),
 )(Results);
-
-/*
-  <div>
-        {results.map((item) => <p className="align-center">{item}</p>)}
-      </div>
-
-      <div className="gameCanvas">
-          <Stage
-            width={fieldSize * cellSize + cellSize * 2}
-            height={fieldSize * cellSize + cellSize * 2}
-            onClick={this.gridClicked.bind(this)}
-          >
-            <Layer x={cellSize} y={cellSize}>
-              {canvasGrid.map((line) => line)}
-              {emptyCircle.map((circl) => circl)}
-              {loop.map((l1) => l1)}
-              {circle.map((circ) => circ)}
-            </Layer>
-          </Stage>
-        </div>
-*/
