@@ -87,7 +87,7 @@ class Leaderboard extends Component {
               </tbody>
             </Table>
           </Row>
-          <Row>
+          <Row className="mb-5">
             <Pagination className="m-auto">{paginationItems}</Pagination>
           </Row>
         </Container>

@@ -83,6 +83,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     print("EXCEPTION", e)
 
                 is_full = Field.is_full_field(new_field)
+                await self.save_score(room_id, field.score)
                 new_field = GameFieldSerializer().to_client(new_field)
                 new_field["is_full"] = is_full
                 new_field["colors"] = await self.get_user_colors(room_id)
@@ -93,6 +94,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
             await self.channel_layer.group_discard(room_group_name, self.channel_name)
 
+        
         await self.channel_layer.group_send(
             'game_room_' + room_id,
             {
@@ -147,21 +149,22 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_field_and_change_turn(self, room, field):
         user1, user2 = UserGame.objects.filter(game_room=room).all()
+        user1.turn = not user1.turn
+        user2.turn = not user2.turn
         with transaction.atomic():
             GameRoom.objects.filter(id=room).update(
                 field=GameFieldSerializer().to_database(field)
             )
-            user1.turn = not user1.turn
-            user2.turn = not user2.turn
             user1.save()
             user2.save()
-            if user1.turn:
-                return user1.user.username
-            return user2.user.username
+
+    @database_sync_to_async
+    def save_score(self, room, score):
+        for key in score:
+            UserGame.objects.filter(game_room=room, user=key).update(score=score[key])
 
 
 def send_updated_rooms(rooms):
-    print("Message on the way!")
     layer = channels.layers.get_channel_layer()
     async_to_sync(layer.group_send)(
         "all-games",
