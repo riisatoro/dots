@@ -6,6 +6,7 @@ import {
   Form, Button, Col,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import isContrast from '../actions/findContrast';
 import TYPES from '../redux/types';
 
 function NewGameForm(props) {
@@ -19,8 +20,15 @@ function NewGameForm(props) {
   };
 
   const onCreateNewRoom = handleSubmit(({ fieldSize }) => {
-    const { token } = props;
-    props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
+    const { setModal, token } = props;
+    const contrast = (
+      isContrast(playerColor, '#FFFFFF', 1)
+      && isContrast(playerColor, '#000000', 2)
+    );
+    setModal(contrast);
+    if (contrast) {
+      props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
+    }
   });
 
   return (
@@ -71,6 +79,7 @@ NewGameForm.propTypes = {
   playerColor: PropTypes.string.isRequired,
   token: PropTypes.string.isRequired,
 
+  setModal: PropTypes.func.isRequired,
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
 };
@@ -89,7 +98,9 @@ export default connect(
     setPlayerColor: (color) => {
       dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
     },
-
+    setModal: (value) => {
+      dispatch({ type: TYPES.SET_MODAL, payload: value });
+    },
     createNewRoom: (token, fieldSize, gameColor) => {
       const data = { color: gameColor, size: fieldSize };
       const newRoomRequest = () => {

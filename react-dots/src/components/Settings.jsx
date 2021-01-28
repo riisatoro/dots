@@ -38,7 +38,8 @@ class Settings extends Component {
       onJoinGameRoom, token, playerColor, rooms, setModal,
     } = this.props;
     const index = e.target.id;
-    const contrast = isContrast(playerColor, rooms[index].color, 1.8);
+    const contrast = (
+      isContrast(playerColor, rooms[index].color, 1.8));
     setModal(contrast);
     if (contrast) {
       onJoinGameRoom(token, rooms[index].game_room.id, playerColor);
@@ -77,7 +78,7 @@ class Settings extends Component {
             <Modal.Title>Colors are too common!</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            This color is too simmilar to the choosen one!
+            This color is too simmilar to the choosen one, or to blar or white colors!
             Please, choose another, more contrast color.
           </Modal.Body>
           <Modal.Footer>
