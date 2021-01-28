@@ -5,11 +5,13 @@ import { Stage, Layer } from 'react-konva';
 import {
   Container, Row, Button, Modal, Spinner,
 } from 'react-bootstrap';
-import connectSocket from '../socket/socket';
+
 import TYPES from '../redux/types';
+import connectSocket from '../socket/socket';
 import {
   getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle,
 } from '../actions/gameFieldDrawable';
+
 import '../../public/css/default.css';
 
 class GameField extends Component {
@@ -93,9 +95,6 @@ class GameField extends Component {
     const circle = getCircleCoords(field, cellSize, playerColors);
     const emptyCircle = createEmptyCircle(field, cellSize);
     const loop = createLoopFigure(field, loops, cellSize, playerColors);
-
-    const colorKey = playerColors[turn];
-    const userColorKey = playerColors[userID];
 
     let textTurn = '';
     if (turn === userID) {

@@ -14,59 +14,63 @@ import GameField from './GameField';
 import MainPage from './MainPage';
 import Login from './Login';
 import Register from './Register';
+import Footer from './Footer';
 
 function App(props) {
   const { authorized, gameStarted } = props;
 
   return (
-    <section className="App">
-      <Router>
-        <Header />
+    <>
+      <section style={{ minHeight: '100%' }}>
+        <Router>
+          <Header />
 
-        <Switch>
-          <Route exact path="/">
-            <Redirect to="/main" />
-          </Route>
+          <Switch>
+            <Route exact path="/">
+              <Redirect to="/main" />
+            </Route>
 
-          <Route path="/register">
-            { authorized ? <Redirect to="/main" /> : '' }
-            <Register />
-          </Route>
+            <Route path="/register">
+              { authorized ? <Redirect to="/main" /> : '' }
+              <Register />
+            </Route>
 
-          <Route path="/login">
-            { authorized ? <Redirect to="/main" /> : '' }
-            <Login />
-          </Route>
+            <Route path="/login">
+              { authorized ? <Redirect to="/main" /> : '' }
+              <Login />
+            </Route>
 
-          <Route path="/main">
-            <MainPage />
-          </Route>
+            <Route path="/main">
+              <MainPage />
+            </Route>
 
-          <Route path="/new_game">
-            { authorized ? <Settings /> : <Redirect to="/login" /> }
-            { authorized && gameStarted ? <Redirect to="/game" /> : <Redirect to="/new_game" />}
-          </Route>
+            <Route path="/new_game">
+              { authorized ? <Settings /> : <Redirect to="/login" /> }
+              { authorized && gameStarted ? <Redirect to="/game" /> : <Redirect to="/new_game" />}
+            </Route>
 
-          <Route path="/leaderboards">
-            { authorized ? <Leaderboard /> : <Redirect to="/login" /> }
-          </Route>
+            <Route path="/leaderboards">
+              { authorized ? <Leaderboard /> : <Redirect to="/login" /> }
+            </Route>
 
-          <Route path="/game">
-            <GameField />
-          </Route>
+            <Route path="/game">
+              <GameField />
+            </Route>
 
-          <Route path="/game_result">
-            { authorized ? <Results /> : <Redirect to="/login" /> }
-          </Route>
+            <Route path="/game_result">
+              { authorized ? <Results /> : <Redirect to="/login" /> }
+            </Route>
 
-          <Route path="/logout">
-            <Redirect to="/login" />
-          </Route>
+            <Route path="/logout">
+              <Redirect to="/login" />
+            </Route>
 
-        </Switch>
-      </Router>
+          </Switch>
+        </Router>
+      </section>
 
-    </section>
+      <Footer />
+    </>
   );
 }
 

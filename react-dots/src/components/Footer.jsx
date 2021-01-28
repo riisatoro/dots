@@ -12,20 +12,33 @@ class Footer extends Component {
   }
 
   render() {
-    return (
-      <Container className="pt-4 my-md-3 pt-md-3 border-top fixed-bottom">
-        <Row>
-          <Col className="text-center">
-            <h3>Thanks for playing!</h3>
-          </Col>
+    const { isAuth } = this.props;
+    let navigation = (
+      <ul>
+        <a href="/register" className="d-block">Register</a>
+        <a href="/login" className="d-block">Login</a>
+      </ul>
+    );
 
-          <Col className="list-group text-right col-4">
+    if (isAuth) {
+      navigation = (
+        <ul>
+          <a href="/new_game" className="d-block">New game</a>
+          <a href="/leaderboards" className="d-block">Leaderboards</a>
+          <a href="/logout" className="d-block" onClick={this.logoutUser}>Logout</a>
+        </ul>
+      );
+    }
+
+    return (
+      <Container className="my-2 pt-2 pb-1 border-top">
+        <Row>
+          <Col xs={12} md={6}>
             <h6>Navigation</h6>
-            <a href="/register">Register</a>
-            <a href="/login">Login</a>
-            <a href="/new_game">New game</a>
-            <a href="/leaderboard">Leaderboards</a>
-            <a href="/logout" onClick={this.logoutUser}>Logout</a>
+            {navigation}
+          </Col>
+          <Col xs={12} md={6}>
+            <h4 className="text-center mt-3">Thanks for playing!</h4>
           </Col>
         </Row>
       </Container>
