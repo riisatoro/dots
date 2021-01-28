@@ -6,7 +6,6 @@ import { Stage, Layer } from 'react-konva';
 import {
   Container, Row, Button, Modal, Spinner,
 } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
 import connectSocket from '../socket/socket';
 import TYPES from '../redux/types';
 import {
@@ -15,19 +14,36 @@ import {
 import '../../public/css/default.css';
 
 class GameField extends Component {
+  constructor(props) {
+    super(props);
+    this.gridClicked = this.gridClicked.bind(this);
+    this.onPlayerGiveUp = this.onPlayerGiveUp.bind(this);
+  }
+
   componentDidMount() {
     const {
       roomID,
       receiveReply,
       setModal,
     } = this.props;
+
     this.socket = connectSocket(roomID);
     this.socket.onmessage = (msg) => {
       const data = JSON.parse(msg.data);
-      if (data.TYPE === TYPES.PLAYER_JOIN) {
-        this.socket.send(JSON.stringify({ fieldPoint: [0, 0], TYPE: TYPES.PLAYER_SET_DOT }));
-      } else {
-        receiveReply(data);
+      switch (data.TYPE) {
+        case TYPES.PLAYER_JOIN: {
+          this.socket.send(JSON.stringify({ fieldPoint: [0, 0], TYPE: TYPES.PLAYER_SET_DOT }));
+          break;
+        }
+        case TYPES.PLAYER_SET_DOT: {
+          receiveReply(data);
+          break;
+        }
+        case TYPES.SOCKET_DISCONNECT: {
+          this.socket.close();
+          break;
+        }
+        default: break;
       }
     };
     this.socket.onerror = () => { setModal(false); };
@@ -40,36 +56,22 @@ class GameField extends Component {
   }
 
   onPlayerGiveUp() {
-    const { setModal } = this.props;
-    setModal(true);
     this.socket.send(JSON.stringify({ TYPE: TYPES.PLAYER_GIVE_UP, data: {} }));
     this.socket.close();
   }
 
   gridClicked(e) {
     const { cellSize } = this.props;
-    let xPoint = 0;
-    let yPoint = 0;
-    if (e.evt.layerX !== undefined) {
-      const xAxis = e.evt.layerX - cellSize / 2;
-      const yAxis = e.evt.layerY - cellSize / 2;
-      xPoint = Math.floor(xAxis / cellSize) + 1;
-      yPoint = Math.floor(yAxis / cellSize) + 1;
-    } else {
-      xPoint = e.target.attrs.x / cellSize + 1;
-      yPoint = e.target.attrs.y / cellSize + 1;
-    }
+    const xPoint = e.target.attrs.x / cellSize + 1;
+    const yPoint = e.target.attrs.y / cellSize + 1;
 
-    if (!(xPoint === undefined) || !(yPoint === undefined)) {
+    const hasOwner = e.target.attrs.fillRadialGradientColorStops;
+
+    if (xPoint !== undefined && yPoint !== undefined && hasOwner === undefined) {
       this.socket.send(
         JSON.stringify({ fieldPoint: [xPoint, yPoint], TYPE: TYPES.PLAYER_SET_DOT }),
       );
     }
-  }
-
-  closeModal() {
-    const { setModal } = this.props;
-    setModal(false);
   }
 
   render() {
@@ -164,8 +166,8 @@ class GameField extends Component {
             <Stage
               width={fieldSize * cellSize + cellSize}
               height={fieldSize * cellSize + cellSize}
-              onClick={this.gridClicked.bind(this)}
-              onTap={this.gridClicked.bind(this)}
+              onClick={this.gridClicked}
+              onTap={this.gridClicked}
             >
               <Layer x={cellSize} y={cellSize}>
 
@@ -208,7 +210,7 @@ class GameField extends Component {
             ))}
           </Row>
           <div className="text-center mb-5">
-            <Button variant="danger" onClick={this.closeModal.bind(this)}>Give up</Button>
+            <Button variant="danger" onClick={this.onPlayerGiveUp}>Give up</Button>
           </div>
         </Container>
       </>
@@ -266,12 +268,6 @@ export default connect(
   (dispatch) => ({
     receiveReply: (data) => {
       dispatch({ type: data.TYPE, payload: data });
-    },
-    interruptGame: () => {
-      dispatch({ type: TYPES.INTERRUPT_GAME_COMPONENT, payload: { } });
-    },
-    closeResults: () => {
-      dispatch({ type: TYPES.CLOSE_RESULTS, payload: { } });
     },
     setModal: (value) => {
       dispatch({ type: TYPES.SET_MODAL, payload: value });
