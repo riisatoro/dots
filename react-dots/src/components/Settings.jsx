@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -14,6 +13,13 @@ import connectSocket from '../socket/gameListSocket';
 import '../../public/css/default.css';
 
 class Settings extends Component {
+  constructor(props) {
+    super(props);
+    this.closeModal = this.closeModal.bind(this);
+    this.onPlayerJoinGame = this.onPlayerJoinGame.bind(this);
+    this.changePickedColor = this.changePickedColor.bind(this);
+  }
+
   componentDidMount() {
     const { getGameRooms, token, updateGameRooms } = this.props;
     getGameRooms(token);
@@ -75,7 +81,7 @@ class Settings extends Component {
             Please, choose another, more contrast color.
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.closeModal.bind(this)}>
+            <Button variant="secondary" onClick={this.closeModal}>
               OK
             </Button>
           </Modal.Footer>
@@ -114,7 +120,7 @@ class Settings extends Component {
                           type="color"
                           className="games-color-block"
                           value={playerColor}
-                          onChange={this.changePickedColor.bind(this)}
+                          onChange={this.changePickedColor}
                         />
                       </div>
                     </div>
@@ -123,7 +129,7 @@ class Settings extends Component {
                       type="button"
                       id={index}
                       className="btn btn-primary"
-                      onClick={this.onPlayerJoinGame.bind(this)}
+                      onClick={this.onPlayerJoinGame}
                     >
                       Join
                     </Button>
@@ -140,14 +146,15 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
+  modal: PropTypes.bool,
+  token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
+  rooms: PropTypes.arrayOf(PropTypes.object),
+
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
-  token: PropTypes.string.isRequired,
-  rooms: PropTypes.array,
   onJoinGameRoom: PropTypes.func.isRequired,
-  modal: PropTypes.bool,
   setModal: PropTypes.func.isRequired,
   updateGameRooms: PropTypes.func.isRequired,
 };
@@ -159,10 +166,10 @@ Settings.defaultProps = {
 
 const mapStateToProps = (state) => {
   const data = {
-    playerColor: state.playerColor,
-    token: state.user.token,
-    rooms: state.rooms,
     modal: state.modal,
+    token: state.user.token,
+    playerColor: state.playerColor,
+    rooms: state.rooms,
   };
   return data;
 };

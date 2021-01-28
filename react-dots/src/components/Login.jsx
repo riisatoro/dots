@@ -4,7 +4,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Col, Toast, Row,
+  Form, Button, Container, Toast, Row,
 } from 'react-bootstrap';
 import TYPES from '../redux/types';
 
@@ -76,9 +76,10 @@ function Login(props) {
 }
 
 Login.propTypes = {
-  sendLoginForm: PropTypes.func.isRequired,
   toast: PropTypes.bool,
   toastMessage: PropTypes.string,
+
+  sendLoginForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
 };
 

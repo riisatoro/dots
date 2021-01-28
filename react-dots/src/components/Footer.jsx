@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
 
-// eslint-disable-next-line react/prefer-stateless-function
 class Footer extends Component {
   logoutUser() {
     const { logoutUser, token } = this.props;
@@ -19,7 +19,6 @@ class Footer extends Component {
         <a href="/login" className="d-block">Login</a>
       </ul>
     );
-
     if (isAuth) {
       navigation = (
         <ul>

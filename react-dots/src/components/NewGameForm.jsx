@@ -69,9 +69,10 @@ function NewGameForm(props) {
 
 NewGameForm.propTypes = {
   playerColor: PropTypes.string.isRequired,
+  token: PropTypes.string.isRequired,
+
   createNewRoom: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
-  token: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => {

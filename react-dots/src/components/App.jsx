@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import Leaderboard from './Leaderboard';
 import Settings from './Settings';
-import Results from './Results';
 import GameField from './GameField';
 import MainPage from './MainPage';
 import Login from './Login';
@@ -55,10 +54,6 @@ function App(props) {
 
             <Route path="/game">
               <GameField />
-            </Route>
-
-            <Route path="/game_result">
-              { authorized ? <Results /> : <Redirect to="/login" /> }
             </Route>
 
             <Route path="/logout">

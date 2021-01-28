@@ -35,7 +35,5 @@ function MainPage() {
 }
 
 export default hot(
-  connect(
-    null, null,
-  )(MainPage),
+  connect()(MainPage),
 );

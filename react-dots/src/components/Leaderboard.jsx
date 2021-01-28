@@ -1,8 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
 import {
   Container, Row, Table, Pagination,
 } from 'react-bootstrap';
@@ -83,7 +82,7 @@ class Leaderboard extends Component {
                   }
                   </React.Fragment>
                 ))
-}
+                }
               </tbody>
             </Table>
           </Row>
@@ -98,10 +97,10 @@ class Leaderboard extends Component {
 
 Leaderboard.propTypes = {
   token: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  matches: PropTypes.array,
-  getLeaderboard: PropTypes.func.isRequired,
+  matches: PropTypes.arrayOf(PropTypes.array),
   activeLeadersPage: PropTypes.number.isRequired,
+
+  getLeaderboard: PropTypes.func.isRequired,
   setActivePagination: PropTypes.func.isRequired,
 };
 

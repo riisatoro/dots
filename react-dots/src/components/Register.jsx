@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  Form, Button, Container, Col, Row, Toast,
+  Form, Button, Container, Row, Toast,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TYPES from '../redux/types';
@@ -123,9 +123,10 @@ function Register(props) {
 }
 
 Register.propTypes = {
-  sendRegisterForm: PropTypes.func.isRequired,
   toast: PropTypes.bool,
   toastMessage: PropTypes.string,
+
+  sendRegisterForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
 };
 

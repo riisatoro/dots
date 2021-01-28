@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -9,6 +8,11 @@ import {
 import TYPES from '../redux/types';
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.logoutUser = this.logoutUser.bind(this);
+  }
+
   onOpenLeaders() {
     const { getLeaderboard, token } = this.props;
     getLeaderboard(token);
@@ -34,7 +38,7 @@ class Header extends Component {
             <Nav.Link href="/main" to="/main" className={homeClass}>Home</Nav.Link>
             <Nav.Link href="/new_game" className={newGameClass}>New game</Nav.Link>
             <Nav.Link href="/leaderboards" className={leaderboardsClass}>Leaderboards</Nav.Link>
-            <Button variant="outline-info" onClick={this.logoutUser.bind(this)}>Logout</Button>
+            <Button variant="outline-info" onClick={this.logoutUser}>Logout</Button>
           </Nav>
         </>
       );
