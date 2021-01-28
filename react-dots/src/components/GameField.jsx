@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,7 +22,7 @@ class GameField extends Component {
   componentDidMount() {
     const {
       roomID,
-      receiveReply,
+      receiveSocketReply,
       setModal,
     } = this.props;
 
@@ -36,7 +35,7 @@ class GameField extends Component {
           break;
         }
         case TYPES.PLAYER_SET_DOT: {
-          receiveReply(data);
+          receiveSocketReply(data);
           break;
         }
         case TYPES.SOCKET_DISCONNECT: {
@@ -99,7 +98,7 @@ class GameField extends Component {
     const userColorKey = playerColors[userID];
 
     let textTurn = '';
-    if (Object.keys(playerColors).length > 1 && colorKey === userColorKey) {
+    if (turn === userID) {
       textTurn = 'Now is your turn';
     }
     const textScore = [];
@@ -194,7 +193,6 @@ class GameField extends Component {
                     {circ}
                   </React.Fragment>
                 ))}
-
               </Layer>
             </Stage>
           </div>
@@ -219,63 +217,68 @@ class GameField extends Component {
 }
 
 GameField.propTypes = {
-  setModal: PropTypes.func.isRequired,
+  modal: PropTypes.bool,
+  turn: PropTypes.number,
+  loops: PropTypes.arrayOf(PropTypes.array),
+
   userID: PropTypes.number.isRequired,
   roomID: PropTypes.number.isRequired,
-  field: PropTypes.array.isRequired,
-  fieldSize: PropTypes.number.isRequired,
-  turn: PropTypes.number,
-  loops: PropTypes.array,
   cellSize: PropTypes.number.isRequired,
-  playerColors: PropTypes.object.isRequired,
+  fieldSize: PropTypes.number.isRequired,
+
   playerColor: PropTypes.string.isRequired,
-  receiveReply: PropTypes.func.isRequired,
-  score: PropTypes.object.isRequired,
-  modal: PropTypes.bool,
+  field: PropTypes.arrayOf(PropTypes.array).isRequired,
+
+  score: PropTypes.objectOf(PropTypes.number).isRequired,
+  playerColors: PropTypes.objectOf(PropTypes.string).isRequired,
+
+  setModal: PropTypes.func.isRequired,
   closeGame: PropTypes.func.isRequired,
+  receiveSocketReply: PropTypes.func.isRequired,
 };
 
 GameField.defaultProps = {
+  modal: false,
   turn: -1,
   loops: [],
-  modal: false,
 };
 
 const mapStateToProps = (state) => {
   const data = {
+    loops: state.loops,
+    modal: state.modal,
+    turn: state.turn,
+
     userID: state.user.userID,
     roomID: state.socket.roomId,
-    field: state.field,
+    cellSize: state.cellSize,
     fieldSize: state.socket.fieldSize,
-    username: state.user.username,
-    turn: state.turn,
+
     playerColor: state.playerColor,
-    captured: state.captured,
+    field: state.field,
+
     gameEnd: state.gameEnd,
     gameResults: state.gameResults,
-    loops: state.loops,
-    cellSize: state.cellSize,
-    playerColors: state.playerColors,
+
     score: state.score,
-    modal: state.modal,
-    gameStarted: state.gameStarted,
+    playerColors: state.playerColors,
   };
   return data;
 };
 
 export default connect(
   mapStateToProps,
-  (dispatch) => ({
-    receiveReply: (data) => {
-      dispatch({ type: data.TYPE, payload: data });
-    },
-    setModal: (value) => {
-      dispatch({ type: TYPES.SET_MODAL, payload: value });
-    },
-
-    closeGame: () => {
-      dispatch({ type: TYPES.CLOSE_RESULTS, payload: {} });
-    },
-  }
+  (dispatch) => (
+    {
+      receiveSocketReply: (data) => {
+        dispatch({ type: data.TYPE, payload: data });
+      },
+      setModal: (value) => {
+        dispatch({ type: TYPES.SET_MODAL, payload: value });
+      },
+      closeGame: () => {
+        dispatch({ type: TYPES.CLOSE_RESULTS, payload: {} });
+      },
+    }
   ),
 )(GameField);
