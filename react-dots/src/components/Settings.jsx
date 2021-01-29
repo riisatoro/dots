@@ -18,6 +18,7 @@ class Settings extends Component {
     this.closeModal = this.closeModal.bind(this);
     this.onPlayerJoinGame = this.onPlayerJoinGame.bind(this);
     this.changePickedColor = this.changePickedColor.bind(this);
+    this.playerLeaveRoom = this.playerLeaveRoom.bind(this);
   }
 
   componentDidMount() {
@@ -64,6 +65,11 @@ class Settings extends Component {
     setModal(true);
   }
 
+  playerLeaveRoom(e) {
+    const { token, playerLeaveRoom } = this.props;
+    playerLeaveRoom(token, e.target.id);
+  }
+
   render() {
     const {
       rooms, modal, playerColor, playerRooms, user,
@@ -97,21 +103,28 @@ class Settings extends Component {
           <h2 className="text-center">Create new game room</h2>
           <NewGameForm />
         </Container>
-        
+
         <Container className="mt-5">
           <Row>
             {
             Object.keys(playerRooms).map((key) => (
               <Col key={key.toString()} md={4} xs={12}>
-                <p>Your color:</p>
-                <div style={{ backgroundColor: playerRooms[key].players[user].color }} className="games-color-block mb-2" />
-                <Button variant="secondary">Open</Button>
+                <p>Players:</p>
+                {
+                  Object.keys(playerRooms[key].players).map((userId) => (
+                    <div style={{ backgroundColor: playerRooms[key].players[userId].color }} className="games-color-block mb-2" />
+                  ))
+                }
+                <Row>
+                  <Button variant="secondary" className="m-auto">Open</Button>
+                  <Button variant="danger" className="m-auto" id={key} onClick={this.playerLeaveRoom}>Leave room</Button>
+                </Row>
               </Col>
             ))
           }
           </Row>
         </Container>
-        
+
         <Container><hr /></Container>
         <Container>
           <h2>Join new room</h2>
@@ -172,6 +185,7 @@ Settings.propTypes = {
   onJoinGameRoom: PropTypes.func.isRequired,
   setModal: PropTypes.func.isRequired,
   updateGameRooms: PropTypes.func.isRequired,
+  playerLeaveRoom: PropTypes.func.isRequired,
 };
 
 Settings.defaultProps = {
@@ -192,6 +206,25 @@ const mapStateToProps = (state) => ({
 export default connect(
   mapStateToProps,
   (dispatch) => ({
+    playerLeaveRoom: (token, room) => {
+      const playerLeave = () => {
+        axios({
+          method: 'post',
+          headers: { Authorization: `Token ${token}` },
+          data: {
+            "room": room
+          },
+          url: '/api/v2/leave/',
+        }).then((response) => {
+          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: response.data });
+        }).catch((error) => {
+          console.log(error);
+          // dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS_ERROR, payload: null });
+        });
+      };
+      playerLeave();
+    },
+
     setPlayerColor: (color) => {
       dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
     },

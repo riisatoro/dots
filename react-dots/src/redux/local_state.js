@@ -63,19 +63,3 @@ const loadState = () => {
 };
 
 export { loadState, setInitial };
-
-/*
-userGames: {
-  0: {
-    score: {},
-    players: {},
-    playerTurn: null,
-    playerColor: '#262A3D',
-    fieldSize: {
-      width: 0,
-      height: 0,
-    },
-    gameField: [[]],
-  },
-}
-*/

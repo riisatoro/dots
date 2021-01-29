@@ -14,6 +14,7 @@ export default function gameReducer(state, action) {
     }
 
     case TYPES.UPDATE_PLAYER_ROOMS: {
+      console.log(data);
       return {
         ...state,
         userGames: data.data,

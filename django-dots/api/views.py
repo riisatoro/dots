@@ -40,16 +40,22 @@ def group_player_score(games):
     ]
     return result
 
-def group_player_rooms(rooms):
+def group_player_rooms(user):
     room_data = {}
-    for room in rooms:
+    player_rooms = models.UserGame.objects.filter(
+        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True),
+        game_room__is_started=False
+    )
+    player_rooms = serializers.UserGameSerializer(player_rooms, many=True).data
+
+    for room in player_rooms:
         key = room.get('game_room').get('id')
         room_data[key] = {
             "size": 0,
             "players": {},
         }
-    
-    for room in rooms:
+
+    for room in player_rooms:
         key = room.get('game_room').get('id')
         player = room.get('user').get('id')
         room_data[key]["players"][player] = {
@@ -175,14 +181,8 @@ class GameRoomView(APIView):
                 many=True
             ).data
         )
-        playerRooms = models.UserGame.objects.filter(
-            game_room__in=models.UserGame.objects.filter(user=request.user).values_list('game_room', flat=True),
-            game_room__is_started=False
-        )
-        
-        player_rooms = group_player_rooms(
-            serializers.UserGameSerializer(playerRooms, many=True).data
-        )
+
+        player_rooms = group_player_rooms(request.user)
         return Response(
             {
                 "error": False,
@@ -265,11 +265,18 @@ class GameRoomJoin(APIView):
 class GameRoomLeave(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        return Response()
-
     def post(self, request):
-        models.UserGame.objects.filter(
-            user=request.user, game_room__is_started=True, game_room__is_ended=False
-        ).update(room__is_ended=True)
-        return Response()
+        room = request.data["room"]
+
+        if models.GameRoom.objects.filter(id=room).count() == 1:
+            models.GameRoom.objects.get(id=room).delete()
+        else:
+            models.UserGame.objects.filter(game_room=room, user=request.user).delete()
+
+        return Response(
+            {
+                "error": False,
+                "message": "Room was created!",
+                "data": group_player_rooms(request.user),
+            }
+        )
