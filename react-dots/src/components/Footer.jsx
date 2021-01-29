@@ -6,20 +6,25 @@ import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
 
 class Footer extends Component {
+  constructor(props) {
+    super(props);
+    this.logoutUser = this.logoutUser.bind(this);
+  }
+
   logoutUser() {
-    const { logoutUser, token } = this.props;
-    logoutUser(token);
+    const { logout, token } = this.props;
+    logout(token);
   }
 
   render() {
-    const { isAuth } = this.props;
+    const { isAuthorized } = this.props;
     let navigation = (
       <ul>
         <a href="/register" className="d-block">Register</a>
         <a href="/login" className="d-block">Login</a>
       </ul>
     );
-    if (isAuth) {
+    if (isAuthorized) {
       navigation = (
         <ul>
           <a href="/new_game" className="d-block">New game</a>
@@ -46,15 +51,15 @@ class Footer extends Component {
 }
 
 Footer.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
-  isAuth: PropTypes.bool.isRequired,
+  isAuthorized: PropTypes.bool.isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const data = {
-    token: state.user.token,
-    isAuth: state.user.auth,
+    token: state.auth.token,
+    isAuthorized: state.auth.isAuthorized,
   };
   return data;
 };
@@ -62,14 +67,16 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    logoutUser: (token) => {
+    logout: (token) => {
       const asyncLogout = () => {
         axios({
           method: 'get',
           url: '/api/auth/logout/',
           headers: { Authorization: `Token ${token}` },
         }).then(() => {
-          dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
+          dispatch({ type: TYPES.LOGOUT_REPLY, payload: null });
+        }).catch(() => {
+          dispatch({ type: TYPES.LOGOUT_ERROR, payload: null });
         });
       };
       asyncLogout();

@@ -22,10 +22,10 @@ function Register(props) {
     props.sendRegisterForm({ username, email, password });
   });
 
-  const { toast, toastMessage, closeToast } = props;
+  const { openToast, toastMessage, closeToast } = props;
   const toastWindow = (
-    <Row className="mb-2" style={{ height: '30px' }}>
-      <Toast onClose={closeToast} show={toast} delay={5000} autohide className="ml-auto">
+    <Row className="mb-2">
+      <Toast onClose={closeToast} show={openToast} delay={5000} autohide className="ml-auto">
         <Toast.Header>
           <strong className="mr-auto text-danger">Error!</strong>
           <small>Error</small>
@@ -37,13 +37,16 @@ function Register(props) {
 
   return (
     <section>
-      <Container className="h-100">
+      <Container>
         {toastWindow}
+      </Container>
+      <Container>
         <Form onSubmit={onSubmitForm}>
           <Form.Row>
-            <Form.Group className="col-sm-12 col-md-6" controlId="username">
+            <Form.Group className="col-sm-12 col-md-6 " controlId="username">
               <Form.Label>Username</Form.Label>
               <Form.Control
+                autoComplete="off"
                 type="text"
                 placeholder="Username"
                 name="username"
@@ -63,6 +66,7 @@ function Register(props) {
             <Form.Group className="col-sm-12 col-md-6" controlId="email">
               <Form.Label>Email</Form.Label>
               <Form.Control
+                autoComplete="off"
                 type="email"
                 placeholder="Email"
                 name="email"
@@ -123,31 +127,31 @@ function Register(props) {
 }
 
 Register.propTypes = {
-  toast: PropTypes.bool,
-  toastMessage: PropTypes.string,
+  openToast: PropTypes.bool.isRequired,
+  toastMessage: PropTypes.string.isRequired,
 
   sendRegisterForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
 };
 
-Register.defaultProps = {
-  toast: false,
-  toastMessage: '',
+Register.propTypes = {
+  openToast: PropTypes.bool.isRequired,
+  toastMessage: PropTypes.string.isRequired,
+
+  sendRegisterForm: PropTypes.func.isRequired,
+  closeToast: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  const data = {
-    toast: state.toast,
-    toastMessage: state.toastMessage,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  openToast: state.auth.error,
+  toastMessage: state.auth.errorMessage,
+});
 
 export default connect(
   mapStateToProps,
   (dispatch) => ({
     closeToast: () => {
-      dispatch({ type: TYPES.SERVER_TOAST, payload: false });
+      dispatch({ type: TYPES.CLOSE_TOAST, payload: false });
     },
 
     sendRegisterForm: (data) => {
@@ -157,11 +161,11 @@ export default connect(
           data,
         ).then(
           (response) => {
-            dispatch({ type: TYPES.RECEIVE_AUTH_REPLY, payload: response });
+            dispatch({ type: TYPES.REGISTRATION_REPLY, payload: response.data });
           },
         ).catch(
           (error) => {
-            dispatch({ type: TYPES.LOGIN_ERROR, payload: error.response.data });
+            dispatch({ type: TYPES.REGISTRATION_ERROR, payload: error.response.data });
           },
         );
       };

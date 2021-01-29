@@ -85,7 +85,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 is_full = Field.is_full_field(new_field)
                 new_field = GameFieldSerializer().to_client(new_field)
                 new_field["is_full"] = is_full
-                new_field["colors"] = await self.get_user_colors(room_id)
+                new_field["players"] = await self.get_players_data(room_id)
                 new_field["turn"] = await self.get_who_has_turn(room_id)
                 self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": new_field}
 
@@ -117,12 +117,15 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return game.get().game_room.field
 
     @database_sync_to_async
-    def get_user_colors(self, room_id):
+    def get_players_data(self, room_id):
         data = UserGame.objects.filter(game_room__id=room_id).all()
-        colors = {}
-        for color in data:
-            colors[color.user.id] = color.color
-        return colors
+        players = {}
+        for player in data:
+            players[color.user.id] = {
+                "username": player.user.username,
+                "color": player.color,
+            }
+        return players
 
     @database_sync_to_async
     def close_current_game(self, room_id):

@@ -44,11 +44,7 @@ class Leaderboard extends Component {
       );
       matchesList.push(matches.slice(i, i + splitBy));
     }
-    let alp = activeLeadersPage;
-    if (alp > matchesList.length || alp < 1) {
-      alp = 1;
-    }
-    const paginationMatches = matchesList[alp - 1];
+    const paginationMatches = matchesList[activeLeadersPage - 1];
 
     return (
       <section className="leaderboard">
@@ -106,9 +102,9 @@ Leaderboard.propTypes = {
 
 const mapStateToProps = (state) => {
   const data = {
-    token: state.user.token,
-    matches: state.leaders,
-    activeLeadersPage: state.activeLeadersPage,
+    token: state.auth.token,
+    matches: state.domainData.matches,
+    activeLeadersPage: state.uiData.matchPagination,
   };
   return data;
 };
@@ -126,13 +122,17 @@ export default connect(
           method: 'GET',
           url: 'api/v2/match/',
           headers: { Authorization: `Token ${token}` },
-        }).then((response) => { dispatch({ type: TYPES.RECEIVE_LEADERS, payload: response }); });
+        }).then((response) => {
+          dispatch({ type: TYPES.UPDATE_LEADERS, payload: response.data });
+        }).catch(() => {
+          dispatch({ type: TYPES.UPDATE_LEADERS_ERROR, payload: null });
+        });
       };
       getLeaderboardRequest();
     },
     setActivePagination: (event) => {
       dispatch({
-        type: TYPES.SET_ACTIVE_PAGINATION,
+        type: TYPES.SWITCH_PAGINATION,
         payload: { num: parseInt(event.target.id, 10) + 1 },
       });
     },

@@ -2,12 +2,33 @@ import TYPES from './types';
 
 const setInitial = () => (
   {
-    reply: { error: false, message: '' },
-    user: {
-      auth: false, userName: '', token: '', userID: null,
+    auth: {
+      id: null,
+      token: '',
+      username: '',
+      isAuthorized: false,
+      error: false,
+      errorMessage: '',
     },
-    socket: {
-      connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
+
+    domainData: {
+      availableGames: [],
+      leaderboards: [],
+    },
+
+    gameData: {
+      temporary: {
+        playerColor: '#AAAAAA',
+      },
+      userGames: {},
+    },
+
+    appData: {
+      roomLimit: 3,
+    },
+
+    uiData: {
+      matchPagination: 0,
     },
 
     turn: 0,
@@ -16,14 +37,10 @@ const setInitial = () => (
     game_end: false,
     gameResults: false,
 
-    playerColor: '#AA00AA',
+    playerColor: '#AAAAAA',
     playerScore: 0,
 
     loops: [],
-    colors: ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'],
-    colorTable: {
-      O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
-    },
 
     leaders: [],
     gameInterrupted: false,
@@ -46,3 +63,19 @@ const loadState = () => {
 };
 
 export { loadState, setInitial };
+
+/*
+userGames: {
+  0: {
+    score: {},
+    players: {},
+    playerTurn: null,
+    playerColor: '#262A3D',
+    fieldSize: {
+      width: 0,
+      height: 0,
+    },
+    gameField: [[]],
+  },
+}
+*/

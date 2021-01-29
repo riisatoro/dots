@@ -17,10 +17,10 @@ function Login(props) {
     props.sendLoginForm({ username, password });
   });
 
-  const { toast, toastMessage, closeToast } = props;
+  const { openToast, toastMessage, closeToast } = props;
   const toastWindow = (
     <Row className="mb-5" style={{ height: '30px' }}>
-      <Toast onClose={closeToast} show={toast} delay={5000} autohide className="ml-auto">
+      <Toast onClose={closeToast} show={openToast} delay={5000} autohide className="ml-auto">
         <Toast.Header>
           <strong className="mr-auto text-danger">Error!</strong>
           <small>Error</small>
@@ -31,76 +31,73 @@ function Login(props) {
   );
 
   return (
-    <Container className="h-100">
-      {toastWindow}
-      <Form onSubmit={onSubmitForm}>
-        <Form.Row>
-          <Form.Group className="col-sm-12 col-md-6" controlId="username">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              type="text"
-              name="username"
-              placeholder="Username"
-              isInvalid={errors.username}
-              ref={register({
-                required: true,
-                minLength: 3,
-              })}
-            />
-            <Form.Control.Feedback type="invalid">
-              Username must be 3 or more characters
-            </Form.Control.Feedback>
-          </Form.Group>
+    <>
+      <Container>
+        {toastWindow}
+      </Container>
+      <Container className="h-100">
+        <Form onSubmit={onSubmitForm}>
+          <Form.Row>
+            <Form.Group className="col-sm-12 col-md-6" controlId="username">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                autoComplete="off"
+                type="text"
+                name="username"
+                placeholder="Username"
+                isInvalid={errors.username}
+                ref={register({
+                  required: true,
+                  minLength: 3,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Username must be 3 or more characters
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <Form.Group className="col-sm-12 col-md-6" controlId="password">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              placeholder="Password"
-              isInvalid={errors.password}
-              ref={register({
-                required: true,
-                minLength: 5,
-              })}
-            />
-            <Form.Control.Feedback type="invalid">
-              Password should be 5 or more characters and number
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form.Row>
-        <Button type="submit" className="mb-5">Log in</Button>
-      </Form>
-    </Container>
+            <Form.Group className="col-sm-12 col-md-6" controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Password"
+                isInvalid={errors.password}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Password should be 5 or more characters and number
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+          <Button type="submit" className="mb-5">Log in</Button>
+        </Form>
+      </Container>
+    </>
   );
 }
 
 Login.propTypes = {
-  toast: PropTypes.bool,
-  toastMessage: PropTypes.string,
+  openToast: PropTypes.bool.isRequired,
+  toastMessage: PropTypes.string.isRequired,
 
   sendLoginForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
 };
 
-Login.defaultProps = {
-  toast: false,
-  toastMessage: '',
-};
-
-const mapStateToProps = (state) => {
-  const data = {
-    toast: state.toast,
-    toastMessage: state.toastMessage,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  openToast: state.auth.error,
+  toastMessage: state.auth.errorMessage,
+});
 
 export default connect(
   mapStateToProps,
   (dispatch) => ({
     closeToast: () => {
-      dispatch({ type: TYPES.SERVER_TOAST, payload: false });
+      dispatch({ type: TYPES.CLOSE_TOAST, payload: null });
     },
 
     sendLoginForm: (data) => {
@@ -111,7 +108,7 @@ export default connect(
           data,
         }).then(
           (response) => {
-            dispatch({ type: TYPES.RECEIVE_AUTH_REPLY, payload: response });
+            dispatch({ type: TYPES.LOGIN_REPLY, payload: response.data });
           },
         ).catch(
           (error) => {

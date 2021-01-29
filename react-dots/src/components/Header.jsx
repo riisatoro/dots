@@ -68,19 +68,17 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  getLeaderboard: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
   isAuth: PropTypes.bool.isRequired,
+
+  logoutUser: PropTypes.func.isRequired,
+  getLeaderboard: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  const data = {
-    token: state.user.token,
-    isAuth: state.user.auth,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  token: state.auth.token,
+  isAuth: state.auth.isAuthorized,
+});
 
 export default connect(
   mapStateToProps,
@@ -95,6 +93,7 @@ export default connect(
       };
       getLeaderboardRequest();
     },
+
     logoutUser: (token) => {
       const asyncLogout = () => {
         axios({
@@ -102,7 +101,9 @@ export default connect(
           url: '/api/auth/logout/',
           headers: { Authorization: `Token ${token}` },
         }).then(() => {
-          dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
+          dispatch({ type: TYPES.LOGOUT_REPLY, payload: null });
+        }).catch(() => {
+          dispatch({ type: TYPES.LOGOUT_ERROR, payload: null });
         });
       };
       asyncLogout();

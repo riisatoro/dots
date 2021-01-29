@@ -66,10 +66,8 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, modal,
+      rooms, modal, playerColor, playerRooms,
     } = this.props;
-
-    const { playerColor } = this.props;
 
     const modalWindow = (
       <>
@@ -151,7 +149,8 @@ Settings.propTypes = {
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
   rooms: PropTypes.arrayOf(PropTypes.object),
-
+  roomLimit: PropTypes.number.isRequired,
+  playerRooms: PropTypes.objectOf(PropTypes.object),
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getGameRooms: PropTypes.func.isRequired,
@@ -165,15 +164,14 @@ Settings.defaultProps = {
   modal: false,
 };
 
-const mapStateToProps = (state) => {
-  const data = {
-    modal: state.modal,
-    token: state.user.token,
-    playerColor: state.playerColor,
-    rooms: state.rooms,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  modal: false,
+  token: state.auth.token,
+  playerColor: state.gameData.temporary.playerColor,
+  rooms: state.domainData.availableGames,
+  roomLimit: state.appData.roomLimit,
+  playerRooms: state.gameData.userGames,
+});
 
 export default connect(
   mapStateToProps,
@@ -193,29 +191,14 @@ export default connect(
           headers: { Authorization: `Token ${token}` },
           url: '/api/v2/rooms/',
         }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: response.data.free_room } });
+          // dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: response.data.free_room } });
         });
       };
       gameRoomRequest();
     },
 
     updateGameRooms: (data) => {
-      dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: data.message } });
-    },
-
-    createNewRoom: (token, fieldSize, gameColor) => {
-      const data = { color: gameColor, size: fieldSize };
-      const newRoomRequest = () => {
-        axios({
-          method: 'post',
-          headers: { Authorization: `Token ${token}` },
-          url: '/api/v2/rooms/',
-          data,
-        }).then((response) => {
-          dispatch({ type: TYPES.NEW_ROOM_CREATED, payload: response });
-        });
-      };
-      newRoomRequest();
+      // dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: data.message } });
     },
 
     onJoinGameRoom: (token, roomId, playerColor) => {
@@ -234,7 +217,7 @@ export default connect(
     },
 
     setModal: (value) => {
-      dispatch({ type: TYPES.SET_MODAL, payload: value });
+      // dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }),
 )(Settings);

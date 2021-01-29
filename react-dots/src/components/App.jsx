@@ -16,14 +16,14 @@ import Register from './Register';
 import Footer from './Footer';
 
 function App(props) {
-  const { authorized, gameStarted } = props;
+  const { authorized } = props;
+  const gameStarted = false;
 
   return (
     <>
       <section style={{ minHeight: '100%' }}>
+        <Header />
         <Router>
-          <Header />
-
           <Switch>
             <Route exact path="/">
               <Redirect to="/main" />
@@ -63,7 +63,6 @@ function App(props) {
           </Switch>
         </Router>
       </section>
-
       <Footer />
     </>
   );
@@ -71,12 +70,10 @@ function App(props) {
 
 App.propTypes = {
   authorized: PropTypes.bool.isRequired,
-  gameStarted: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  authorized: state.user.auth,
-  gameStarted: state.gameStarted,
+  authorized: state.auth.isAuthorized,
 });
 
 export default hot(
