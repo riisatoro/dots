@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  Form, Button, Col, Container,
+  Form, Button, Col, Container, Row,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import isContrast from '../actions/findContrast';
 import TYPES from '../redux/types';
 
 function NewGameForm(props) {
-  const { playerColor, playerRooms, roomLimit } = props;
+  const { playerColor, playerRooms, roomLimit, user } = props;
   const {
     register, errors, handleSubmit,
   } = useForm();
@@ -30,11 +30,11 @@ function NewGameForm(props) {
       props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
     }
   });
-  const limitReached = Object.keys(playerRooms).length >= roomLimit ? 'disabled' : '';
+  const limitReached = Object.keys(playerRooms).length >= roomLimit ? 'd-none' : '';
 
   return (
     <>
-      <Form onSubmit={onCreateNewRoom}>
+      <Form onSubmit={onCreateNewRoom} className={limitReached}>
         <Form.Row className="mb-3">
           <Form.Group as={Col} sm={12} lg={6} controlId="color" className="m-auto">
             <Form.Label>Click to choose your color:</Form.Label>
@@ -71,24 +71,17 @@ function NewGameForm(props) {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        {limitReached === 'disabled' && <p className="text-danger text-center">You reached room limit! Please, finish your games first</p>}
         <Form.Row className="mb-3">
           <Button type="submit" className={`btn btn-success m-auto ${limitReached}`}>Create new game</Button>
         </Form.Row>
       </Form>
-
-      <Container>
-        {
-            Object.keys(playerRooms).map((key) => (
-              <p key={key.toString()}>{key}</p>
-            ))
-          }
-      </Container>
+      {limitReached === 'd-none' && <p className="text-danger text-center">You reached room limit! Please, finish your games first</p>}
     </>
   );
 }
 
 NewGameForm.propTypes = {
+  user: PropTypes.number.isRequired,
   roomLimit: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
@@ -106,6 +99,7 @@ NewGameForm.defaultProps = {
 
 const mapStateToProps = (state) => {
   const data = {
+    user: state.auth.id,
     roomLimit: state.appData.roomLimit,
     token: state.auth.token,
     playerColor: state.gameData.temporary.playerColor,
@@ -125,6 +119,7 @@ export default connect(
     setModal: (value) => {
       /* dispatch({ type: TYPES.SET_MODAL, payload: value }); */
     },
+
     createNewRoom: (token, fieldSize, gameColor) => {
       const data = { color: gameColor, size: fieldSize };
       const newRoomRequest = () => {

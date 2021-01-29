@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Row, Modal,
+  Form, Button, Container, Row, Modal, Col,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -66,7 +66,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, modal, playerColor, playerRooms,
+      rooms, modal, playerColor, playerRooms, user,
     } = this.props;
 
     const modalWindow = (
@@ -97,7 +97,21 @@ class Settings extends Component {
           <h2 className="text-center">Create new game room</h2>
           <NewGameForm />
         </Container>
-
+        
+        <Container className="mt-5">
+          <Row>
+            {
+            Object.keys(playerRooms).map((key) => (
+              <Col key={key.toString()} md={4} xs={12}>
+                <p>Your color:</p>
+                <div style={{ backgroundColor: playerRooms[key].players[user].color }} className="games-color-block mb-2" />
+                <Button variant="secondary">Open</Button>
+              </Col>
+            ))
+          }
+          </Row>
+        </Container>
+        
         <Container><hr /></Container>
         <Container>
           <h2>Join new room</h2>
@@ -145,6 +159,7 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
+  user: PropTypes.number.isRequired,
   modal: PropTypes.bool,
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
@@ -165,6 +180,7 @@ Settings.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
+  user: state.auth.id,
   modal: false,
   token: state.auth.token,
   playerColor: state.gameData.temporary.playerColor,
