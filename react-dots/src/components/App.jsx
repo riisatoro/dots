@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import Header from './Header';
 import Leaderboard from './Leaderboard';
-import Settings from './Settings';
+import GameContainer from './GameContainer';
 import GameField from './GameField';
 import MainPage from './MainPage';
 import Login from './Login';
@@ -17,7 +17,6 @@ import Footer from './Footer';
 
 function App(props) {
   const { authorized } = props;
-  const gameStarted = false;
 
   return (
     <>
@@ -43,17 +42,12 @@ function App(props) {
               <MainPage />
             </Route>
 
-            <Route path="/new_game">
-              { authorized ? <Settings /> : <Redirect to="/login" /> }
-              { authorized && gameStarted ? <Redirect to="/game" /> : <Redirect to="/new_game" />}
+            <Route path="/game">
+              { authorized ? <GameContainer /> : <Redirect to="/login" /> }
             </Route>
 
             <Route path="/leaderboards">
               { authorized ? <Leaderboard /> : <Redirect to="/login" /> }
-            </Route>
-
-            <Route path="/game">
-              <GameField />
             </Route>
 
             <Route path="/logout">

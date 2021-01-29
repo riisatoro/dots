@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Stage, Layer } from 'react-konva';
 import {
-  Container, Row, Button, Modal, Spinner,
+  Container, Row, Button,
 } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 import TYPES from '../redux/types';
-import connectSocket from '../socket/socket';
 import {
   getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle,
 } from '../actions/gameFieldDrawable';
@@ -15,7 +14,225 @@ import {
 import '../../public/css/default.css';
 
 class GameField extends Component {
-  constructor(props) {
+  render() {
+    const {
+      games,
+      cellSize,
+      activeGameId,
+    } = this.props;
+
+    const game = games[activeGameId];
+    let field = [[]];
+    let fieldSize = 0;
+
+    let canvasGrid = [];
+    let circle = [];
+    let emptyCircle = [];
+    let loop = [];
+
+    if (game !== undefined) {
+      field = game.field;
+      fieldSize = game.size;
+
+      canvasGrid = getCanvasGrid(fieldSize, cellSize);
+      // circle = getCircleCoords(field, cellSize, playerColors);
+      emptyCircle = createEmptyCircle(field, cellSize);
+      // loop = createLoopFigure(field, loops, cellSize, playerColors);
+    }
+
+    return (
+      <>
+        <Container>
+          <div className="m-auto" style={{ width: fieldSize * cellSize + cellSize }}>
+            <Stage
+              width={fieldSize * cellSize + cellSize}
+              height={fieldSize * cellSize + cellSize}
+              onClick={this.gridClicked}
+              onTap={this.gridClicked}
+            >
+              <Layer x={cellSize} y={cellSize}>
+                {canvasGrid.map((line, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {line}
+                  </React.Fragment>
+                ))}
+
+                {emptyCircle.map((circl, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circl}
+                  </React.Fragment>
+                ))}
+
+                {loop.map((l1, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {l1}
+                  </React.Fragment>
+                ))}
+
+                {circle.map((circ, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circ}
+                  </React.Fragment>
+                ))}
+              </Layer>
+            </Stage>
+          </div>
+        </Container>
+      </>
+    );
+  }
+}
+
+GameField.propTypes = {
+  games: PropTypes.objectOf(PropTypes.object),
+  cellSize: PropTypes.number.isRequired,
+  activeGameId: PropTypes.number.isRequired,
+};
+
+GameField.defaultProps = {
+  games: {},
+};
+
+const mapStateToProps = (state) => ({
+  activeGameId: state.uiData.activeGameTab,
+  games: state.gameData.userGames,
+  cellSize: state.appData.cellSize,
+});
+
+export default connect(
+  mapStateToProps,
+  (dispatch) => (
+    {
+
+    }
+  ),
+)(GameField);
+
+/*
+<Stage
+              width={fieldSize * cellSize + cellSize}
+              height={fieldSize * cellSize + cellSize}
+              onClick={this.gridClicked}
+              onTap={this.gridClicked}
+            >
+              <Layer x={cellSize} y={cellSize}>
+{canvasGrid.map((line, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {line}
+                  </React.Fragment>
+                ))}
+
+                {emptyCircle.map((circl, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circl}
+                  </React.Fragment>
+                ))}
+
+                {loop.map((l1, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {l1}
+                  </React.Fragment>
+                ))}
+
+                {circle.map((circ, index) => (
+                  <React.Fragment key={index.toString()}>
+                    {circ}
+                  </React.Fragment>
+                ))}
+                              </Layer>
+            </Stage>
+
+    const {
+      field,
+      fieldSize,
+      turn,
+      loops,
+      cellSize,
+      playerColors,
+      userID,
+      score,
+      playerColor,
+      modal,
+      setModal,
+      closeGame,
+    } = this.props;
+
+    let textTurn = '';
+    if (turn === userID) {
+      textTurn = 'Now is your turn';
+    }
+    const textScore = [];
+    Object.keys(score).forEach((key) => {
+      textScore.push([playerColors[key], `captured ${score[key]} points`]);
+    });
+
+    const textScoreResult = [];
+    Object.keys(score).forEach((key) => {
+      textScoreResult.push([playerColors[key], `${score[key]} points`]);
+    });
+    const playerConnected = Object.keys(playerColors).length > 1;
+
+    const modalBlock = (
+      <Modal
+        show={modal}
+        onHide={closeGame}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Game over
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4 className="text-center">Players captured</h4>
+          {textScoreResult.map((item, index) => (
+            <div className="container" key={index.toString()}>
+              <Row className="align-middle mb-2">
+                <div className="game-color-block m-auto" style={{ backgroundColor: item[0] }} />
+                <p className="d-block m-auto">{item[1]}</p>
+              </Row>
+            </div>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          <a href="/leaderboards" onClick={setModal}>
+            <Button>Close</Button>
+          </a>
+        </Modal.Footer>
+      </Modal>
+    );
+
+    {modalBlock}
+        <Container className="text-center">
+          <p>Your points color:</p>
+          <div className="game-color-block" style={{ backgroundColor: playerColor }} />
+          <p className="text-center" style={{ height: '20px' }}>{textTurn}</p>
+          { !playerConnected
+           && (
+           <React.Fragment key="waiting">
+             <Spinner animation="border" variant="primary" />
+             <p className="text-center">Waiting for another player</p>
+           </React.Fragment>
+           )}
+        </Container>
+
+<Container>
+          <Row>
+            {textScore.map((item, index) => (
+              <div className="col-xs-12 col-md-6 col-lg-4 text-center" key={index.toString()}>
+                <div className="game-color-block" style={{ backgroundColor: item[0] }} />
+                <p>{item[1]}</p>
+              </div>
+            ))}
+          </Row>
+          <div className="text-center mb-5">
+            <Button variant="danger" onClick={this.onPlayerGiveUp}>Give up</Button>
+          </div>
+        </Container>
+
+constructor(props) {
     super(props);
     this.gridClicked = this.gridClicked.bind(this);
     this.onPlayerGiveUp = this.onPlayerGiveUp.bind(this);
@@ -75,146 +292,6 @@ class GameField extends Component {
     }
   }
 
-  render() {
-    const {
-      field,
-      fieldSize,
-      turn,
-      loops,
-      cellSize,
-      playerColors,
-      userID,
-      score,
-      playerColor,
-      modal,
-      setModal,
-      closeGame,
-    } = this.props;
-
-    const canvasGrid = getCanvasGrid(fieldSize, cellSize);
-    const circle = getCircleCoords(field, cellSize, playerColors);
-    const emptyCircle = createEmptyCircle(field, cellSize);
-    const loop = createLoopFigure(field, loops, cellSize, playerColors);
-
-    let textTurn = '';
-    if (turn === userID) {
-      textTurn = 'Now is your turn';
-    }
-    const textScore = [];
-    Object.keys(score).forEach((key) => {
-      textScore.push([playerColors[key], `captured ${score[key]} points`]);
-    });
-
-    const textScoreResult = [];
-    Object.keys(score).forEach((key) => {
-      textScoreResult.push([playerColors[key], `${score[key]} points`]);
-    });
-    const playerConnected = Object.keys(playerColors).length > 1;
-
-    const modalBlock = (
-      <Modal
-        show={modal}
-        onHide={closeGame}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Game over
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h4 className="text-center">Players captured</h4>
-          {textScoreResult.map((item, index) => (
-            <div className="container" key={index.toString()}>
-              <Row className="align-middle mb-2">
-                <div className="game-color-block m-auto" style={{ backgroundColor: item[0] }} />
-                <p className="d-block m-auto">{item[1]}</p>
-              </Row>
-            </div>
-          ))}
-        </Modal.Body>
-        <Modal.Footer>
-          <a href="/leaderboards" onClick={setModal}>
-            <Button>Close</Button>
-          </a>
-        </Modal.Footer>
-      </Modal>
-    );
-
-    return (
-      <>
-        {modalBlock}
-        <Container className="text-center">
-          <p>Your points color:</p>
-          <div className="game-color-block" style={{ backgroundColor: playerColor }} />
-          <p className="text-center" style={{ height: '20px' }}>{textTurn}</p>
-          { !playerConnected
-           && (
-           <React.Fragment key="waiting">
-             <Spinner animation="border" variant="primary" />
-             <p className="text-center">Waiting for another player</p>
-           </React.Fragment>
-           )}
-        </Container>
-
-        <Container>
-          <div className="m-auto" style={{ width: fieldSize * cellSize + cellSize }}>
-            <Stage
-              width={fieldSize * cellSize + cellSize}
-              height={fieldSize * cellSize + cellSize}
-              onClick={this.gridClicked}
-              onTap={this.gridClicked}
-            >
-              <Layer x={cellSize} y={cellSize}>
-
-                {canvasGrid.map((line, index) => (
-                  <React.Fragment key={index.toString()}>
-                    {line}
-                  </React.Fragment>
-                ))}
-
-                {emptyCircle.map((circl, index) => (
-                  <React.Fragment key={index.toString()}>
-                    {circl}
-                  </React.Fragment>
-                ))}
-
-                {loop.map((l1, index) => (
-                  <React.Fragment key={index.toString()}>
-                    {l1}
-                  </React.Fragment>
-                ))}
-
-                {circle.map((circ, index) => (
-                  <React.Fragment key={index.toString()}>
-                    {circ}
-                  </React.Fragment>
-                ))}
-              </Layer>
-            </Stage>
-          </div>
-        </Container>
-
-        <Container>
-          <Row>
-            {textScore.map((item, index) => (
-              <div className="col-xs-12 col-md-6 col-lg-4 text-center" key={index.toString()}>
-                <div className="game-color-block" style={{ backgroundColor: item[0] }} />
-                <p>{item[1]}</p>
-              </div>
-            ))}
-          </Row>
-          <div className="text-center mb-5">
-            <Button variant="danger" onClick={this.onPlayerGiveUp}>Give up</Button>
-          </div>
-        </Container>
-      </>
-    );
-  }
-}
-
 GameField.propTypes = {
   modal: PropTypes.bool,
   turn: PropTypes.number,
@@ -264,20 +341,4 @@ const mapStateToProps = (state) => {
   };
   return data;
 };
-
-export default connect(
-  mapStateToProps,
-  (dispatch) => (
-    {
-      receiveSocketReply: (data) => {
-        dispatch({ type: data.TYPE, payload: data });
-      },
-      setModal: (value) => {
-        dispatch({ type: TYPES.SET_MODAL, payload: value });
-      },
-      closeGame: () => {
-        dispatch({ type: TYPES.CLOSE_RESULTS, payload: {} });
-      },
-    }
-  ),
-)(GameField);
+*/

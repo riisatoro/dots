@@ -6,15 +6,16 @@ import {
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
-import NewGameForm from './NewGameForm';
 import isContrast from '../actions/findContrast';
 import connectSocket from '../socket/gameListSocket';
 
+import NewGameForm from './NewGameForm';
 import Game from './Game';
+import RoomsToJoin from './RoomsToJoin';
 
 import '../../public/css/default.css';
 
-class Settings extends Component {
+class GameContainer extends Component {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
@@ -66,14 +67,9 @@ class Settings extends Component {
     setModal(true);
   }
 
-  playerLeaveRoom(e) {
-    const { token, playerLeaveRoom } = this.props;
-    playerLeaveRoom(token, e.target.id);
-  }
-
   render() {
     const {
-      rooms, modal, playerColor,
+      modal,
     } = this.props;
 
     const modalWindow = (
@@ -110,43 +106,7 @@ class Settings extends Component {
         </Container>
 
         <Container>
-          <h2>Join new room</h2>
-          {rooms.length === 0 && <p>There is no free rooms. Try to create one!</p>}
-          <Row>
-            { rooms.map((room, index) => (
-              <div className="col-sm-4 mb-5" key={index.toString()}>
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">{room.user.username}</h5>
-                    <div className="row">
-                      <p className="card-text col-6">Player color:</p>
-                      <div className="col-6">
-                        <div style={{ backgroundColor: room.color }} className="games-color-block mb-2" />
-                      </div>
-                      <p className="card-text col-6">Click to choose your color:</p>
-                      <div className="col-6">
-                        <Form.Control
-                          type="color"
-                          className="games-color-block"
-                          value={playerColor}
-                          onChange={this.changePickedColor}
-                        />
-                      </div>
-                    </div>
-                    <p className="card-text">{`Field size: ${room.game_room.size} x ${room.game_room.size}`}</p>
-                    <Button
-                      type="button"
-                      id={index}
-                      className="btn btn-primary"
-                      onClick={this.onPlayerJoinGame}
-                    >
-                      Join
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Row>
+          <RoomsToJoin />
         </Container>
 
       </section>
@@ -154,7 +114,7 @@ class Settings extends Component {
   }
 }
 
-Settings.propTypes = {
+GameContainer.propTypes = {
   user: PropTypes.number.isRequired,
   modal: PropTypes.bool,
   token: PropTypes.string.isRequired,
@@ -170,7 +130,7 @@ Settings.propTypes = {
   updateGameRooms: PropTypes.func.isRequired,
 };
 
-Settings.defaultProps = {
+GameContainer.defaultProps = {
   rooms: [],
   modal: false,
 };
@@ -233,4 +193,4 @@ export default connect(
       // dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }),
-)(Settings);
+)(GameContainer);

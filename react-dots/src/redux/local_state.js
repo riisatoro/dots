@@ -25,6 +25,7 @@ const setInitial = () => (
 
     appData: {
       roomLimit: 6,
+      cellSize: 30,
     },
 
     uiData: {

@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Nav, Button,
+  Container, Nav, Button, Spinner,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
 
 import '../../public/css/default.css';
+import GameField from './GameField';
 
 function Game(props) {
   const {
@@ -20,7 +21,7 @@ function Game(props) {
   } = props;
 
   const playerLeaveRoom = (e) => {
-    playerLeave(token, e.target);
+    playerLeave(token, e.target.id);
   };
 
   const setActive = (e) => {
@@ -33,6 +34,7 @@ function Game(props) {
         { Object.keys(gameRooms).map((key) => (
           <Nav.Item onClick={setActive} key={key.toString()}>
             <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
+              <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger"/>
               Game&nbsp;
               {`${gameRooms[key].size} x ${gameRooms[key].size}`}
               <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
@@ -40,6 +42,7 @@ function Game(props) {
           </Nav.Item>
         ))}
       </Nav>
+      <GameField />
     </Container>
   );
 }

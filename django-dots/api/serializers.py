@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GameRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.GameRoom
-        fields = ('id', 'size', )
+        fields = ('id', 'size', 'field')
 
 
 class UserGameSerializer(serializers.ModelSerializer):

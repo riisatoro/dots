@@ -27,7 +27,7 @@ class Footer extends Component {
     if (isAuthorized) {
       navigation = (
         <ul>
-          <a href="/new_game" className="d-block">New game</a>
+          <a href="/game" className="d-block">New game</a>
           <a href="/leaderboards" className="d-block">Leaderboards</a>
           <a href="/logout" className="d-block" onClick={this.logoutUser}>Logout</a>
         </ul>
