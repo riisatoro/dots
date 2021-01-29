@@ -10,6 +10,8 @@ import NewGameForm from './NewGameForm';
 import isContrast from '../actions/findContrast';
 import connectSocket from '../socket/gameListSocket';
 
+import Game from './Game';
+
 import '../../public/css/default.css';
 
 class Settings extends Component {
@@ -18,7 +20,6 @@ class Settings extends Component {
     this.closeModal = this.closeModal.bind(this);
     this.onPlayerJoinGame = this.onPlayerJoinGame.bind(this);
     this.changePickedColor = this.changePickedColor.bind(this);
-    this.playerLeaveRoom = this.playerLeaveRoom.bind(this);
   }
 
   componentDidMount() {
@@ -72,7 +73,7 @@ class Settings extends Component {
 
   render() {
     const {
-      rooms, modal, playerColor, playerRooms, user,
+      rooms, modal, playerColor,
     } = this.props;
 
     const modalWindow = (
@@ -104,28 +105,10 @@ class Settings extends Component {
           <NewGameForm />
         </Container>
 
-        <Container className="mt-5">
-          <Row>
-            {
-            Object.keys(playerRooms).map((key) => (
-              <Col key={key.toString()} md={4} xs={12}>
-                <p>Players:</p>
-                {
-                  Object.keys(playerRooms[key].players).map((userId) => (
-                    <div style={{ backgroundColor: playerRooms[key].players[userId].color }} className="games-color-block mb-2" />
-                  ))
-                }
-                <Row>
-                  <Button variant="secondary" className="m-auto">Open</Button>
-                  <Button variant="danger" className="m-auto" id={key} onClick={this.playerLeaveRoom}>Leave room</Button>
-                </Row>
-              </Col>
-            ))
-          }
-          </Row>
+        <Container>
+          <Game />
         </Container>
 
-        <Container><hr /></Container>
         <Container>
           <h2>Join new room</h2>
           {rooms.length === 0 && <p>There is no free rooms. Try to create one!</p>}
@@ -185,7 +168,6 @@ Settings.propTypes = {
   onJoinGameRoom: PropTypes.func.isRequired,
   setModal: PropTypes.func.isRequired,
   updateGameRooms: PropTypes.func.isRequired,
-  playerLeaveRoom: PropTypes.func.isRequired,
 };
 
 Settings.defaultProps = {
@@ -206,24 +188,6 @@ const mapStateToProps = (state) => ({
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    playerLeaveRoom: (token, room) => {
-      const playerLeave = () => {
-        axios({
-          method: 'post',
-          headers: { Authorization: `Token ${token}` },
-          data: {
-            "room": room
-          },
-          url: '/api/v2/leave/',
-        }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: response.data });
-        }).catch((error) => {
-          console.log(error);
-          // dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS_ERROR, payload: null });
-        });
-      };
-      playerLeave();
-    },
 
     setPlayerColor: (color) => {
       dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });

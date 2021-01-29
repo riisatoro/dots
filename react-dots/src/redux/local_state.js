@@ -24,11 +24,12 @@ const setInitial = () => (
     },
 
     appData: {
-      roomLimit: 3,
+      roomLimit: 6,
     },
 
     uiData: {
       matchPagination: 0,
+      activeGameTab: 0,
     },
 
     turn: 0,

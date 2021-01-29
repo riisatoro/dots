@@ -51,7 +51,7 @@ def group_player_rooms(user):
     for room in player_rooms:
         key = room.get('game_room').get('id')
         room_data[key] = {
-            "size": 0,
+            "size": room.get('game_room').get('size'),
             "players": {},
         }
 
