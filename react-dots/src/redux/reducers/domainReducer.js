@@ -17,6 +17,13 @@ export default function domainReducer(state, action) {
       };
     }
 
+    case TYPES.UPDATE_FREE_ROOMS: {
+      return {
+        ...state,
+        freeRooms: data.data,
+      };
+    }
+
     default: return { ...state };
   }
 }

@@ -24,12 +24,8 @@ class GameContainer extends Component {
   }
 
   componentDidMount() {
-    const { getGameRooms, token, updateGameRooms } = this.props;
-    getGameRooms(token);
-    this.socket = connectSocket();
-    this.socket.onmessage = (msg) => { updateGameRooms(JSON.parse(msg.data)); };
-    this.socket.onerror = () => { };
-    this.socket.onclose = () => { };
+    const { getPlayerGameRooms, token } = this.props;
+    getPlayerGameRooms(token);
   }
 
   componentWillUnmount() {
@@ -124,7 +120,7 @@ GameContainer.propTypes = {
   playerRooms: PropTypes.objectOf(PropTypes.object),
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
-  getGameRooms: PropTypes.func.isRequired,
+  getPlayerGameRooms: PropTypes.func.isRequired,
   onJoinGameRoom: PropTypes.func.isRequired,
   setModal: PropTypes.func.isRequired,
   updateGameRooms: PropTypes.func.isRequired,
@@ -157,14 +153,15 @@ export default connect(
       dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
     },
 
-    getGameRooms: (token) => {
+    getPlayerGameRooms: (token) => {
       const gameRoomRequest = () => {
         axios({
           method: 'get',
           headers: { Authorization: `Token ${token}` },
           url: '/api/v2/rooms/',
         }).then((response) => {
-          // dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: response.data.free_room } });
+          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: { data: response.data.user_rooms } });
+          dispatch({ type: TYPES.UPDATE_FREE_ROOMS, payload: { data: response.data.free_rooms } })
         });
       };
       gameRoomRequest();

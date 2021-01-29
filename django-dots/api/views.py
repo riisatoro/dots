@@ -160,9 +160,13 @@ class GameRoomView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        free_rooms = models.UserGame.objects.filter(game_room__is_started=False)
+        free_rooms = models.UserGame.objects.filter(game_room__is_started=False).exclude(user=request.user)
+        rooms = group_player_rooms(request.user)
         return Response(
-            {"free_room": serializers.UserGameSerializer(free_rooms, many=True).data}
+            {
+                "free_rooms": serializers.UserGameSerializer(free_rooms, many=True).data,
+                "user_rooms": rooms
+            }
         )
 
     def post(self, request):
