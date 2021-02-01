@@ -22,6 +22,22 @@ export default function gameReducer(state, action) {
       };
     }
 
+    case TYPES.UPDATE_AVAILABLE_ROOMS: {
+      const { user } = action.payload;
+      const { available } = data.data;
+      const filtered = {};
+
+      Object.keys(available).forEach((key) => {
+        if (!Object.keys(available[key].players).includes(user.toString())) {
+          filtered[parseInt(key, 10)] = available[key];
+        }
+      });
+      return {
+        ...state,
+        availableGames: filtered,
+      };
+    }
+
     default: return { ...state };
   }
 }

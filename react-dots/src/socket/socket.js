@@ -1,6 +1,6 @@
 import TYPES from '../redux/types';
 
-function connectSocket(dispatch) {
+function connectSocket(dispatch, user) {
   const socket = new WebSocket('ws://127.0.0.1:8000/ws/global/');
   socket.onopen = (msg) => {
     dispatch({ type: TYPES.SOCKET_OPEN, payload: msg });
@@ -8,7 +8,8 @@ function connectSocket(dispatch) {
 
   socket.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
-    dispatch({ type: data.type, payload: data.data });
+    console.log('socket', data);
+    dispatch({ type: data.type, payload: { data: data.data, user } });
   };
 
   socket.onerror = (msg) => {

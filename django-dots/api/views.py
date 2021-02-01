@@ -50,7 +50,7 @@ def group_player_rooms(player_rooms):
         field = GameFieldSerializer().to_client(
             GameFieldSerializer().from_database(field, size, size)
         )
-        key = room.get('game_room').get('id')
+        key = str(room.get('game_room').get('id'))
         room_data[key] = {
             "size": size,
             "players": {},
@@ -59,8 +59,8 @@ def group_player_rooms(player_rooms):
         }
 
     for room in player_rooms:
-        key = room.get('game_room').get('id')
-        player = room.get('user').get('id')
+        key = str(room.get('game_room').get('id'))
+        player = str(room.get('user').get('id'))
         room_data[key]["players"][player] = {
             "username": room.get('user').get('username'),
             "color": room.get('color'),
@@ -198,13 +198,7 @@ class GameRoomView(APIView):
                 {"error": True, "message": "Server error. Try later"},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-
-        send_updated_rooms(
-            serializers.UserGameSerializer(
-                models.UserGame.objects.filter(game_room__is_started=False),
-                many=True
-            ).data
-        )
+        send_updated_rooms(get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)
@@ -260,12 +254,7 @@ class GameRoomJoin(APIView):
             }
             score[player.user.id] = 0
 
-        send_updated_rooms(
-            serializers.UserGameSerializer(
-                models.UserGame.objects.filter(game_room__is_started=False),
-                many=True
-            ).data
-        )
+        send_updated_rooms(get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)
@@ -282,12 +271,7 @@ class GameRoomLeave(APIView):
         else:
             models.UserGame.objects.filter(game_room=room, user=request.user).delete()
 
-        send_updated_rooms(
-            serializers.UserGameSerializer(
-                models.UserGame.objects.filter(game_room__is_started=False),
-                many=True
-            ).data
-        )
+        send_updated_rooms(get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)

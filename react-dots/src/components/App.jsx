@@ -16,8 +16,8 @@ import Footer from './Footer';
 import connectSocket from '../socket/socket';
 
 function App(props) {
-  const { authorized, dispatch } = props;
-  const socket = connectSocket(dispatch);
+  const { authorized, dispatch, user } = props;
+  connectSocket(dispatch, user);
 
   return (
     <>
@@ -66,10 +66,12 @@ function App(props) {
 App.propTypes = {
   authorized: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  user: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   authorized: state.auth.isAuthorized,
+  user: state.auth.id,
 });
 
 export default hot(

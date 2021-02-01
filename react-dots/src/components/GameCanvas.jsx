@@ -31,7 +31,6 @@ class GameCanvas extends Component {
     let emptyCircle = [];
     let loop = [];
 
-    console.log(game.field);
     if (game !== undefined) {
       field = game.field.field;
       fieldSize = game.size;
