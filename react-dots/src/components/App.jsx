@@ -8,8 +8,7 @@ import PropTypes from 'prop-types';
 
 import Header from './Header';
 import Leaderboard from './Leaderboard';
-import GameContainer from './GameContainer';
-import GameField from './GameField';
+import Game from './Game';
 import MainPage from './MainPage';
 import Login from './Login';
 import Register from './Register';
@@ -43,7 +42,7 @@ function App(props) {
             </Route>
 
             <Route path="/game">
-              { authorized ? <GameContainer /> : <Redirect to="/login" /> }
+              { authorized ? <Game /> : <Redirect to="/login" /> }
             </Route>
 
             <Route path="/leaderboards">

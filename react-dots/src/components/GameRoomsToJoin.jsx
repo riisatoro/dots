@@ -4,11 +4,9 @@ import {
   Form, Button, Container, Row, Modal, Col,
 } from 'react-bootstrap';
 
-import Game from './Game';
-
 import '../../public/css/default.css';
 
-function RoomsToJoin(props) {
+function GameRoomsToJoin(props) {
   return (
     <>
 
@@ -16,11 +14,11 @@ function RoomsToJoin(props) {
   );
 }
 
-RoomsToJoin.propTypes = {
+GameRoomsToJoin.propTypes = {
 
 };
 
-RoomsToJoin.defaultProps = {
+GameRoomsToJoin.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
@@ -32,7 +30,7 @@ export default connect(
   (dispatch) => ({
 
   }),
-)(RoomsToJoin);
+)(GameRoomsToJoin);
 
 /*
  <h2>Join new room</h2>

@@ -13,7 +13,7 @@ import {
 
 import '../../public/css/default.css';
 
-class GameField extends Component {
+class GameCanvas extends Component {
   render() {
     const {
       games,
@@ -83,13 +83,13 @@ class GameField extends Component {
   }
 }
 
-GameField.propTypes = {
+GameCanvas.propTypes = {
   games: PropTypes.objectOf(PropTypes.object),
   cellSize: PropTypes.number.isRequired,
   activeGameId: PropTypes.number.isRequired,
 };
 
-GameField.defaultProps = {
+GameCanvas.defaultProps = {
   games: {},
 };
 
@@ -106,7 +106,7 @@ export default connect(
 
     }
   ),
-)(GameField);
+)(GameCanvas);
 
 /*
 <Stage

@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import isContrast from '../actions/findContrast';
 import TYPES from '../redux/types';
 
-function NewGameForm(props) {
+function GameCreateForm(props) {
   const { playerColor, playerRooms, roomLimit, user } = props;
   const {
     register, errors, handleSubmit,
@@ -80,7 +80,7 @@ function NewGameForm(props) {
   );
 }
 
-NewGameForm.propTypes = {
+GameCreateForm.propTypes = {
   user: PropTypes.number.isRequired,
   roomLimit: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
@@ -93,7 +93,7 @@ NewGameForm.propTypes = {
   setPlayerColor: PropTypes.func.isRequired,
 };
 
-NewGameForm.defaultProps = {
+GameCreateForm.defaultProps = {
   playerRooms: {},
 };
 
@@ -137,4 +137,4 @@ export default connect(
       newRoomRequest();
     },
   }),
-)(NewGameForm);
+)(GameCreateForm);

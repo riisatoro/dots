@@ -27,7 +27,7 @@ class Header extends Component {
     const { isAuth } = this.props;
     const path = window.location.pathname;
     const homeClass = path === '/main' ? 'active' : '';
-    const newGameClass = path === '/new_game' ? 'active' : '';
+    const newGameClass = path === '/game' ? 'active' : '';
     const leaderboardsClass = path === '/leaderboards' ? 'active' : '';
 
     let navigation = [];
@@ -36,7 +36,7 @@ class Header extends Component {
         <>
           <Nav className="ml-auto">
             <Nav.Link href="/main" to="/main" className={homeClass}>Home</Nav.Link>
-            <Nav.Link href="/new_game" className={newGameClass}>New game</Nav.Link>
+            <Nav.Link href="/game" className={newGameClass}>New game</Nav.Link>
             <Nav.Link href="/leaderboards" className={leaderboardsClass}>Leaderboards</Nav.Link>
             <Button variant="outline-info" onClick={this.logoutUser}>Logout</Button>
           </Nav>

@@ -1,94 +1,195 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Nav, Button, Spinner,
+  Form, Button, Container, Row, Modal, Col,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
+import isContrast from '../actions/findContrast';
+import connectSocket from '../socket/gameListSocket';
+
+import GameCreateForm from './GameCreateForm';
+import GameCanvas from './GameCanvas';
+import GameRoomsToJoin from './GameRoomsToJoin';
+import GameTabs from './GameTabs';
 
 import '../../public/css/default.css';
-import GameField from './GameField';
 
-function Game(props) {
-  const {
-    activeGameTab,
-    gameRooms,
-    token,
+class Game extends Component {
+  constructor(props) {
+    super(props);
+    this.closeModal = this.closeModal.bind(this);
+    this.onPlayerJoinGame = this.onPlayerJoinGame.bind(this);
+    this.changePickedColor = this.changePickedColor.bind(this);
+  }
 
-    playerLeave,
-    setActiveTab,
-  } = props;
+  componentDidMount() {
+    const { getPlayerGameRooms, token } = this.props;
+    getPlayerGameRooms(token);
+  }
 
-  const playerLeaveRoom = (e) => {
-    playerLeave(token, e.target.id);
-  };
+  componentWillUnmount() {
+    this.socket.close();
+  }
 
-  const setActive = (e) => {
-    setActiveTab(parseInt(e.target.id, 10));
-  };
+  onPlayerJoinGame(e) {
+    const {
+      onJoinGameRoom, token, playerColor, rooms, setModal,
+    } = this.props;
+    const index = e.target.id;
+    const contrast = (
+      isContrast(playerColor, rooms[index].color, 1.8));
+    setModal(contrast);
+    if (contrast) {
+      onJoinGameRoom(token, rooms[index].game_room.id, playerColor);
+    }
+  }
 
-  return (
-    <Container>
-      <Nav variant="tabs">
-        { Object.keys(gameRooms).map((key) => (
-          <Nav.Item onClick={setActive} key={key.toString()}>
-            <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-              <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger"/>
-              Game&nbsp;
-              {`${gameRooms[key].size} x ${gameRooms[key].size}`}
-              <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
-            </Nav.Link>
-          </Nav.Item>
-        ))}
-      </Nav>
-      <GameField />
-    </Container>
-  );
+  newFieldSize(e) {
+    const { changeFieldSize } = this.props;
+    const size = e.target.value;
+    if (size > 5 && size < 15) {
+      changeFieldSize(size);
+    }
+  }
+
+  changePickedColor(e) {
+    const { setPlayerColor } = this.props;
+    setPlayerColor(e.target.value);
+  }
+
+  closeModal() {
+    const { setModal } = this.props;
+    setModal(true);
+  }
+
+  render() {
+    const {
+      modal,
+    } = this.props;
+
+    const modalWindow = (
+      <>
+        <Modal show={modal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Colors are too common!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            This color is too simmilar to the choosen one, or to blar or white colors!
+            Please, choose another, more contrast color.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.closeModal}>
+              OK
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+
+    return (
+      <section className="field">
+
+        {modalWindow}
+
+        <Container className="mb-5">
+          <h2 className="text-center">Create new game room</h2>
+          <GameCreateForm />
+        </Container>
+
+        <Container>
+          <GameTabs />
+          <GameCanvas />
+        </Container>
+
+        <Container>
+          <GameRoomsToJoin />
+        </Container>
+
+      </section>
+    );
+  }
 }
 
 Game.propTypes = {
-  activeGameTab: PropTypes.number,
+  user: PropTypes.number.isRequired,
+  modal: PropTypes.bool,
   token: PropTypes.string.isRequired,
-  gameRooms: PropTypes.objectOf(PropTypes.object),
-  playerLeave: PropTypes.func.isRequired,
-  setActiveTab: PropTypes.func.isRequired,
+  playerColor: PropTypes.string.isRequired,
+  rooms: PropTypes.arrayOf(PropTypes.object),
+  roomLimit: PropTypes.number.isRequired,
+  playerRooms: PropTypes.objectOf(PropTypes.object),
+  setPlayerColor: PropTypes.func.isRequired,
+  changeFieldSize: PropTypes.func.isRequired,
+  getPlayerGameRooms: PropTypes.func.isRequired,
+  onJoinGameRoom: PropTypes.func.isRequired,
+  setModal: PropTypes.func.isRequired,
+  updateGameRooms: PropTypes.func.isRequired,
 };
 
 Game.defaultProps = {
-  gameRooms: {},
-  activeGameTab: 0,
+  rooms: [],
+  modal: false,
 };
 
 const mapStateToProps = (state) => ({
-  activeGameTab: state.uiData.activeGameTab,
-  gameRooms: state.gameData.userGames,
+  user: state.auth.id,
+  modal: false,
   token: state.auth.token,
+  playerColor: state.gameData.temporary.playerColor,
+  rooms: state.domainData.availableGames,
+  roomLimit: state.appData.roomLimit,
+  playerRooms: state.gameData.userGames,
 });
 
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-    playerLeave: (token, room) => {
-      const request = () => {
+
+    setPlayerColor: (color) => {
+      dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
+    },
+
+    changeFieldSize: (size) => {
+      dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
+    },
+
+    getPlayerGameRooms: (token) => {
+      const gameRoomRequest = () => {
+        axios({
+          method: 'get',
+          headers: { Authorization: `Token ${token}` },
+          url: '/api/v2/rooms/',
+        }).then((response) => {
+          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: { data: response.data.user_rooms } });
+          dispatch({ type: TYPES.UPDATE_FREE_ROOMS, payload: { data: response.data.free_rooms } })
+        });
+      };
+      gameRoomRequest();
+    },
+
+    updateGameRooms: (data) => {
+      // dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: data.message } });
+    },
+
+    onJoinGameRoom: (token, roomId, playerColor) => {
+      const joinGameRoom = () => {
+        const data = { room_id: roomId, color: playerColor };
         axios({
           method: 'post',
           headers: { Authorization: `Token ${token}` },
-          data: {
-            room,
-          },
-          url: '/api/v2/leave/',
+          url: '/api/v2/join/',
+          data,
         }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: response.data });
-        }).catch(() => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS_ERROR, payload: null });
+          dispatch({ type: TYPES.PLAYER_JOIN_ROOM, payload: response });
         });
       };
-      request();
+      joinGameRoom();
     },
 
-    setActiveTab: (tab) => {
-      dispatch({ type: TYPES.SET_ACTIVE_GAME_TAB, payload: tab });
+    setModal: (value) => {
+      // dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }),
 )(Game);

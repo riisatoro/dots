@@ -28,7 +28,7 @@ function MainPage() {
 
       <p className="p-20" />
       <div className="text-center">
-        <Button variant="success" className="w-50 mb-5" href="/new_game">Lets play a game</Button>
+        <Button variant="success" className="w-50 mb-5" href="/game">Lets play a game</Button>
       </div>
     </Container>
   );
