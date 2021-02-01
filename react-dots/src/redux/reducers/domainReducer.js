@@ -17,13 +17,6 @@ export default function domainReducer(state, action) {
       };
     }
 
-    case TYPES.UPDATE_PLAYER_ROOMS: {
-      return {
-        ...state,
-        userGames: data.data,
-      };
-    }
-
     case TYPES.UPDATE_AVAILABLE_ROOMS: {
       if (data.data === undefined) {
         return {

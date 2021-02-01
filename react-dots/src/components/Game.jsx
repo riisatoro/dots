@@ -118,9 +118,7 @@ Game.propTypes = {
   setPlayerColor: PropTypes.func.isRequired,
   changeFieldSize: PropTypes.func.isRequired,
   getPlayerGameRooms: PropTypes.func.isRequired,
-  onJoinGameRoom: PropTypes.func.isRequired,
   setModal: PropTypes.func.isRequired,
-  updateGameRooms: PropTypes.func.isRequired,
 };
 
 Game.defaultProps = {
@@ -158,35 +156,12 @@ export default connect(
           url: '/api/v2/rooms/',
         }).then((response) => {
           dispatch({
-            type: TYPES.UPDATE_PLAYER_ROOMS,
-            payload: { data: response.data.user_rooms }
-          });
-          dispatch({
-            type: TYPES.UPDATE_AVAILABLE_ROOMS,
-            payload: { data: response.data.free_rooms }
+            type: TYPES.UPDATE_ROOMS,
+            payload: { data: response.data },
           });
         });
       };
       gameRoomRequest();
-    },
-
-    updateGameRooms: (data) => {
-      // dispatch({ type: TYPES.UPDATE_GAME_ROOMS, payload: { rooms: data.message } });
-    },
-
-    onJoinGameRoom: (token, roomId, playerColor) => {
-      const joinGameRoom = () => {
-        const data = { room_id: roomId, color: playerColor };
-        axios({
-          method: 'post',
-          headers: { Authorization: `Token ${token}` },
-          url: '/api/v2/join/',
-          data,
-        }).then((response) => {
-          dispatch({ type: TYPES.PLAYER_JOIN_ROOM, payload: response });
-        });
-      };
-      joinGameRoom();
     },
 
     setModal: (value) => {

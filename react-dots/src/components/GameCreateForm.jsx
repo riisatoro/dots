@@ -129,9 +129,7 @@ export default connect(
           url: '/api/v2/rooms/',
           data,
         }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: response.data });
-        }).catch(() => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS_ERROR, payload: null });
+          dispatch({ type: TYPES.UPDATE_ROOMS, payload: response.data });
         });
       };
       newRoomRequest();

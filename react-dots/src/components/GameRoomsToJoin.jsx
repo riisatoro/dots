@@ -3,17 +3,21 @@ import { connect } from 'react-redux';
 import {
   Form, Button, Container, Row, Modal, Col,
 } from 'react-bootstrap';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
 import '../../public/css/default.css';
 
 function GameRoomsToJoin(props) {
-  const { availableGames, playerColor, setPlayerColor } = props;
-  console.log(availableGames);
+  const { availableGames, playerColor, token, onJoinGameRoom } = props;
   const cards = [];
 
   const changePickedColor = (e) => {
     props.setPlayerColor(e.target.value);
+  };
+
+  const joinGame = (e) => {
+    onJoinGameRoom(token, e.target.id, playerColor);
   };
 
   Object.keys(availableGames).forEach((key) => {
@@ -41,7 +45,7 @@ function GameRoomsToJoin(props) {
                 />
               </div>
             </Row>
-            <Button>Join</Button>
+            <Button onClick={joinGame} id={availableGames[key].game_room.id}>Join</Button>
           </div>
         </div>
 
@@ -61,9 +65,13 @@ function GameRoomsToJoin(props) {
 }
 
 GameRoomsToJoin.propTypes = {
-  availableGames: PropTypes.arrayOf(PropTypes.object),
+  token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
+
+  availableGames: PropTypes.arrayOf(PropTypes.object),
+
   setPlayerColor: PropTypes.func.isRequired,
+  onJoinGameRoom: PropTypes.func.isRequired,
 };
 
 GameRoomsToJoin.defaultProps = {
@@ -73,6 +81,7 @@ GameRoomsToJoin.defaultProps = {
 const mapStateToProps = (state) => ({
   availableGames: state.domainData.availableGames,
   playerColor: state.gameData.temporary.playerColor,
+  token: state.auth.token,
 });
 
 export default connect(
@@ -81,5 +90,21 @@ export default connect(
     setPlayerColor: (color) => {
       dispatch({ type: TYPES.UPDATE_TMP_COLOR, payload: { color } });
     },
+
+    onJoinGameRoom: (token, roomId, playerColor) => {
+      const joinGameRoom = () => {
+        const data = { room_id: roomId, color: playerColor };
+        axios({
+          method: 'post',
+          headers: { Authorization: `Token ${token}` },
+          url: '/api/v2/join/',
+          data,
+        }).then((response) => {
+          dispatch({ type: TYPES.UPDATE_ROOMS, payload: response });
+        });
+      };
+      joinGameRoom();
+    },
+
   }),
 )(GameRoomsToJoin);

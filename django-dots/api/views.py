@@ -28,6 +28,7 @@ def create_new_room(user, size, color):
         )
         user_game.save()
 
+
 def group_player_score(games):
     all_games_id = {x.game_room for x in games}
     result = [
@@ -40,14 +41,9 @@ def group_player_score(games):
     ]
     return result
 
-def group_player_rooms(user):
-    room_data = {}
-    player_rooms = models.UserGame.objects.filter(
-        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True),
-        game_room__is_started=False
-    )
-    player_rooms = serializers.UserGameSerializer(player_rooms, many=True).data
 
+def group_player_rooms(player_rooms):
+    room_data = {}
     for room in player_rooms:
         field = room.get('game_room').get('field')
         size = room.get('game_room').get('size')
@@ -58,7 +54,8 @@ def group_player_rooms(user):
         room_data[key] = {
             "size": size,
             "players": {},
-            "field": field
+            "field": field,
+            "turn": room.get('turn')
         }
 
     for room in player_rooms:
@@ -69,6 +66,29 @@ def group_player_rooms(user):
             "color": room.get('color'),
         }
     return room_data
+
+
+def get_games_data(user):
+    # Own rooms started
+    current = models.UserGame.objects.filter(
+        game_room__is_started=True,
+        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
+    ).all()
+
+    # Own room waiting
+    waiting = models.UserGame.objects.filter(
+        game_room__is_started=False,
+        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
+    ).all()
+    
+    # Available rooms
+    available = models.UserGame.objects.filter(game_room__is_started=False).exclude(user=user)
+
+    return {
+        "waiting": group_player_rooms(serializers.UserGameSerializer(waiting, many=True).data),
+        "current": group_player_rooms(serializers.UserGameSerializer(current, many=True).data),
+        "available": group_player_rooms(serializers.UserGameSerializer(available, many=True).data),
+    }
 
 
 class Register(APIView):
@@ -158,15 +178,9 @@ class GameRoomView(APIView):
     """Get free rooms or create a new one"""
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        free_rooms = models.UserGame.objects.filter(game_room__is_started=False).exclude(user=request.user)
-        rooms = group_player_rooms(request.user)
-        return Response(
-            {
-                "free_rooms": serializers.UserGameSerializer(free_rooms, many=True).data,
-                "user_rooms": rooms
-            }
-        )
+    def get(self, request):        
+        data = get_games_data(request.user)
+        return Response(data)
 
     def post(self, request):
         color = request.data["color"]
@@ -192,14 +206,8 @@ class GameRoomView(APIView):
             ).data
         )
 
-        player_rooms = group_player_rooms(request.user)
-        return Response(
-            {
-                "error": False,
-                "message": "Room was created!",
-                "data": player_rooms,
-            }
-        )
+        data = get_games_data(request.user)
+        return Response(data)
 
 
 class GameRoomJoin(APIView):
@@ -259,17 +267,8 @@ class GameRoomJoin(APIView):
             ).data
         )
 
-        return Response(
-            {
-                "error": False,
-                "field": room.field,
-                "field_size": room.size,
-                "room_id": room_id,
-                "turn": data[0].user.id,
-                "players": players,
-                "score": score,
-            }
-        )
+        data = get_games_data(request.user)
+        return Response(data)
 
 
 class GameRoomLeave(APIView):
@@ -290,10 +289,5 @@ class GameRoomLeave(APIView):
             ).data
         )
 
-        return Response(
-            {
-                "error": False,
-                "message": "Room was created!",
-                "data": group_player_rooms(request.user),
-            }
-        )
+        data = get_games_data(request.user)
+        return Response(data)

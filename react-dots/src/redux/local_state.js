@@ -12,7 +12,6 @@ const setInitial = () => (
     },
 
     domainData: {
-      availableGames: [],
       leaderboards: [],
     },
 
@@ -20,7 +19,9 @@ const setInitial = () => (
       temporary: {
         playerColor: '#AAAAAA',
       },
-      userGames: {},
+      waitingGames: {},
+      currentGames: {},
+      awailableGames: {},
     },
 
     appData: {

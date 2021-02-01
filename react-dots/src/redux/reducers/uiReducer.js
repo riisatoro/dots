@@ -10,7 +10,7 @@ export default function uiReducer(state, action) {
       };
     }
 
-    case TYPES.UPDATE_PLAYER_ROOMS: {
+    case TYPES.UPDATE_ROOMS: {
       const gameId = [];
       Object.keys(data.data).forEach((x) => {
         gameId.push(parseInt(x, 10));

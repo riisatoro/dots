@@ -13,15 +13,14 @@ export default function gameReducer(state, action) {
       };
     }
 
-    case TYPES.UPDATE_PLAYER_ROOMS: {
+    case TYPES.UPDATE_ROOMS: {
+      console.log(data);
       return {
         ...state,
-        userGames: data.data,
+        waitingGames: data.waiting,
+        currentGames: data.current,
+        availableGames: data.available,
       };
-    }
-
-    case TYPES.UPDATE_PLAYER_ROOMS_ERROR: {
-      return { ...state };
     }
 
     default: return { ...state };
