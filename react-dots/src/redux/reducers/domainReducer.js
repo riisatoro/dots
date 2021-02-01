@@ -17,10 +17,17 @@ export default function domainReducer(state, action) {
       };
     }
 
-    case TYPES.UPDATE_FREE_ROOMS: {
+    case TYPES.UPDATE_PLAYER_ROOMS: {
       return {
         ...state,
-        freeRooms: data.data,
+        userGames: data.data,
+      };
+    }
+
+    case TYPES.UPDATE_AVAILABLE_ROOMS: {
+      return {
+        ...state,
+        availableGames: data.data,
       };
     }
 

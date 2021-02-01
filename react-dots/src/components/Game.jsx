@@ -157,8 +157,14 @@ export default connect(
           headers: { Authorization: `Token ${token}` },
           url: '/api/v2/rooms/',
         }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_PLAYER_ROOMS, payload: { data: response.data.user_rooms } });
-          dispatch({ type: TYPES.UPDATE_FREE_ROOMS, payload: { data: response.data.free_rooms } })
+          dispatch({
+            type: TYPES.UPDATE_PLAYER_ROOMS,
+            payload: { data: response.data.user_rooms }
+          });
+          dispatch({
+            type: TYPES.UPDATE_AVAILABLE_ROOMS,
+            payload: { data: response.data.free_rooms }
+          });
         });
       };
       gameRoomRequest();
