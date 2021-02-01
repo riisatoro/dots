@@ -19,7 +19,7 @@ function getCanvasGrid(amount, size) {
   return grid;
 }
 
-function getCircleCoords(field, size, playerColors) {
+function getCircleCoords(field, size, colors) {
   const circle = [];
   for (let i = 1; i < field.length - 1; i += 1) {
     for (let j = 1; j < field[0].length - 1; j += 1) {
@@ -38,7 +38,7 @@ function getCircleCoords(field, size, playerColors) {
             y: 0,
           }}
           fillRadialGradientEndRadius={5}
-          fillRadialGradientColorStops={[0, 'white', 1, playerColors[field[i][j].owner]]}
+          fillRadialGradientColorStops={[0, 'white', 1, colors[field[i][j].owner].color]}
         />);
       }
     }
@@ -88,7 +88,7 @@ function createEmptyCircle(field, cellSize) {
         circle.push(<Circle
           x={(j - 1) * cellSize}
           y={(i - 1) * cellSize}
-          radius={4}
+          radius={5}
           strokeWidth={0.5}
           stroke="gray"
           fill="white"

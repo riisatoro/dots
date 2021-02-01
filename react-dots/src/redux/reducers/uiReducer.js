@@ -12,7 +12,10 @@ export default function uiReducer(state, action) {
 
     case TYPES.UPDATE_ROOMS: {
       const gameId = [];
-      Object.keys(data.data).forEach((x) => {
+      Object.keys(data.current).forEach((x) => {
+        gameId.push(parseInt(x, 10));
+      });
+      Object.keys(data.waiting).forEach((x) => {
         gameId.push(parseInt(x, 10));
       });
       return {

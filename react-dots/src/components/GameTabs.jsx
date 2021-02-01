@@ -12,12 +12,15 @@ import '../../public/css/default.css';
 function GameTabs(props) {
   const {
     activeGameTab,
-    gameRooms,
+    waitingGames,
+    currentGames,
     token,
 
     playerLeave,
     setActiveTab,
   } = props;
+
+  const games = { ...waitingGames, ...currentGames };
 
   const playerLeaveRoom = (e) => {
     playerLeave(token, e.target.id);
@@ -30,12 +33,12 @@ function GameTabs(props) {
   return (
     <Container>
       <Nav variant="tabs">
-        { Object.keys(gameRooms).map((key) => (
+        { Object.keys(games).map((key) => (
           <Nav.Item onClick={setActive} key={key.toString()}>
             <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-              <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger"/>
+              <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
               Game&nbsp;
-              {`${gameRooms[key].size} x ${gameRooms[key].size}`}
+              {`${games[key].size} x ${games[key].size}`}
               <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
             </Nav.Link>
           </Nav.Item>
@@ -48,19 +51,23 @@ function GameTabs(props) {
 GameTabs.propTypes = {
   activeGameTab: PropTypes.number,
   token: PropTypes.string.isRequired,
-  gameRooms: PropTypes.objectOf(PropTypes.object),
   playerLeave: PropTypes.func.isRequired,
   setActiveTab: PropTypes.func.isRequired,
+
+  waitingGames: PropTypes.objectOf(PropTypes.object),
+  currentGames: PropTypes.objectOf(PropTypes.object),
 };
 
 GameTabs.defaultProps = {
-  gameRooms: {},
+  waitingGames: {},
+  currentGames: {},
   activeGameTab: 0,
 };
 
 const mapStateToProps = (state) => ({
   activeGameTab: state.uiData.activeGameTab,
-  gameRooms: state.gameData.userGames,
+  waitingGames: state.gameData.waitingGames,
+  currentGames: state.gameData.currentGames,
   token: state.auth.token,
 });
 

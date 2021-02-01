@@ -19,39 +19,11 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
-    this.onPlayerJoinGame = this.onPlayerJoinGame.bind(this);
-    this.changePickedColor = this.changePickedColor.bind(this);
   }
 
   componentDidMount() {
     const { getPlayerGameRooms, token } = this.props;
     getPlayerGameRooms(token);
-  }
-
-  onPlayerJoinGame(e) {
-    const {
-      onJoinGameRoom, token, playerColor, rooms, setModal,
-    } = this.props;
-    const index = e.target.id;
-    const contrast = (
-      isContrast(playerColor, rooms[index].color, 1.8));
-    setModal(contrast);
-    if (contrast) {
-      onJoinGameRoom(token, rooms[index].game_room.id, playerColor);
-    }
-  }
-
-  newFieldSize(e) {
-    const { changeFieldSize } = this.props;
-    const size = e.target.value;
-    if (size > 5 && size < 15) {
-      changeFieldSize(size);
-    }
-  }
-
-  changePickedColor(e) {
-    const { setPlayerColor } = this.props;
-    setPlayerColor(e.target.value);
   }
 
   closeModal() {
@@ -108,46 +80,25 @@ class Game extends Component {
 }
 
 Game.propTypes = {
-  user: PropTypes.number.isRequired,
   modal: PropTypes.bool,
   token: PropTypes.string.isRequired,
-  playerColor: PropTypes.string.isRequired,
-  rooms: PropTypes.arrayOf(PropTypes.object),
-  roomLimit: PropTypes.number.isRequired,
-  playerRooms: PropTypes.objectOf(PropTypes.object),
-  setPlayerColor: PropTypes.func.isRequired,
-  changeFieldSize: PropTypes.func.isRequired,
-  getPlayerGameRooms: PropTypes.func.isRequired,
+
   setModal: PropTypes.func.isRequired,
+  getPlayerGameRooms: PropTypes.func.isRequired,
 };
 
 Game.defaultProps = {
-  rooms: [],
   modal: false,
 };
 
 const mapStateToProps = (state) => ({
-  user: state.auth.id,
   modal: false,
   token: state.auth.token,
-  playerColor: state.gameData.temporary.playerColor,
-  rooms: state.domainData.availableGames,
-  roomLimit: state.appData.roomLimit,
-  playerRooms: state.gameData.userGames,
 });
 
 export default connect(
   mapStateToProps,
   (dispatch) => ({
-
-    setPlayerColor: (color) => {
-      dispatch({ type: TYPES.COLOR_CHOOSED, payload: { color } });
-    },
-
-    changeFieldSize: (size) => {
-      dispatch({ type: TYPES.FIELD_SIZE_CHANGED, payload: { size } });
-    },
-
     getPlayerGameRooms: (token) => {
       const gameRoomRequest = () => {
         axios({
@@ -157,7 +108,7 @@ export default connect(
         }).then((response) => {
           dispatch({
             type: TYPES.UPDATE_ROOMS,
-            payload: { data: response.data },
+            payload: response.data,
           });
         });
       };
@@ -165,7 +116,7 @@ export default connect(
     },
 
     setModal: (value) => {
-      // dispatch({ type: TYPES.SET_MODAL, payload: value });
+      dispatch({ type: TYPES.SET_MODAL, payload: value });
     },
   }),
 )(Game);

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Form, Button, Container, Row, Modal, Col,
+  Form, Button, Row, Col,
 } from 'react-bootstrap';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -9,7 +9,9 @@ import TYPES from '../redux/types';
 import '../../public/css/default.css';
 
 function GameRoomsToJoin(props) {
-  const { availableGames, playerColor, token, onJoinGameRoom } = props;
+  const {
+    availableGames, playerColor, token, onJoinGameRoom,
+  } = props;
   const cards = [];
 
   const changePickedColor = (e) => {
@@ -24,16 +26,17 @@ function GameRoomsToJoin(props) {
     cards.push(
       <Col xs={12} md={6} lg={4} key={key.toString()}>
         <div className="card m-2 p-2">
-          <h5 className="card-title">
-            Player:&nbsp;
-            {availableGames[key].user.username}
-          </h5>
+          {
+            Object.keys(availableGames[key].players).map((player) => (
+              <h5 className="card-title" key={player.toString()}>
+                Player:&nbsp;
+                {availableGames[key].players[player].username}
+                <div className="games-color-block col-6" style={{ backgroundColor: availableGames[key].players[player].color }} />
+              </h5>
+            ))
+          }
 
           <div className="card-body">
-            <Row>
-              <p className="col-6">Color:</p>
-              <div className="games-color-block col-6" style={{ backgroundColor: availableGames[key].color }} />
-            </Row>
             <Row>
               <p className="card-text col-6">Change color:</p>
               <div className="col-6">
@@ -45,7 +48,7 @@ function GameRoomsToJoin(props) {
                 />
               </div>
             </Row>
-            <Button onClick={joinGame} id={availableGames[key].game_room.id}>Join</Button>
+            <Button onClick={joinGame} id={key}>Join</Button>
           </div>
         </div>
 
@@ -68,7 +71,7 @@ GameRoomsToJoin.propTypes = {
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
 
-  availableGames: PropTypes.arrayOf(PropTypes.object),
+  availableGames: PropTypes.objectOf(PropTypes.object),
 
   setPlayerColor: PropTypes.func.isRequired,
   onJoinGameRoom: PropTypes.func.isRequired,
@@ -79,9 +82,9 @@ GameRoomsToJoin.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  availableGames: state.domainData.availableGames,
-  playerColor: state.gameData.temporary.playerColor,
   token: state.auth.token,
+  availableGames: state.gameData.availableGames,
+  playerColor: state.gameData.temporary.playerColor,
 });
 
 export default connect(
@@ -100,11 +103,10 @@ export default connect(
           url: '/api/v2/join/',
           data,
         }).then((response) => {
-          dispatch({ type: TYPES.UPDATE_ROOMS, payload: response });
+          dispatch({ type: TYPES.UPDATE_ROOMS, payload: response.data });
         });
       };
       joinGameRoom();
     },
-
   }),
 )(GameRoomsToJoin);
