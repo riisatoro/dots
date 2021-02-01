@@ -73,9 +73,12 @@ WSGI_APPLICATION = 'dots.wsgi.application'
 
 ASGI_APPLICATION = "dots.routing.application"
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
-    }
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
 }
 
 # Database

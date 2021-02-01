@@ -13,9 +13,11 @@ import MainPage from './MainPage';
 import Login from './Login';
 import Register from './Register';
 import Footer from './Footer';
+import connectSocket from '../socket/socket';
 
 function App(props) {
-  const { authorized } = props;
+  const { authorized, dispatch } = props;
+  const socket = connectSocket(dispatch);
 
   return (
     <>
@@ -63,6 +65,7 @@ function App(props) {
 
 App.propTypes = {
   authorized: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({

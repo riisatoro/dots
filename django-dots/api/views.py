@@ -54,7 +54,6 @@ def group_player_rooms(user):
         field = GameFieldSerializer().to_client(
             GameFieldSerializer().from_database(field, size, size)
         )
-        print(field)
         key = room.get('game_room').get('id')
         room_data[key] = {
             "size": size,
@@ -283,6 +282,13 @@ class GameRoomLeave(APIView):
             models.GameRoom.objects.get(id=room).delete()
         else:
             models.UserGame.objects.filter(game_room=room, user=request.user).delete()
+
+        send_updated_rooms(
+            serializers.UserGameSerializer(
+                models.UserGame.objects.filter(game_room__is_started=False),
+                many=True
+            ).data
+        )
 
         return Response(
             {

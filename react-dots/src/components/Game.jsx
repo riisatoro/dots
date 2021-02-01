@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
 import isContrast from '../actions/findContrast';
-import connectSocket from '../socket/gameListSocket';
 
 import GameCreateForm from './GameCreateForm';
 import GameCanvas from './GameCanvas';
@@ -27,10 +26,6 @@ class Game extends Component {
   componentDidMount() {
     const { getPlayerGameRooms, token } = this.props;
     getPlayerGameRooms(token);
-  }
-
-  componentWillUnmount() {
-    this.socket.close();
   }
 
   onPlayerJoinGame(e) {
