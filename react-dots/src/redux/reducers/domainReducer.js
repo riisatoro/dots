@@ -25,6 +25,12 @@ export default function domainReducer(state, action) {
     }
 
     case TYPES.UPDATE_AVAILABLE_ROOMS: {
+      if (data.data === undefined) {
+        return {
+          ...state,
+          availableGames: data,
+        };
+      }
       return {
         ...state,
         availableGames: data.data,
