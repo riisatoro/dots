@@ -51,11 +51,15 @@ def group_player_rooms(player_rooms):
             GameFieldSerializer().from_database(field, size, size)
         )
         key = str(room.get('game_room').get('id'))
+        turn = 0
+        if room.get('turn'):
+            turn = room.get('user').get('id')
+
         room_data[key] = {
             "size": size,
             "players": {},
             "field": field,
-            "turn": room.get('turn')
+            "turn": turn,
         }
 
     for room in player_rooms:

@@ -56,7 +56,6 @@ class GameCanvas extends Component {
     let loop = [];
 
     if (game !== undefined) {
-      console.log(game);
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;

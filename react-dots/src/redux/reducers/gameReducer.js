@@ -14,7 +14,6 @@ export default function gameReducer(state, action) {
     }
 
     case TYPES.UPDATE_ROOMS: {
-      console.log(data.currentGames);
       return {
         ...state,
         waitingGames: data.waiting,

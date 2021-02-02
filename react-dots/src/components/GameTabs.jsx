@@ -31,14 +31,16 @@ function GameTabs(props) {
     setActiveTab(parseInt(e.target.id, 10));
   };
 
+  console.log(games);
+
   return (
     <Container>
       <Nav variant="tabs">
         { Object.keys(games).map((key) => (
           <Nav.Item onClick={setActive} key={key.toString()}>
             <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-              {games[key].field.turn === user && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
-              {Object.keys(games[key].field.players).length < 1 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+              {games[key].turn === user && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+              {Object.keys(games[key].field.players).length < 2 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
               Game&nbsp;
               {`${games[key].size} x ${games[key].size}`}
               <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
