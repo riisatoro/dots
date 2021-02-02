@@ -15,6 +15,7 @@ function GameTabs(props) {
     waitingGames,
     currentGames,
     token,
+    user,
 
     playerLeave,
     setActiveTab,
@@ -36,7 +37,8 @@ function GameTabs(props) {
         { Object.keys(games).map((key) => (
           <Nav.Item onClick={setActive} key={key.toString()}>
             <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-              <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
+              {games[key].field.turn === user && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+              {Object.keys(games[key].field.players).length < 1 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
               Game&nbsp;
               {`${games[key].size} x ${games[key].size}`}
               <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
@@ -49,6 +51,7 @@ function GameTabs(props) {
 }
 
 GameTabs.propTypes = {
+  user: PropTypes.number.isRequired,
   activeGameTab: PropTypes.number,
   token: PropTypes.string.isRequired,
   playerLeave: PropTypes.func.isRequired,
@@ -65,6 +68,7 @@ GameTabs.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
+  user: state.auth.id,
   activeGameTab: state.uiData.activeGameTab,
   waitingGames: state.gameData.waitingGames,
   currentGames: state.gameData.currentGames,
