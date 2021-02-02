@@ -56,13 +56,14 @@ class GameCanvas extends Component {
     let loop = [];
 
     if (game !== undefined) {
+      console.log(game);
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;
       canvasGrid = getCanvasGrid(fieldSize, cellSize);
       circle = getCircleCoords(field, cellSize, colors);
       emptyCircle = createEmptyCircle(field, cellSize);
-      loop = createLoopFigure(field, game.loops, cellSize, colors);
+      loop = createLoopFigure(field, game.field.loops, cellSize, colors);
     }
 
     return (

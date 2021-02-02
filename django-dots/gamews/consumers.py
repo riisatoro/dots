@@ -74,8 +74,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                         }
                     }
                 )
-
-        # await self.send(json.dumps(response))
+            else:
+                await self.send(json.dumps(response))
 
     async def global_update(self, event):
         message = event['message']

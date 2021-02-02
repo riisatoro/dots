@@ -47,7 +47,6 @@ export default function gameReducer(state, action) {
           players: updates.data.field.players,
           field: updates.data.field,
           turn: updates.data.field.turn,
-          loops: updates.data.field.loops,
         };
         return {
           ...state,
