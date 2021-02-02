@@ -38,6 +38,25 @@ export default function gameReducer(state, action) {
       };
     }
 
+    case TYPES.PLAYER_SET_DOT: {
+      const updates = JSON.parse(data.data);
+      if (Object.keys(state.currentGames).includes(updates.data.room.toString())) {
+        const updatedGames = { ...state.curretGames };
+        updatedGames[updates.data.room] = {
+          size: updates.data.field.field.length - 2,
+          players: updates.data.field.players,
+          field: updates.data.field,
+          turn: updates.data.field.turn,
+          loops: updates.data.field.loops,
+        };
+        return {
+          ...state,
+          currentGames: updatedGames,
+        };
+      }
+      return { ...state };
+    }
+
     default: return { ...state };
   }
 }

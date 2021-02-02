@@ -59,11 +59,10 @@ class GameCanvas extends Component {
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;
-
       canvasGrid = getCanvasGrid(fieldSize, cellSize);
       circle = getCircleCoords(field, cellSize, colors);
       emptyCircle = createEmptyCircle(field, cellSize);
-      loop = createLoopFigure(field, game.new_loops, cellSize, colors);
+      loop = createLoopFigure(field, game.loops, cellSize, colors);
     }
 
     return (

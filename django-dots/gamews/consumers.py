@@ -18,7 +18,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         user_group = str(self.scope["user"].id)
         if self.scope["user"].is_authenticated:
             await self.accept()
+            self.groups.append(user_group)
             await self.channel_layer.group_add('global', user_group)
+            await self.channel_layer.group_add(user_group, f'user_group_{user_group}')
         else:
             await self.close()
 
@@ -61,20 +63,18 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 field["turn"] = await self.get_who_has_turn(room)
                 response = {"type": types.PLAYER_SET_DOT, "data": { "room": room, "field":field }}
 
-                for group in field["players"]:
-                    self.send_channel_message(str(group), "hi")
-                    # await self.channel_layer.group_send(
-                    #     str(group),
-                    #     {
-                    #         "type": "websocket.send",
-                    #         "message" : {
-                    #             "type": types.PLAYER_SET_DOT,
-                    #             "data": json.dumps(response),
-                    #         }
-                    #     }
-                    # )
+                await self.channel_layer.group_send(
+                    "global",
+                    {
+                        "type": "global_update",
+                        "message" : {
+                            "type": types.PLAYER_SET_DOT,
+                            "data": json.dumps(response),
+                        }
+                    }
+                )
 
-        await self.send(json.dumps(response))
+        # await self.send(json.dumps(response))
 
     async def global_update(self, event):
         message = event['message']

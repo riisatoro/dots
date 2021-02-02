@@ -8,6 +8,7 @@ import appReducer from './reducers/appReducer';
 const initialState = loadState();
 
 export default function reducer(state = initialState, action) {
+  console.log(state);
   return {
     auth: authReducer(state.auth, action),
     domainData: domainReducer(state.domainData, action),
