@@ -80,7 +80,7 @@ def get_games_data(user):
         game_room__is_started=False,
         game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
     ).all()
-    
+
     # Available rooms
     available = models.UserGame.objects.filter(game_room__is_started=False).exclude(user=user)
 
@@ -178,7 +178,7 @@ class GameRoomView(APIView):
     """Get free rooms or create a new one"""
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):        
+    def get(self, request):
         data = get_games_data(request.user)
         return Response(data)
 
@@ -187,7 +187,7 @@ class GameRoomView(APIView):
         size = request.data["size"]
 
         try:
-            room = create_new_room(request.user, size, color)
+            create_new_room(request.user, size, color)
         except ValidationError:
             return Response(
                 {"error": True, "message": "Unexpected field size."},

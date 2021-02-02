@@ -14,6 +14,7 @@ from api.game.structure import Point
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     groups = ['global']
+
     async def connect(self):
         user_group = str(self.scope["user"].id)
         if self.scope["user"].is_authenticated:
@@ -61,13 +62,13 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 field["is_full"] = is_full
                 field["players"] = await self.get_players_data(room)
                 field["turn"] = await self.get_who_has_turn(room)
-                response = {"type": types.PLAYER_SET_DOT, "data": { "room": room, "field":field }}
+                response = {"type": types.PLAYER_SET_DOT, "data": {"room": room, "field": field}}
 
                 await self.channel_layer.group_send(
                     "global",
                     {
                         "type": "global_update",
-                        "message" : {
+                        "message": {
                             "type": types.PLAYER_SET_DOT,
                             "data": json.dumps(response),
                         }
