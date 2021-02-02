@@ -14,6 +14,7 @@ export default function gameReducer(state, action) {
     }
 
     case TYPES.UPDATE_ROOMS: {
+      console.log(data.currentGames);
       return {
         ...state,
         waitingGames: data.waiting,
@@ -41,7 +42,7 @@ export default function gameReducer(state, action) {
     case TYPES.PLAYER_SET_DOT: {
       const updates = JSON.parse(data.data);
       if (Object.keys(state.currentGames).includes(updates.data.room.toString())) {
-        const updatedGames = { ...state.curretGames };
+        const updatedGames = { ...state.currentGames };
         updatedGames[updates.data.room] = {
           size: updates.data.field.field.length - 2,
           players: updates.data.field.players,
