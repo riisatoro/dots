@@ -64,6 +64,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 field["turn"] = await self.get_who_has_turn(room)
                 response = {"type": types.PLAYER_SET_DOT, "data": {"room": room, "field": field}}
 
+                if is_full:
+                    await self.close_current_game(room)
+
                 await self.channel_layer.group_send(
                     "global",
                     {
@@ -103,15 +106,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return players
 
     @database_sync_to_async
-    def close_current_game(self, room_id):
-        is_room = GameRoom.objects.filter(id=room_id)
-        if is_room.exists():
-            room = GameRoom.objects.get(id=room_id)
-            if room.is_started:
-                room.is_ended = True
-                room.save()
-            else:
-                room.delete()
+    def close_current_game(self, room):
+        GameRoom.objects.filter(id=room).update(is_ended=True)
 
     @database_sync_to_async
     def is_allowed_to_set_point(self, user_id, room_id):

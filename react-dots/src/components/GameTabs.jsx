@@ -30,6 +30,7 @@ function GameTabs(props) {
   const setActive = (e) => {
     setActiveTab(parseInt(e.target.id, 10));
   };
+  console.log(games);
 
   let gameOver = false;
   let players = {};
@@ -44,8 +45,14 @@ function GameTabs(props) {
 
   const resultWindow = (
     <Container className="my-3">
-      <h3 className="text-center">This game is over!</h3>
-      <h4 className="text-center">Results:</h4>
+      { gameOver
+        && (
+        <>
+          <h3 className="text-center">This game is over!</h3>
+          <h4 className="text-center">Results:</h4>
+        </>
+        )}
+
       <Row>
         {Object.keys(score).map((key) => (
           <Col key={key.toString()} xs={12} md={6} className="text-center">
@@ -64,8 +71,15 @@ function GameTabs(props) {
           { Object.keys(games).map((key) => (
             <Nav.Item onClick={setActive} key={key.toString()}>
               <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-                {games[key].turn === user && !gameOver && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
-                {Object.keys(games[key].field.players).length < 2 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+                {
+                  games[key].turn === user
+                  && !gameOver
+                  && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
+                }
+                {
+                  Object.keys(games[key].field.players).length < 2
+                  && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
+                }
                 Game&nbsp;
                 {`${games[key].size} x ${games[key].size}`}
                 <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
@@ -74,7 +88,7 @@ function GameTabs(props) {
           ))}
         </Nav>
       </Container>
-      { gameOver && resultWindow }
+      { resultWindow }
     </>
   );
 }

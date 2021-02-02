@@ -53,9 +53,11 @@ def group_player_rooms(player_rooms):
         key = str(room.get('game_room').get('id'))
         turn = 0
         if room.get('turn'):
-            turn = room.get('user').get('id')
+            turn = room.get('user').get('id')      
 
         field["is_full"] = Field.is_full_raw(field["field"])
+        field["score"] = Field.get_score_from_raw(field['field'], field['players'])
+
         room_data[key] = {
             "size": size,
             "players": {},
@@ -77,6 +79,7 @@ def get_games_data(user):
     # Own rooms started
     current = models.UserGame.objects.filter(
         game_room__is_started=True,
+        game_room__is_ended=False,
         game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
     ).all()
 

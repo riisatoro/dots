@@ -67,6 +67,16 @@ class Field:
                     return False
         return True
 
+    @staticmethod
+    def get_score_from_raw(field, players):
+        score = {str(x): 0 for x in players}
+        
+        for row in field:
+            for col in row:
+                if bool(col['captured_by']):
+                    if col["owner"] != None and not col['border'] and col['owner'] != [-1]:
+                        score[str(col['owner'])] += 1
+        return score
 
 class Core:
     @staticmethod
