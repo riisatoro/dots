@@ -43,7 +43,7 @@ class Field:
         x, y = point
 
         if owner not in field.players:
-            raise ValueError("Player ID is not in the GameField")
+            field = Field.add_player(field, owner)
 
         if field.field[y][x].owner is None and not field.field[y][x].border and not field.field[y][x].is_captured:
             field.field[y][x].owner = owner

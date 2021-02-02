@@ -15,14 +15,10 @@ from api.game.structure import Point
 class GameRoomConsumer(AsyncWebsocketConsumer):
     groups = ['global']
     async def connect(self):
-        channel_name = "global"
-        room_name = str(self.scope["user"].id)
+        user_group = str(self.scope["user"].id)
         if self.scope["user"].is_authenticated:
-            await self.channel_layer.group_add(
-                room_name,
-                channel_name
-            )
             await self.accept()
+            await self.channel_layer.group_add('global', user_group)
         else:
             await self.close()
 
@@ -40,39 +36,49 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             data = {'type': types.INVALID_JSON}
             response = {'type': types.INVALID_JSON, 'data': {}}
 
-        # if data["TYPE"] == types.PLAYER_SET_DOT:
-        #     if await self.is_allowed_to_set_point(user_id, room_id):
-        #         size = await self.get_field_size(room_id)
-        #         field = GameFieldSerializer().from_database(
-        #             await self.get_game_field(room_id, user_id), size, size
-        #         )
-        #         point = Point(data["fieldPoint"][0], data["fieldPoint"][1])
+        if data["type"] == types.PLAYER_SET_DOT:
+            user = self.scope["user"].id
+            room = data["currentGame"]
+            point = Point(data["point"][0], data["point"][1])
 
-        #         new_field = field
-        #         try:
-        #             new_field = Core.process_point(field, point, user_id)
-        #             await self.save_field_and_change_turn(room_id, new_field)
-        #             await self.save_score(room_id, new_field.score)
-        #         except Exception as e:
-        #             print("EXCEPTION", e)
+            if await self.is_allowed_to_set_point(user, room):
+                size = await self.get_field_size(room)
+                field = GameFieldSerializer().from_database(
+                    await self.get_game_field(room, user), size, size
+                )
 
-        #         is_full = Field.is_full_field(new_field)
-        #         new_field = GameFieldSerializer().to_client(new_field)
-        #         new_field["is_full"] = is_full
-        #         new_field["players"] = await self.get_players_data(room_id)
-        #         new_field["turn"] = await self.get_who_has_turn(room_id)
-        #         self.response = {"TYPE": types.PLAYER_SET_DOT, "error": False, "data": new_field}
+                try:
+                    field = Core.process_point(field, point, user)
+                    await self.save_field_and_change_turn(room, field)
+                    await self.save_score(room, field.score)
+                except Exception as e:
+                    print("EXCEPTION", e)
 
-        # elif data["TYPE"] == types.PLAYER_GIVE_UP:
-        #     room_group_name = "game_room_" + self.scope['url_route']['kwargs']['room_id']
-        #     await self.channel_layer.group_discard(room_group_name, self.channel_name)
+                is_full = Field.is_full_field(field)
+                field = GameFieldSerializer().to_client(field)
+                field["is_full"] = is_full
+                field["players"] = await self.get_players_data(room)
+                field["turn"] = await self.get_who_has_turn(room)
+                response = {"type": types.PLAYER_SET_DOT, "data": { "room": room, "field":field }}
+
+                for group in field["players"]:
+                    self.send_channel_message(str(group), "hi")
+                    # await self.channel_layer.group_send(
+                    #     str(group),
+                    #     {
+                    #         "type": "websocket.send",
+                    #         "message" : {
+                    #             "type": types.PLAYER_SET_DOT,
+                    #             "data": json.dumps(response),
+                    #         }
+                    #     }
+                    # )
 
         await self.send(json.dumps(response))
 
-    async def chat_message(self, event):
+    async def global_update(self, event):
         message = event['message']
         await self.send(text_data=json.dumps(message))
-
 
     @database_sync_to_async
     def get_field_size(self, room_id):
@@ -89,7 +95,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         data = UserGame.objects.filter(game_room__id=room_id).all()
         players = {}
         for player in data:
-            players[color.user.id] = {
+            players[player.user.id] = {
                 "username": player.user.username,
                 "color": player.color,
             }
@@ -136,9 +142,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 def send_updated_rooms(rooms):
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
-        "global",
+        'global',
         {
-            'type': 'chat_message',
+            'type': 'global_update',
             'message': {
                 "type": types.UPDATE_AVAILABLE_ROOMS,
                 "data": rooms

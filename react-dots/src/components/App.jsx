@@ -13,7 +13,7 @@ import MainPage from './MainPage';
 import Login from './Login';
 import Register from './Register';
 import Footer from './Footer';
-import connectSocket from '../socket/socket';
+import { connectSocket } from '../socket/socket';
 
 function App(props) {
   const { authorized, dispatch, user } = props;

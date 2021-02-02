@@ -10,10 +10,34 @@ import TYPES from '../redux/types';
 import {
   getCanvasGrid, getCircleCoords, createLoopFigure, createEmptyCircle,
 } from '../actions/gameFieldDrawable';
+import { socket } from '../socket/socket';
 
 import '../../public/css/default.css';
 
 class GameCanvas extends Component {
+  constructor(props) {
+    super(props);
+    this.gridClicked = this.gridClicked.bind(this);
+  }
+
+  gridClicked(e) {
+    const { cellSize, currentGame } = this.props;
+    const xPoint = e.target.attrs.x / cellSize + 1;
+    const yPoint = e.target.attrs.y / cellSize + 1;
+
+    const hasOwner = e.target.attrs.fillRadialGradientColorStops;
+
+    if (!Number.isNaN(xPoint) && !Number.isNaN(yPoint) && hasOwner === undefined) {
+      socket.send(
+        JSON.stringify({
+          type: TYPES.PLAYER_SET_DOT,
+          point: [xPoint, yPoint],
+          currentGame,
+        }),
+      );
+    }
+  }
+
   render() {
     const {
       games,
@@ -86,9 +110,10 @@ class GameCanvas extends Component {
 }
 
 GameCanvas.propTypes = {
-  games: PropTypes.objectOf(PropTypes.object),
+  currentGame: PropTypes.number.isRequired,
   cellSize: PropTypes.number.isRequired,
   activeGameId: PropTypes.number.isRequired,
+  games: PropTypes.objectOf(PropTypes.object),
 };
 
 GameCanvas.defaultProps = {
@@ -102,6 +127,7 @@ const mapStateToProps = (state) => ({
     ...state.gameData.waitingGames,
   },
   cellSize: state.appData.cellSize,
+  currentGame: state.uiData.activeGameTab,
 });
 
 export default connect(
