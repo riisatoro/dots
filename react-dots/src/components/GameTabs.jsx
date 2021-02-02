@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Container, Nav, Button, Spinner,
+  Container, Nav, Button, Spinner, Col, Row,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -31,24 +31,51 @@ function GameTabs(props) {
     setActiveTab(parseInt(e.target.id, 10));
   };
 
-  console.log(games);
+  let gameOver = false;
+  let players = {};
+  let score = {};
+  try {
+    gameOver = Boolean(currentGames[activeGameTab].field.is_full);
+    players = currentGames[activeGameTab].players;
+    score = currentGames[activeGameTab].field.score;
+  } catch (error) {
+    // console.log(error);
+  }
+
+  const resultWindow = (
+    <Container className="my-3">
+      <h3 className="text-center">This game is over!</h3>
+      <h4 className="text-center">Results:</h4>
+      <Row>
+        {Object.keys(score).map((key) => (
+          <Col key={key.toString()} xs={12} md={6} className="text-center">
+            <div className="game-color-block" style={{ backgroundColor: players[key].color }} />
+            <p>{`${players[key].username} captured ${score[key]} points`}</p>
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
 
   return (
-    <Container>
-      <Nav variant="tabs">
-        { Object.keys(games).map((key) => (
-          <Nav.Item onClick={setActive} key={key.toString()}>
-            <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-              {games[key].turn === user && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
-              {Object.keys(games[key].field.players).length < 2 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
-              Game&nbsp;
-              {`${games[key].size} x ${games[key].size}`}
-              <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
-            </Nav.Link>
-          </Nav.Item>
-        ))}
-      </Nav>
-    </Container>
+    <>
+      <Container>
+        <Nav variant="tabs">
+          { Object.keys(games).map((key) => (
+            <Nav.Item onClick={setActive} key={key.toString()}>
+              <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
+                {games[key].turn === user && !gameOver && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+                {Object.keys(games[key].field.players).length < 2 && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />}
+                Game&nbsp;
+                {`${games[key].size} x ${games[key].size}`}
+                <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
+              </Nav.Link>
+            </Nav.Item>
+          ))}
+        </Nav>
+      </Container>
+      { gameOver && resultWindow }
+    </>
   );
 }
 

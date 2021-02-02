@@ -55,6 +55,7 @@ def group_player_rooms(player_rooms):
         if room.get('turn'):
             turn = room.get('user').get('id')
 
+        field["is_full"] = Field.is_full_raw(field["field"])
         room_data[key] = {
             "size": size,
             "players": {},

@@ -59,6 +59,14 @@ class Field:
                     return False
         return True
 
+    @staticmethod
+    def is_full_raw(field):
+        for row in field:
+            for col in row:
+                if col['owner'] is None and not col['border']:
+                    return False
+        return True
+
 
 class Core:
     @staticmethod
