@@ -25,7 +25,7 @@ function GameRoomsToJoin(props) {
     const colors = availableGames[e.target.id].players;
 
     Object.keys(colors).forEach((key) => {
-      colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 1);
+      colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 2);
     });
 
     if (colorIsContrast) {

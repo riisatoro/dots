@@ -58,7 +58,7 @@ class Game extends Component {
 
     return (
       <section className="field">
-        {/* { modalWindow } */}
+        { modalWindow }
         <Container className="mb-5">
           <h2 className="text-center">Create new game room</h2>
           <GameCreateForm />

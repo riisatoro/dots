@@ -9,11 +9,11 @@ function contrast(rgb1, rgb2) {
   const lum2 = luminanace(rgb2.r, rgb2.g, rgb2.b);
   const brightest = Math.max(lum1, lum2);
   const darkest = Math.min(lum1, lum2);
-  return (brightest + 0.05)
-    / (darkest + 0.05);
+  return brightest / darkest;
 }
 
-function hexToRgb(hex) {
+function hexToRgb(color) {
+  const hex = color.replace('#', '');
   const bigint = parseInt(hex, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
