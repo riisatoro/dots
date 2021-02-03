@@ -32,6 +32,7 @@ const setInitial = () => (
     uiData: {
       matchPagination: 0,
       activeGameTab: 0,
+      modalColorContrast: false,
     },
 
     turn: 0,

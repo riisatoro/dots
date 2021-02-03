@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Container,
-} from 'react-bootstrap';
+import { Container, Modal, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
@@ -31,6 +29,33 @@ class Game extends Component {
   }
 
   render() {
+    const { modalColorContrast } = this.props;
+    const modalWindow = (
+      <Modal
+        show={modalColorContrast}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton onClick={this.closeModal}>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Modal heading
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Centered Modal</h4>
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+            consectetur ac, vestibulum at eros.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={this.closeModal}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+
     return (
       <section className="field">
         {/* { modalWindow } */}
@@ -55,14 +80,20 @@ class Game extends Component {
 
 Game.propTypes = {
   token: PropTypes.string.isRequired,
+  modalColorContrast: PropTypes.bool,
+
+  setModal: PropTypes.func.isRequired,
   getPlayerGameRooms: PropTypes.func.isRequired,
 };
 
-Game.defaultProps = {};
+Game.defaultProps = {
+  modalColorContrast: false,
+};
 
 const mapStateToProps = (state) => ({
   token: state.auth.token,
   games: state.gameData.currentGames,
+  modalColorContrast: state.uiData.modalColorContrast,
 });
 
 export default connect(
@@ -82,6 +113,10 @@ export default connect(
         });
       };
       gameRoomRequest();
+    },
+
+    setModal: () => {
+      dispatch({ type: TYPES.CLOSE_MODAL_COLOR });
     },
   }),
 )(Game);

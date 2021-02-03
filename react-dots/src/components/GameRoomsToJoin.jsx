@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
 import { socket } from '../socket/socket';
 import '../../public/css/default.css';
+import isContrast from '../actions/findContrast';
 
 function GameRoomsToJoin(props) {
   const {
@@ -20,13 +21,24 @@ function GameRoomsToJoin(props) {
   };
 
   const joinGame = (e) => {
-    onJoinGameRoom(token, e.target.id, playerColor);
-    socket.send(JSON.stringify(
-      {
-        type: TYPES.PLAYER_JOIN_GAME,
-        currentGame: e.target.id,
-      },
-    ));
+    let colorIsContrast = true;
+    const colors = availableGames[e.target.id].players;
+
+    Object.keys(colors).forEach((key) => {
+      colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 1);
+    });
+
+    if (colorIsContrast) {
+      onJoinGameRoom(token, e.target.id, playerColor);
+      socket.send(JSON.stringify(
+        {
+          type: TYPES.PLAYER_JOIN_GAME,
+          currentGame: e.target.id,
+        },
+      ));
+    } else {
+      props.openModal();
+    }
   };
 
   Object.keys(availableGames).forEach((key) => {
@@ -80,6 +92,7 @@ GameRoomsToJoin.propTypes = {
 
   availableGames: PropTypes.objectOf(PropTypes.object),
 
+  openModal: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   onJoinGameRoom: PropTypes.func.isRequired,
 };
@@ -114,6 +127,9 @@ export default connect(
         });
       };
       joinGameRoom();
+    },
+    openModal: () => {
+      dispatch({ type: TYPES.OPEN_MODAL_COLOR });
     },
   }),
 )(GameRoomsToJoin);

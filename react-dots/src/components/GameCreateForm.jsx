@@ -23,7 +23,7 @@ function GameCreateForm(props) {
     const { setModal, token } = props;
     const contrast = (
       isContrast(playerColor, '#FFFFFF', 1)
-      && isContrast(playerColor, '#000000', 2)
+      && isContrast(playerColor, '#000000', 1)
     );
     setModal(contrast);
     if (contrast && Object.keys(playerRooms).length <= roomLimit) {

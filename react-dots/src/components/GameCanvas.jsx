@@ -57,8 +57,8 @@ class GameCanvas extends Component {
     let emptyCircle = [];
     let loop = [];
 
-    if (activeGameId !== null) {
-      const game = games[activeGameId];
+    const game = games[activeGameId];
+    if (activeGameId !== null && game !== undefined) {
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;

@@ -25,7 +25,6 @@ function GameTabs(props) {
   if (activeGameTab === null) {
     activeGameTab = Object.keys(games).pop();
   }
-  console.log(activeGameTab);
 
   const playerLeaveRoom = (e) => {
     playerLeave(token, e.target.id);

@@ -32,6 +32,14 @@ export default function uiReducer(state, action) {
       };
     }
 
+    case TYPES.OPEN_MODAL_COLOR: {
+      return { ...state, modalColorContrast: true };
+    }
+
+    case TYPES.CLOSE_MODAL_COLOR: {
+      return { ...state, modalColorContrast: false };
+    }
+
     default: return { ...state };
   }
 }

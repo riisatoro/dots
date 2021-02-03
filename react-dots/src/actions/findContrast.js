@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise */
+
 function luminanace(r, g, b) {
   return (r / 255) * 0.2126 + (g / 255) * 0.7152 + (b / 255) * 0.0722;
 }
@@ -12,12 +14,12 @@ function contrast(rgb1, rgb2) {
 }
 
 function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16),
-  } : null;
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+
+  return { r, g, b };
 }
 
 function isContrast(hex1, hex2, ratio) {
