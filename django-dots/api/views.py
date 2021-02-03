@@ -9,21 +9,22 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
-from . import serializers, models
 from .game.core import Field
 from .game.serializers import GameFieldSerializer
 from gamews.consumers import send_updated_rooms
+from .models import GameRoom, UserGame
+from .serializers import UserGameSerializer
 
 
 def create_new_room(user, size, color):
     field = Field.add_player(Field.create_field(size, size), user.id)
-    room = models.GameRoom(
+    room = GameRoom(
         field=GameFieldSerializer().to_database(field), size=size
     )
     room.full_clean()
     room.save()
     with transaction.atomic():
-        user_game = models.UserGame(
+        user_game = UserGame(
             user=user, game_room=room, color=color
         )
         user_game.save()
@@ -76,26 +77,23 @@ def group_player_rooms(player_rooms):
 
 
 def get_games_data(user):
-    # Own rooms started
-    current = models.UserGame.objects.filter(
+    current = UserGame.objects.filter(
         game_room__is_started=True,
         game_room__is_ended=False,
-        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
+        game_room__in=UserGame.objects.filter(user=user).values_list('game_room', flat=True)
     ).all()
 
-    # Own room waiting
-    waiting = models.UserGame.objects.filter(
+    waiting = UserGame.objects.filter(
         game_room__is_started=False,
-        game_room__in=models.UserGame.objects.filter(user=user).values_list('game_room', flat=True)
+        game_room__in=UserGame.objects.filter(user=user).values_list('game_room', flat=True)
     ).all()
 
-    # Available rooms
-    available = models.UserGame.objects.filter(game_room__is_started=False).exclude(user=user)
+    available = UserGame.objects.filter(game_room__is_started=False).exclude(user=user)
 
     return {
-        "waiting": group_player_rooms(serializers.UserGameSerializer(waiting, many=True).data),
-        "current": group_player_rooms(serializers.UserGameSerializer(current, many=True).data),
-        "available": group_player_rooms(serializers.UserGameSerializer(available, many=True).data),
+        "waiting": group_player_rooms(UserGameSerializer(waiting, many=True).data),
+        "current": group_player_rooms(UserGameSerializer(current, many=True).data),
+        "available": group_player_rooms(UserGameSerializer(available, many=True).data),
     }
 
 
@@ -172,8 +170,8 @@ class MatchViewSet(APIView):
 
     def get(self, request):
         score = group_player_score(
-            models.UserGame.objects.filter(
-                game_room__in=models.UserGame.objects.filter(user=1).values("game_room")
+            UserGame.objects.filter(
+                game_room__in=UserGame.objects.filter(user=1).values("game_room")
             ).all()
         )
         return Response({"error": False, "data": score})
@@ -222,11 +220,11 @@ class GameRoomJoin(APIView):
 
     def post(self, request):
         room_id = request.data["room_id"]
-        owner = models.UserGame.objects.filter(
+        owner = UserGame.objects.filter(
             game_room__id=room_id, game_room__is_started=False
         ).exclude(user=request.user)
 
-        room = models.GameRoom.objects.filter(id=room_id)
+        room = GameRoom.objects.filter(id=room_id)
         if not room.exists() or not owner.exists():
             return Response(
                 {"error": True, "message": "Room does not exists."},
@@ -236,7 +234,7 @@ class GameRoomJoin(APIView):
         owner = owner.get()
         room = room.get()
 
-        user_game = models.UserGame(
+        user_game = UserGame(
             user=request.user, game_room=room, color=request.data["color"]
         )
         user_game.save()
@@ -252,7 +250,7 @@ class GameRoomJoin(APIView):
         room.save()
         owner.save()
 
-        data = models.UserGame.objects.filter(game_room__id=room.id).all()
+        data = UserGame.objects.filter(game_room__id=room.id).all()
         players = {}
         score = {}
         for player in data:
@@ -274,12 +272,11 @@ class GameRoomLeave(APIView):
     def post(self, request):
         room = request.data["room"]
 
-        if models.GameRoom.objects.filter(id=room).count() == 1:
-            models.GameRoom.objects.get(id=room).delete()
+        if UserGame.objects.filter(game_room=room).count() == 1:
+            GameRoom.objects.get(id=room).delete()
         else:
-            models.UserGame.objects.filter(game_room=room, user=request.user).delete()
+            GameRoom.objects.filter(id=room).update(is_started=True, is_ended=True)
 
         send_updated_rooms(get_games_data(-1))
-
         data = get_games_data(request.user)
         return Response(data)

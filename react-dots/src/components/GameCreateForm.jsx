@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  Form, Button, Col, Container, Row,
+  Form, Button, Col,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import isContrast from '../actions/findContrast';
@@ -16,8 +16,9 @@ function GameCreateForm(props) {
     playerColor,
     roomLimit,
   } = props;
-  const { register, errors, handleSubmit } = useForm();
+  const { errors, register, handleSubmit } = useForm();
   const games = { ...waitingGames, ...currentGames };
+  const disabledColors = ['#FFFFFF', '#000000'];
 
   const changePickedColor = (e) => {
     props.setPlayerColor(e.target.value);
@@ -25,12 +26,14 @@ function GameCreateForm(props) {
 
   const onCreateNewRoom = handleSubmit(({ fieldSize }) => {
     const { setModal, token } = props;
-    const contrast = (
-      isContrast(playerColor, '#FFFFFF', 1.5)
-      && isContrast(playerColor, '#000000', 1.5)
-    );
-    setModal(contrast);
-    if (contrast && Object.keys(games).length <= roomLimit) {
+
+    let contrast = true;
+    disabledColors.forEach((color) => {
+      contrast = contrast && isContrast(playerColor, color, 1.2);
+    });
+
+    if (!contrast) setModal();
+    else if (Object.keys(games).length <= roomLimit) {
       props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
     }
   });
@@ -120,8 +123,8 @@ export default connect(
       dispatch({ type: TYPES.UPDATE_TMP_COLOR, payload: { color } });
     },
 
-    setModal: (value) => {
-      /* dispatch({ type: TYPES.SET_MODAL, payload: value }); */
+    setModal: () => {
+      dispatch({ type: TYPES.OPEN_MODAL_COLOR });
     },
 
     createNewRoom: (token, fieldSize, gameColor) => {
