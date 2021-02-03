@@ -11,18 +11,21 @@ import { socket } from '../socket/socket';
 import '../../public/css/default.css';
 
 function GameTabs(props) {
+  let { activeGameTab } = props;
   const {
-    activeGameTab,
     waitingGames,
     currentGames,
     token,
     user,
-
     playerLeave,
     setActiveTab,
   } = props;
 
   const games = { ...waitingGames, ...currentGames };
+  if (activeGameTab === null) {
+    activeGameTab = Object.keys(games).pop();
+  }
+  console.log(activeGameTab);
 
   const playerLeaveRoom = (e) => {
     playerLeave(token, e.target.id);
@@ -67,29 +70,26 @@ function GameTabs(props) {
       </Row>
     </Container>
   );
-  let nav = [];
-  if (currentGames[activeGameTab] !== undefined) {
-    nav = (
-      [Object.keys(games).map((key) => (
-        <Nav.Item onClick={setActive} key={key.toString()}>
-          <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-            {
+  const nav = (
+    [Object.keys(games).map((key) => (
+      <Nav.Item onClick={setActive} key={key.toString()}>
+        <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
+          {
             games[key].turn === user
             && !games[key].field.is_full
             && <Spinner animation="grow" className="mx-2" id={key} style={{ width: '20px', height: '20px' }} variant="danger" />
           }
-            {
+          {
             Object.keys(games[key].field.players).length < 2
             && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
           }
-            Game&nbsp;
-            {`${games[key].size} x ${games[key].size}`}
-            <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
-          </Nav.Link>
-        </Nav.Item>
-      ))]
-    );
-  }
+          Game&nbsp;
+          {`${games[key].size} x ${games[key].size}`}
+          <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
+        </Nav.Link>
+      </Nav.Item>
+    ))]
+  );
 
   return (
     <>
