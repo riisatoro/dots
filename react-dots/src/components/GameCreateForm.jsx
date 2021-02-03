@@ -10,10 +10,14 @@ import isContrast from '../actions/findContrast';
 import TYPES from '../redux/types';
 
 function GameCreateForm(props) {
-  const { playerColor, playerRooms, roomLimit, user } = props;
   const {
-    register, errors, handleSubmit,
-  } = useForm();
+    waitingGames,
+    currentGames,
+    playerColor,
+    roomLimit,
+  } = props;
+  const { register, errors, handleSubmit } = useForm();
+  const games = { ...waitingGames, ...currentGames };
 
   const changePickedColor = (e) => {
     props.setPlayerColor(e.target.value);
@@ -22,15 +26,15 @@ function GameCreateForm(props) {
   const onCreateNewRoom = handleSubmit(({ fieldSize }) => {
     const { setModal, token } = props;
     const contrast = (
-      isContrast(playerColor, '#FFFFFF', 1)
-      && isContrast(playerColor, '#000000', 1)
+      isContrast(playerColor, '#FFFFFF', 1.5)
+      && isContrast(playerColor, '#000000', 1.5)
     );
     setModal(contrast);
-    if (contrast && Object.keys(playerRooms).length <= roomLimit) {
+    if (contrast && Object.keys(games).length <= roomLimit) {
       props.createNewRoom(token, parseInt(fieldSize, 10), playerColor);
     }
   });
-  const limitReached = Object.keys(playerRooms).length >= roomLimit ? 'd-none' : '';
+  const limitReached = Object.keys(games).length >= roomLimit ? 'd-none' : '';
 
   return (
     <>
@@ -81,12 +85,11 @@ function GameCreateForm(props) {
 }
 
 GameCreateForm.propTypes = {
-  user: PropTypes.number.isRequired,
   roomLimit: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
-
-  playerRooms: PropTypes.objectOf(PropTypes.object),
+  waitingGames: PropTypes.objectOf(PropTypes.object),
+  currentGames: PropTypes.objectOf(PropTypes.object),
 
   setModal: PropTypes.func.isRequired,
   createNewRoom: PropTypes.func.isRequired,
@@ -94,17 +97,18 @@ GameCreateForm.propTypes = {
 };
 
 GameCreateForm.defaultProps = {
-  playerRooms: {},
+  waitingGames: {},
+  currentGames: {},
 };
 
 const mapStateToProps = (state) => {
   const data = {
-    user: state.auth.id,
+    waitingGames: state.gameData.waitingGames,
+    currentGames: state.gameData.currentGames,
+
     roomLimit: state.appData.roomLimit,
     token: state.auth.token,
     playerColor: state.gameData.temporary.playerColor,
-
-    playerRooms: state.gameData.userGames,
   };
   return data;
 };

@@ -113,7 +113,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 )
 
         elif data['type'] == PLAYER_LEAVE:
-            print("LEAVE")
             user = self.scope["user"].id
             room = data["currentGame"]
             players = await self.get_players_data(room)
