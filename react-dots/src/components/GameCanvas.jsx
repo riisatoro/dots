@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Stage, Layer } from 'react-konva';
-import {
-  Container, Row, Button,
-} from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 import TYPES from '../redux/types';
@@ -27,7 +25,12 @@ class GameCanvas extends Component {
 
     const hasOwner = e.target.attrs.fillRadialGradientColorStops;
 
-    if (!Number.isNaN(xPoint) && !Number.isNaN(yPoint) && hasOwner === undefined) {
+    if (
+      !Number.isNaN(xPoint)
+      && !Number.isNaN(yPoint)
+      && hasOwner === undefined
+      && currentGame != null
+    ) {
       socket.send(
         JSON.stringify({
           type: TYPES.PLAYER_SET_DOT,
@@ -45,7 +48,6 @@ class GameCanvas extends Component {
       activeGameId,
     } = this.props;
 
-    const game = games[activeGameId];
     let field = [[]];
     let fieldSize = 0;
     let colors = {};
@@ -55,7 +57,8 @@ class GameCanvas extends Component {
     let emptyCircle = [];
     let loop = [];
 
-    if (game !== undefined) {
+    if (activeGameId !== null) {
+      const game = games[activeGameId];
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;
@@ -109,14 +112,16 @@ class GameCanvas extends Component {
 }
 
 GameCanvas.propTypes = {
-  currentGame: PropTypes.number.isRequired,
+  currentGame: PropTypes.number,
   cellSize: PropTypes.number.isRequired,
-  activeGameId: PropTypes.number.isRequired,
+  activeGameId: PropTypes.number,
   games: PropTypes.objectOf(PropTypes.object),
 };
 
 GameCanvas.defaultProps = {
   games: {},
+  activeGameId: null,
+  currentGame: null,
 };
 
 const mapStateToProps = (state) => ({

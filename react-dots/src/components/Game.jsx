@@ -55,7 +55,6 @@ class Game extends Component {
 
 Game.propTypes = {
   token: PropTypes.string.isRequired,
-
   getPlayerGameRooms: PropTypes.func.isRequired,
 };
 
@@ -64,7 +63,6 @@ Game.defaultProps = {};
 const mapStateToProps = (state) => ({
   token: state.auth.token,
   games: state.gameData.currentGames,
-  activeGameId: state.uiData.activeGameTab,
 });
 
 export default connect(

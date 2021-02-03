@@ -18,9 +18,10 @@ export default function uiReducer(state, action) {
       Object.keys(data.waiting).forEach((x) => {
         gameId.push(parseInt(x, 10));
       });
+
       return {
         ...state,
-        activeGameTab: Math.max(...gameId),
+        activeGameTab: gameId[0],
       };
     }
 

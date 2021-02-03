@@ -41,12 +41,10 @@ function GameTabs(props) {
   let gameOver = false;
   let players = {};
   let score = {};
-  try {
+  if (currentGames[activeGameTab] !== undefined) {
     gameOver = Boolean(currentGames[activeGameTab].field.is_full);
     players = currentGames[activeGameTab].players;
     score = currentGames[activeGameTab].field.score;
-  } catch (error) {
-    // console.log(error);
   }
 
   const resultWindow = (
@@ -69,29 +67,35 @@ function GameTabs(props) {
       </Row>
     </Container>
   );
+  let nav = [];
+  if (currentGames[activeGameTab] !== undefined) {
+    nav = (
+      [Object.keys(games).map((key) => (
+        <Nav.Item onClick={setActive} key={key.toString()}>
+          <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
+            {
+            games[key].turn === user
+            && !games[key].field.is_full
+            && <Spinner animation="grow" className="mx-2" id={key} style={{ width: '20px', height: '20px' }} variant="danger" />
+          }
+            {
+            Object.keys(games[key].field.players).length < 2
+            && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
+          }
+            Game&nbsp;
+            {`${games[key].size} x ${games[key].size}`}
+            <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
+          </Nav.Link>
+        </Nav.Item>
+      ))]
+    );
+  }
 
   return (
     <>
       <Container>
         <Nav variant="tabs">
-          { Object.keys(games).map((key) => (
-            <Nav.Item onClick={setActive} key={key.toString()}>
-              <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
-                {
-                  games[key].turn === user
-                  && !gameOver
-                  && <Spinner animation="grow" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
-                }
-                {
-                  Object.keys(games[key].field.players).length < 2
-                  && <Spinner animation="border" className="mx-2" style={{ width: '20px', height: '20px' }} variant="danger" />
-                }
-                Game&nbsp;
-                {`${games[key].size} x ${games[key].size}`}
-                <Button variant="danger" className="ml-3" id={key} onClick={playerLeaveRoom}>x</Button>
-              </Nav.Link>
-            </Nav.Item>
-          ))}
+          {nav}
         </Nav>
       </Container>
       { resultWindow }
