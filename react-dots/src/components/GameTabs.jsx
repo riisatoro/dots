@@ -72,7 +72,7 @@ function GameTabs(props) {
   const nav = (
     [Object.keys(games).map((key) => (
       <Nav.Item onClick={setActive} key={key.toString()}>
-        <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
+        <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>  
           {
             games[key].turn === user
             && !games[key].field.is_full

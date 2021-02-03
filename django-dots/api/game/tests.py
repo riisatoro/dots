@@ -192,11 +192,6 @@ class ApiFieldChangeOwnerTest(TestCase):
             point = Point(20, -5)
             self.field = Field.change_owner(self.field, point, 2)
 
-    def test_anonymous_owner(self):
-        with self.assertRaises(ValueError):
-            point = Point(1, 2)
-            self.field = Field.change_owner(self.field, point, 50)
-
 
 class ApiFieldFullFieldTest(TestCase):
     def setUp(self):
@@ -379,3 +374,31 @@ class ApiCoreBuildLoops(TestCase):
 
         loops = Core.build_loops(self.field.field, self.points[-1], 1)
         print(loops)
+
+class ApiCoreLoopInLoop(TestCase):
+    def setUp(self):
+        self.data = open_data('ApiCoreLoopInLoop')
+        self.field = prepare_field(self.data)
+
+        self.points_1 = tuple_to_point(self.data["points_1"])
+        self.points_2 = tuple_to_point(self.data["points_2"])
+        self.points_3 = tuple_to_point(self.data["points_3"])
+
+    def test_loops(self):
+        from .draw import draw_field;
+
+        for p in self.points_1:
+            self.field = Core.process_point(self.field, p, 1)
+            draw_field(self.field)
+
+        for p in self.points_2:
+            self.field = Core.process_point(self.field, p, 2)
+            draw_field(self.field)
+
+        for p in self.points_3:
+            self.field = Core.process_point(self.field, p, 1)
+            draw_field(self.field)
+
+        self.assertEqual(
+            len(self.field.new_loops), 2
+        )
