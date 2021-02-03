@@ -1,48 +1,51 @@
 import json
-from . import types
-from channels.layers import get_channel_layer
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
-from django.db import transaction
-from asgiref.sync import async_to_sync
 
-from api.models import GameRoom, UserGame
+from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
+from django.db import transaction
+
 from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
+from api.models import GameRoom, UserGame
+
+from gamews.types import (
+    INVALID_JSON,
+    PLAYER_SET_DOT,
+    PLAYER_JOIN_GAME,
+    PLAYER_LEAVE,
+    UPDATE_AVAILABLE_ROOMS
+)
 
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
-    groups = ['global']
-
     async def connect(self):
-        user_group = str(self.scope["user"].id)
         if self.scope["user"].is_authenticated:
             await self.accept()
-            # if user_group not in self.groups:
-            #     self.groups.append(user_group)
-            # await self.channel_layer.group_add(user_group, f'user_group_{user_group}')
-
-            await self.channel_layer.group_add('global', user_group)
+            user_group = str(self.scope["user"].id)
+            await self.channel_layer.group_add('global', self.channel_name)
+            await self.channel_layer.group_add(user_group, self.channel_name)
 
         else:
             await self.close()
 
     async def disconnect(self, close_code=404):
+        await self.channel_layer.group_discard('global', self.channel_name)
+        await self.channel_layer.group_discard(str(self.scope["user"].id), self.channel_name)
         await self.close()
 
     async def receive(self, text_data=None, bytes_data=None):
-        response = {
-            "type": "",
-            "data": {}
-        }
+        response = {"type": "", "data": {}}
+
         try:
             data = json.loads(text_data)
         except ValueError:
-            data = {'type': types.INVALID_JSON}
-            response = {'type': types.INVALID_JSON, 'data': {}}
+            data = {'type': INVALID_JSON}
+            response = {'type': INVALID_JSON, 'data': {}}
 
-        if data["type"] == types.PLAYER_SET_DOT:
+        if data["type"] == PLAYER_SET_DOT:
             user = self.scope["user"].id
             room = data["currentGame"]
             point = Point(data["point"][0], data["point"][1])
@@ -65,22 +68,24 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 field["is_full"] = is_full
                 field["players"] = await self.get_players_data(room)
                 field["turn"] = await self.get_who_has_turn(room)
-                response = {"type": types.PLAYER_SET_DOT, "data": {"room": room, "field": field}}
+                response = {"type": PLAYER_SET_DOT, "data": {"room": room, "field": field}}
 
                 if is_full:
                     await self.close_current_game(room)
 
-                await self.channel_layer.group_send(
-                    "global",
-                    {
-                        "type": "global_update",
-                        "message": {
-                            "type": types.PLAYER_SET_DOT,
-                            "data": json.dumps(response),
+                for player in field['players']:
+                    await self.channel_layer.group_send(
+                        str(player),
+                        {
+                            "type": "global_update",
+                            "message": {
+                                "type": PLAYER_SET_DOT,
+                                "data": json.dumps(response),
+                            }
                         }
-                    }
-                )
-        elif data["type"] == types.PLAYER_JOIN_GAME:
+                    )
+
+        elif data["type"] == PLAYER_JOIN_GAME:
             user = self.scope["user"].id
             room = data["currentGame"]
 
@@ -94,17 +99,38 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             field["is_full"] = is_full
             field["players"] = await self.get_players_data(room)
             field["turn"] = await self.get_who_has_turn(room)
-            response = {"type": types.PLAYER_JOIN_GAME, "data": {"room": room, "field": field}}
-            await self.channel_layer.group_send(
-                "global",
-                {
-                    "type": "global_update",
-                    "message": {
-                        "type": types.PLAYER_JOIN_GAME,
-                        "data": json.dumps(response),
+            response = {"type": PLAYER_JOIN_GAME, "data": {"room": room, "field": field}}
+            for player in field['players']:
+                await self.channel_layer.group_send(
+                    str(player),
+                    {
+                        "type": "global_update",
+                        "message": {
+                            "type": PLAYER_JOIN_GAME,
+                            "data": json.dumps(response),
+                        }
                     }
-                }
-            )
+                )
+
+        elif data['type'] == PLAYER_LEAVE:
+            print("LEAVE")
+            user = self.scope["user"].id
+            room = data["currentGame"]
+            players = await self.get_players_data(room)
+
+            response = {"data": {"room": room}}
+            for player in players:
+                await self.channel_layer.group_send(
+                    str(player),
+                    {
+                        "type": "global_update",
+                        "message": {
+                            "type": PLAYER_LEAVE,
+                            "data": json.dumps(response),
+                        }
+                    }
+                )
+
         else:
             await self.send(json.dumps(response))
 
@@ -117,8 +143,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return GameRoom.objects.get(id=room_id).size
 
     @database_sync_to_async
-    def get_game_field(self, room_id, user_id):
-        game = UserGame.objects.filter(user=user_id, game_room=room_id)
+    def get_game_field(self, room, user):
+        game = UserGame.objects.filter(user=user, game_room=room)
         if game.exists():
             return game.get().game_room.field
 
@@ -139,8 +165,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def is_allowed_to_set_point(self, user_id, room_id):
-        data = UserGame.objects.filter(user=user_id, game_room=room_id).values_list('game_room__is_started', 'turn').get()
-        return data[0] and data[1]
+        try:
+            data = UserGame.objects.filter(user=user_id, game_room=room_id).values_list('game_room__is_started', 'turn').get()
+            return data[0] and data[1]
+        except Exception:
+            return False
 
     @database_sync_to_async
     def get_who_has_turn(self, room_id):
@@ -171,7 +200,7 @@ def send_updated_rooms(rooms):
         {
             'type': 'global_update',
             'message': {
-                "type": types.UPDATE_AVAILABLE_ROOMS,
+                "type": UPDATE_AVAILABLE_ROOMS,
                 "data": rooms
             }
         })

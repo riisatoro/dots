@@ -6,6 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import TYPES from '../redux/types';
+import { socket } from '../socket/socket';
 
 import '../../public/css/default.css';
 
@@ -25,6 +26,12 @@ function GameTabs(props) {
 
   const playerLeaveRoom = (e) => {
     playerLeave(token, e.target.id);
+    socket.send(JSON.stringify(
+      {
+        type: TYPES.PLAYER_LEAVE,
+        currentGame: e.target.id,
+      },
+    ));
   };
 
   const setActive = (e) => {

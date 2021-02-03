@@ -80,6 +80,18 @@ export default function gameReducer(state, action) {
       return { ...state };
     }
 
+    case TYPES.PLAYER_LEAVE: {
+      const updates = JSON.parse(data.data);
+      const current = { ...state.currentGames };
+      current[updates.data.room].field.is_full = true;
+
+      return {
+        ...state,
+        currentGames: current,
+
+      };
+    }
+
     default: return { ...state };
   }
 }
