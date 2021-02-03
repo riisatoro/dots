@@ -9,6 +9,7 @@ function connectSocket(dispatch, user) {
 
   socket.onmessage = (msg) => {
     const data = JSON.parse(msg.data);
+    console.log('socket', data);
     dispatch({ type: data.type, payload: { data: data.data, user } });
   };
 

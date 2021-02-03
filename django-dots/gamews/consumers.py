@@ -19,9 +19,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         user_group = str(self.scope["user"].id)
         if self.scope["user"].is_authenticated:
             await self.accept()
-            self.groups.append(user_group)
+            # if user_group not in self.groups:
+            #     self.groups.append(user_group)
+            # await self.channel_layer.group_add(user_group, f'user_group_{user_group}')
+
             await self.channel_layer.group_add('global', user_group)
-            await self.channel_layer.group_add(user_group, f'user_group_{user_group}')
+
         else:
             await self.close()
 
@@ -77,8 +80,33 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                         }
                     }
                 )
-            else:
-                await self.send(json.dumps(response))
+        elif data["type"] == types.PLAYER_JOIN_GAME:
+            user = self.scope["user"].id
+            room = data["currentGame"]
+
+            size = await self.get_field_size(room)
+            field = GameFieldSerializer().from_database(
+                await self.get_game_field(room, user), size, size
+            )
+            field = Core.process_point(field, Point(0, 0), user)
+            is_full = Field.is_full_field(field)
+            field = GameFieldSerializer().to_client(field)
+            field["is_full"] = is_full
+            field["players"] = await self.get_players_data(room)
+            field["turn"] = await self.get_who_has_turn(room)
+            response = {"type": types.PLAYER_JOIN_GAME, "data": {"room": room, "field": field}}
+            await self.channel_layer.group_send(
+                "global",
+                {
+                    "type": "global_update",
+                    "message": {
+                        "type": types.PLAYER_JOIN_GAME,
+                        "data": json.dumps(response),
+                    }
+                }
+            )
+        else:
+            await self.send(json.dumps(response))
 
     async def global_update(self, event):
         message = event['message']

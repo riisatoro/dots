@@ -6,6 +6,7 @@ import {
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import TYPES from '../redux/types';
+import { socket } from '../socket/socket';
 import '../../public/css/default.css';
 
 function GameRoomsToJoin(props) {
@@ -20,6 +21,12 @@ function GameRoomsToJoin(props) {
 
   const joinGame = (e) => {
     onJoinGameRoom(token, e.target.id, playerColor);
+    socket.send(JSON.stringify(
+      {
+        type: TYPES.PLAYER_JOIN_GAME,
+        currentGame: e.target.id,
+      },
+    ));
   };
 
   Object.keys(availableGames).forEach((key) => {

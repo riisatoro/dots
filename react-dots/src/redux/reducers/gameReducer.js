@@ -56,6 +56,30 @@ export default function gameReducer(state, action) {
       return { ...state };
     }
 
+    case TYPES.PLAYER_JOIN_GAME: {
+      const updates = JSON.parse(data.data);
+      const games = { ...state.currentGames, ...state.waitingGames };
+      if (Object.keys(games).includes(updates.data.room.toString())) {
+        const updatedGames = { ...state.currentGames };
+        const updatedWaiting = { ...state.waitingGames };
+        delete updatedWaiting[updates.data.room];
+
+        updatedGames[updates.data.room] = {
+          size: updates.data.field.field.length - 2,
+          players: updates.data.field.players,
+          field: updates.data.field,
+          turn: updates.data.field.turn,
+        };
+
+        return {
+          ...state,
+          currentGames: updatedGames,
+          waitingGames: updatedWaiting,
+        };
+      }
+      return { ...state };
+    }
+
     default: return { ...state };
   }
 }

@@ -30,7 +30,6 @@ function GameTabs(props) {
   const setActive = (e) => {
     setActiveTab(parseInt(e.target.id, 10));
   };
-  console.log(games);
 
   let gameOver = false;
   let players = {};
