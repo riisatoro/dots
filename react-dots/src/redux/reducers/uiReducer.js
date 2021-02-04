@@ -36,8 +36,16 @@ export default function uiReducer(state, action) {
       return { ...state, modalColorContrast: true };
     }
 
-    case TYPES.CLOSE_MODAL_COLOR: {
-      return { ...state, modalColorContrast: false };
+    case TYPES.OPEN_MODAL_LIMIT: {
+      return { ...state, modalLimitReached: true };
+    }
+
+    case TYPES.CLOSE_MODAL: {
+      return {
+        ...state,
+        modalColorContrast: false,
+        modalLimitReached: false,
+      };
     }
 
     default: return { ...state };

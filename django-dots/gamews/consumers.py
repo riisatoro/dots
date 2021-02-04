@@ -6,11 +6,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from django.db import transaction
 
+from api.models import GameRoom, UserGame
 from api.game.core import Core, Field
 from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
-from api.models import GameRoom, UserGame
-
 from gamews.types import (
     INVALID_JSON,
     PLAYER_SET_DOT,
@@ -27,7 +26,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             user_group = str(self.scope["user"].id)
             await self.channel_layer.group_add('global', self.channel_name)
             await self.channel_layer.group_add(user_group, self.channel_name)
-
         else:
             await self.close()
 
@@ -37,8 +35,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         await self.close()
 
     async def receive(self, text_data=None, bytes_data=None):
-        response = {"type": "", "data": {}}
-
         try:
             data = json.loads(text_data)
         except ValueError:
@@ -52,8 +48,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
             if await self.is_allowed_to_set_point(user, room):
                 size = await self.get_field_size(room)
+                game_field = await self.get_game_field(room, user)
                 field = GameFieldSerializer().from_database(
-                    await self.get_game_field(room, user), size, size
+                    game_field, height=size, width=size
                 )
 
                 try:
@@ -131,7 +128,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 )
 
         else:
-            await self.send(json.dumps(response))
+            await self.send(json.dumps({'type': INVALID_JSON}))
 
     async def global_update(self, event):
         message = event['message']
@@ -142,21 +139,18 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         return GameRoom.objects.get(id=room_id).size
 
     @database_sync_to_async
-    def get_game_field(self, room, user):
-        game = UserGame.objects.filter(user=user, game_room=room)
-        if game.exists():
-            return game.get().game_room.field
+    def get_game_field(self, room_id, user):
+        return GameRoom.objects.get(id=room_id).field
 
     @database_sync_to_async
     def get_players_data(self, room_id):
         data = UserGame.objects.filter(game_room__id=room_id).all()
-        players = {}
-        for player in data:
-            players[player.user.id] = {
-                "username": player.user.username,
-                "color": player.color,
-            }
-        return players
+        return {
+            player.user.id: {
+                'username': player.user.username,
+                'color': player.color
+            } for player in data
+        }
 
     @database_sync_to_async
     def close_current_game(self, room):
@@ -177,8 +171,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_field_and_change_turn(self, room, field):
         user1, user2 = UserGame.objects.filter(game_room=room).all()
+        user2.turn = user1.turn
         user1.turn = not user1.turn
-        user2.turn = not user2.turn
         with transaction.atomic():
             GameRoom.objects.filter(id=room).update(
                 field=GameFieldSerializer().to_database(field)
@@ -191,6 +185,19 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         for key in score:
             UserGame.objects.filter(game_room=room, user=key).update(score=score[key])
 
+"""
+def send_updated_rooms(group: str, type: str, reply: dict):
+    layer = get_channel_layer()
+    async_to_sync(layer.group_send)(
+        str(group),
+        {
+            'type': 'global_update',
+            'message': {
+                "type": type,
+                "data": reply
+            }
+        })
+"""
 
 def send_updated_rooms(rooms):
     layer = get_channel_layer()

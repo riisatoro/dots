@@ -23,12 +23,17 @@ function GameRoomsToJoin(props) {
   const joinGame = (e) => {
     let colorIsContrast = true;
     const colors = availableGames[e.target.id].players;
+    const limitReached = Object.keys(props.games).length >= props.roomLimit
 
     Object.keys(colors).forEach((key) => {
       colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 2);
     });
 
-    if (colorIsContrast) {
+    if (!colorIsContrast) {
+      props.openModal();
+    } else if (limitReached) {
+      props.openLimitModal();
+    } else {
       onJoinGameRoom(token, e.target.id, playerColor);
       socket.send(JSON.stringify(
         {
@@ -36,8 +41,6 @@ function GameRoomsToJoin(props) {
           currentGame: e.target.id,
         },
       ));
-    } else {
-      props.openModal();
     }
   };
 
@@ -87,24 +90,33 @@ function GameRoomsToJoin(props) {
 }
 
 GameRoomsToJoin.propTypes = {
+  games: PropTypes.objectOf(PropTypes.object),
+  roomLimit: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
   playerColor: PropTypes.string.isRequired,
 
   availableGames: PropTypes.objectOf(PropTypes.object),
 
   openModal: PropTypes.func.isRequired,
+  openLimitModal: PropTypes.func.isRequired,
   setPlayerColor: PropTypes.func.isRequired,
   onJoinGameRoom: PropTypes.func.isRequired,
 };
 
 GameRoomsToJoin.defaultProps = {
   availableGames: [],
+  games: {},
 };
 
 const mapStateToProps = (state) => ({
   token: state.auth.token,
+  roomLimit: state.appData.roomLimit,
   availableGames: state.gameData.availableGames,
   playerColor: state.gameData.temporary.playerColor,
+  games: {
+    ...state.gameData.currentGames,
+    ...state.gameData.waitingGames,
+  },
 });
 
 export default connect(
@@ -130,6 +142,9 @@ export default connect(
     },
     openModal: () => {
       dispatch({ type: TYPES.OPEN_MODAL_COLOR });
+    },
+    openLimitModal: () => {
+      dispatch({ type: TYPES.OPEN_MODAL_LIMIT });
     },
   }),
 )(GameRoomsToJoin);

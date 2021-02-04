@@ -103,6 +103,8 @@ class Core:
             or x['stats']['enemy']
         ]
 
+        print("NORMAL", normal_paths)
+
         loops = [
             p for p in normal_paths
             if p['stats']['enemy']
@@ -111,6 +113,7 @@ class Core:
 
         for loop in loops:
             field = Core.add_new_loop(field, loop['path'], owner)
+
 
         old_houses = field.new_houses
 
@@ -138,6 +141,9 @@ class Core:
             result[key] = value
 
         field.score = result
+        
+        from .draw import draw_field; draw_field(field)
+
         return field
 
     @staticmethod
@@ -387,4 +393,5 @@ class Core:
                 if points_set:
                     list_of_sides = [points_set]
 
+        print(point, list_of_sides)
         return list_of_sides

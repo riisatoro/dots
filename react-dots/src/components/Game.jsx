@@ -16,6 +16,8 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
+    const { getPlayerGameRooms, token } = this.props;
+    getPlayerGameRooms(token);
   }
 
   componentDidMount() {
@@ -60,7 +62,6 @@ class Game extends Component {
       <section className="field">
         { modalWindow }
         <Container className="mb-5">
-          <h2 className="text-center">Create new game room</h2>
           <GameCreateForm />
         </Container>
 
@@ -116,7 +117,7 @@ export default connect(
     },
 
     setModal: () => {
-      dispatch({ type: TYPES.CLOSE_MODAL_COLOR });
+      dispatch({ type: TYPES.CLOSE_MODAL });
     },
   }),
 )(Game);

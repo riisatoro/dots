@@ -34,25 +34,6 @@ const setInitial = () => (
       activeGameTab: 0,
       modalColorContrast: false,
     },
-
-    turn: 0,
-    cellSize: 30,
-    field_size: 10,
-    game_end: false,
-    gameResults: false,
-
-    playerColor: '#AAAAAA',
-    playerScore: 0,
-
-    loops: [],
-
-    leaders: [],
-    gameInterrupted: false,
-    gameStarted: false,
-
-    components: { },
-    modal: false,
-    activeLeadersPage: 0,
   }
 );
 

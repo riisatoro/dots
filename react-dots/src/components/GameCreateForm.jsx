@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  Form, Button, Col,
+  Form, Button, Col, Container,
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import isContrast from '../actions/findContrast';
@@ -40,8 +40,9 @@ function GameCreateForm(props) {
   const limitReached = Object.keys(games).length >= roomLimit ? 'd-none' : '';
 
   return (
-    <>
-      <Form onSubmit={onCreateNewRoom} className={limitReached}>
+    <Container className={limitReached}>
+      <h2 className="text-center">Create new game room</h2>
+      <Form onSubmit={onCreateNewRoom}>
         <Form.Row className="mb-3">
           <Form.Group as={Col} sm={12} lg={6} controlId="color" className="m-auto">
             <Form.Label>Click to choose your color:</Form.Label>
@@ -82,8 +83,7 @@ function GameCreateForm(props) {
           <Button type="submit" className={`btn btn-success m-auto ${limitReached}`}>Create new game</Button>
         </Form.Row>
       </Form>
-      {limitReached === 'd-none' && <p className="text-danger text-center">You reached room limit! Please, finish your games first</p>}
-    </>
+    </Container>
   );
 }
 
