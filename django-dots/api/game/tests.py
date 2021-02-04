@@ -17,8 +17,8 @@ def prepare_field(data):
     x, y = data["field"]
     field = Field.create_field(x, y)
 
-    for player in data["players"]:
-        field = Field.add_player(field, player)
+    # for player in data["players"]:
+    #     field = Field.add_player(field, player)
     return field
 
 
@@ -340,6 +340,7 @@ class ApiCoreSetOfSides(TestCase):
         self.field = Field.create_field(5, 5)
         self.field = Field.add_player(self.field, 1)
         self.points = [Point(2, 1), Point(3, 2), Point(3, 3)]
+        self.loop = tuple_to_point([[3, 2], [2, 3], [4, 3], [3, 4]])
 
     def test_simple(self):
         for point in self.points:
@@ -355,6 +356,16 @@ class ApiCoreSetOfSides(TestCase):
 
         sides = Core.get_all_segments(self.field.field, Point(3, 2), 1)
         self.assertEqual(len(sides), 3)
+
+    def test_with_captured(self):
+        self.field.field[3][3].owner = 2
+        self.field.field[3][3].captured_by = []
+        for p in self.loop:
+            self.field = Core.process_point(self.field, p, 1)
+
+        seg = Core.get_all_segments(self.field.field, self.loop[-1], 1)
+        self.assertEqual(len(seg), 2)
+
 
 
 class ApiCoreBuildLoops(TestCase):
@@ -373,31 +384,28 @@ class ApiCoreBuildLoops(TestCase):
             self.field.field[point.y][point.x].owner = 1
 
         loops = Core.build_loops(self.field.field, self.points[-1], 1)
-        print(loops)
+        # print(loops)
+
 
 class ApiCoreLoopInLoop(TestCase):
     def setUp(self):
         self.data = open_data('ApiCoreLoopInLoop')
         self.field = prepare_field(self.data)
+        self.field.players = []
 
         self.points_1 = tuple_to_point(self.data["points_1"])
         self.points_2 = tuple_to_point(self.data["points_2"])
         self.points_3 = tuple_to_point(self.data["points_3"])
 
     def test_loops(self):
-        from .draw import draw_field;
-
         for p in self.points_1:
             self.field = Core.process_point(self.field, p, 1)
-            draw_field(self.field)
 
         for p in self.points_2:
             self.field = Core.process_point(self.field, p, 2)
-            draw_field(self.field)
 
         for p in self.points_3:
             self.field = Core.process_point(self.field, p, 1)
-            draw_field(self.field)
 
         self.assertEqual(
             len(self.field.new_loops), 2

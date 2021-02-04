@@ -38,8 +38,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         try:
             data = json.loads(text_data)
         except ValueError:
-            data = {'type': INVALID_JSON}
-            response = {'type': INVALID_JSON, 'data': {}}
+            await self.send(json.dumps({'type': INVALID_JSON}))
 
         if data['type'] == PLAYER_SET_DOT:
             user = self.scope['user'].id
@@ -128,7 +127,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 )
 
         else:
-            await self.send(json.dumps({'type': INVALID_JSON}))
+            await self.send(json.dumps({'type': 'INVALID_DATA'}))
 
     async def global_update(self, event):
         message = event['message']
@@ -136,6 +135,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_field_size(self, room_id):
+        print(room_id)
+        print(UserGame.objects.all())
         return GameRoom.objects.get(id=room_id).size
 
     @database_sync_to_async

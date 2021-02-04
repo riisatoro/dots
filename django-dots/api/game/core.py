@@ -103,7 +103,7 @@ class Core:
             or x['stats']['enemy']
         ]
 
-        print("NORMAL", normal_paths)
+        # print("NORMAL", normal_paths)
 
         loops = [
             p for p in normal_paths
@@ -142,7 +142,7 @@ class Core:
 
         field.score = result
         
-        from .draw import draw_field; draw_field(field)
+        # from .draw import draw_field; draw_field(field)
 
         return field
 
@@ -376,9 +376,13 @@ class Core:
 
             points_set = set()
 
-            if field[this_point.y][this_point.x].owner != owner and not field[this_point.y][this_point.x].is_captured:
+            point_1 = field[this_point.y][this_point.x]
+            point_2 = field[neigbor_point.y][neigbor_point.x]
+            
+            if not point_1.owner == owner or (len(point_1.captured_by) > 0 and point_1.captured_by[-1] != owner):
                 points_set.add(this_point)
-            if field[neigbor_point.y][neigbor_point.x].owner != owner and not field[neigbor_point.y][neigbor_point.x].is_captured:
+
+            if not point_2.owner == owner or (len(point_2.captured_by) > 0 and point_2.captured_by[-1] != owner):
                 points_set.add(neigbor_point)
 
             if list_of_sides:
@@ -393,5 +397,4 @@ class Core:
                 if points_set:
                     list_of_sides = [points_set]
 
-        print(point, list_of_sides)
         return list_of_sides

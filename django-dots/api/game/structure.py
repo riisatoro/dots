@@ -18,7 +18,7 @@ class GamePoint:
 @dataclass
 class GameField:
     field: [[GamePoint]]
-    players: list = None
+    players: list = field(default_factory=list)
     loops: dict = None
     score: dict = None
     new_loops: list = field(default_factory=list)
