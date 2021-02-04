@@ -16,7 +16,7 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
-    const { getPlayerGameRooms, token } = this.props;
+    const { getPlayerGameRooms, token } = props;
     getPlayerGameRooms(token);
   }
 
