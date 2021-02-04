@@ -1,6 +1,7 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+require('dotenv').config();
 
 module.exports = {
   context: __dirname,
@@ -14,7 +15,7 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': `http://${process.env.PROXY}`,
     },
   },
 

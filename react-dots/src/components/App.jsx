@@ -15,6 +15,7 @@ import Register from './Register';
 import Footer from './Footer';
 import { connectSocket } from '../socket/socket';
 
+
 function App(props) {
   const { authorized, dispatch, user } = props;
   if (authorized) {

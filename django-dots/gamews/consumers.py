@@ -21,9 +21,9 @@ from gamews.types import (
 
 class GameRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        if self.scope["user"].is_authenticated:
+        if self.scope['user'].is_authenticated:
             await self.accept()
-            user_group = str(self.scope["user"].id)
+            user_group = str(self.scope['user'].id)
             await self.channel_layer.group_add('global', self.channel_name)
             await self.channel_layer.group_add(user_group, self.channel_name)
         else:
@@ -31,7 +31,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code=404):
         await self.channel_layer.group_discard('global', self.channel_name)
-        await self.channel_layer.group_discard(str(self.scope["user"].id), self.channel_name)
+        await self.channel_layer.group_discard(str(self.scope['user'].id), self.channel_name)
         await self.close()
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -41,10 +41,10 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             data = {'type': INVALID_JSON}
             response = {'type': INVALID_JSON, 'data': {}}
 
-        if data["type"] == PLAYER_SET_DOT:
-            user = self.scope["user"].id
-            room = data["currentGame"]
-            point = Point(data["point"][0], data["point"][1])
+        if data['type'] == PLAYER_SET_DOT:
+            user = self.scope['user'].id
+            room = data['currentGame']
+            point = Point(data['point'][0], data['point'][1])
 
             if await self.is_allowed_to_set_point(user, room):
                 size = await self.get_field_size(room)
@@ -58,14 +58,14 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     await self.save_field_and_change_turn(room, field)
                     await self.save_score(room, field.score)
                 except Exception as e:
-                    print("EXCEPTION", e)
+                    print('EXCEPTION', e)
 
                 is_full = Field.is_full_field(field)
                 field = GameFieldSerializer().to_client(field)
-                field["is_full"] = is_full
-                field["players"] = await self.get_players_data(room)
-                field["turn"] = await self.get_who_has_turn(room)
-                response = {"type": PLAYER_SET_DOT, "data": {"room": room, "field": field}}
+                field['is_full'] = is_full
+                field['players'] = await self.get_players_data(room)
+                field['turn'] = await self.get_who_has_turn(room)
+                response = {'type': PLAYER_SET_DOT, 'data': {'room': room, 'field': field}}
 
                 if is_full:
                     await self.close_current_game(room)
@@ -74,17 +74,17 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     await self.channel_layer.group_send(
                         str(player),
                         {
-                            "type": "global_update",
-                            "message": {
-                                "type": PLAYER_SET_DOT,
-                                "data": json.dumps(response),
+                            'type': 'global_update',
+                            'message': {
+                                'type': PLAYER_SET_DOT,
+                                'data': json.dumps(response),
                             }
                         }
                     )
 
-        elif data["type"] == PLAYER_JOIN_GAME:
-            user = self.scope["user"].id
-            room = data["currentGame"]
+        elif data['type'] == PLAYER_JOIN_GAME:
+            user = self.scope['user'].id
+            room = data['currentGame']
 
             size = await self.get_field_size(room)
             field = GameFieldSerializer().from_database(
@@ -93,36 +93,36 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             field = Core.process_point(field, Point(0, 0), user)
             is_full = Field.is_full_field(field)
             field = GameFieldSerializer().to_client(field)
-            field["is_full"] = is_full
-            field["players"] = await self.get_players_data(room)
-            field["turn"] = await self.get_who_has_turn(room)
-            response = {"type": PLAYER_JOIN_GAME, "data": {"room": room, "field": field}}
+            field['is_full'] = is_full
+            field['players'] = await self.get_players_data(room)
+            field['turn'] = await self.get_who_has_turn(room)
+            response = {'type': PLAYER_JOIN_GAME, 'data': {'room': room, 'field': field}}
             for player in field['players']:
                 await self.channel_layer.group_send(
                     str(player),
                     {
-                        "type": "global_update",
-                        "message": {
-                            "type": PLAYER_JOIN_GAME,
-                            "data": json.dumps(response),
+                        'type': 'global_update',
+                        'message': {
+                            'type': PLAYER_JOIN_GAME,
+                            'data': json.dumps(response),
                         }
                     }
                 )
 
         elif data['type'] == PLAYER_LEAVE:
-            user = self.scope["user"].id
-            room = data["currentGame"]
+            user = self.scope['user'].id
+            room = data['currentGame']
             players = await self.get_players_data(room)
 
-            response = {"data": {"room": room}}
+            response = {'data': {'room': room}}
             for player in players:
                 await self.channel_layer.group_send(
                     str(player),
                     {
-                        "type": "global_update",
-                        "message": {
-                            "type": PLAYER_LEAVE,
-                            "data": json.dumps(response),
+                        'type': 'global_update',
+                        'message': {
+                            'type': PLAYER_LEAVE,
+                            'data': json.dumps(response),
                         }
                     }
                 )
@@ -193,8 +193,8 @@ def send_updated_rooms(group: str, type: str, reply: dict):
         {
             'type': 'global_update',
             'message': {
-                "type": type,
-                "data": reply
+                'type': type,
+                'data': reply
             }
         })
 """
@@ -206,7 +206,7 @@ def send_updated_rooms(rooms):
         {
             'type': 'global_update',
             'message': {
-                "type": UPDATE_AVAILABLE_ROOMS,
-                "data": rooms
+                'type': UPDATE_AVAILABLE_ROOMS,
+                'data': rooms
             }
         })
