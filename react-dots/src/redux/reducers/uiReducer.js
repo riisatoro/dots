@@ -37,14 +37,14 @@ export default function uiReducer(state, action) {
     }
 
     case TYPES.OPEN_MODAL_LIMIT: {
-      return { ...state, modalLimitReached: true };
+      return { ...state, modalLimitRooms: true };
     }
 
     case TYPES.CLOSE_MODAL: {
       return {
         ...state,
         modalColorContrast: false,
-        modalLimitReached: false,
+        modalLimitRooms: false,
       };
     }
 

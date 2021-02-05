@@ -33,6 +33,7 @@ const setInitial = () => (
       matchPagination: 0,
       activeGameTab: 0,
       modalColorContrast: false,
+      modalLimitRooms: false,
     },
   }
 );

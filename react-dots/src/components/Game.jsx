@@ -31,26 +31,38 @@ class Game extends Component {
   }
 
   render() {
-    const { modalColorContrast } = this.props;
-    const modalWindow = (
+    const { modalColorContrast, modalLimitRooms } = this.props;
+    const warnTitle = [
+      <h4>Colors is not contrast!</h4>,
+      <p>
+        Room limit reached!
+      </p>,
+    ];
+    const warnText = [
+      <p>
+        Your color is not contrast with colors of other players.&nbsp;
+        Or, maybe, is&apos;t too dark or too white.&nbsp;
+        Please, choose another color!
+      </p>,
+      <p>You already playing in 6 games!&nbsp;Finish them and try again!</p>,
+    ];
+    const modalWarning = (
       <Modal
-        show={modalColorContrast}
+        show={modalColorContrast || modalLimitRooms}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
         <Modal.Header closeButton onClick={this.closeModal}>
           <Modal.Title id="contained-modal-title-vcenter">
-            Color warning
+            {
+              modalColorContrast ? 'Color warning' : 'Room limit warning'
+            }
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Color is not contrast!</h4>
-          <p>
-            Your color is not contrast with colors of other players.&nbsp;
-            Or, maybe, is&apos;t too dark or too white.&nbsp;
-            Please, choose another color!
-          </p>
+          { modalColorContrast ? warnTitle[0] : warnTitle[1] }
+          { modalColorContrast ? warnText[0] : warnText[1] }
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.closeModal}>Close</Button>
@@ -60,7 +72,7 @@ class Game extends Component {
 
     return (
       <section className="field">
-        { modalWindow }
+        { modalWarning }
         <Container className="mb-5">
           <GameCreateForm />
         </Container>
@@ -82,12 +94,14 @@ class Game extends Component {
 Game.propTypes = {
   token: PropTypes.string.isRequired,
   modalColorContrast: PropTypes.bool,
+  modalLimitRooms: PropTypes.bool,
 
   setModal: PropTypes.func.isRequired,
   getPlayerGameRooms: PropTypes.func.isRequired,
 };
 
 Game.defaultProps = {
+  modalLimitRooms: false,
   modalColorContrast: false,
 };
 
@@ -95,6 +109,7 @@ const mapStateToProps = (state) => ({
   token: state.auth.token,
   games: state.gameData.currentGames,
   modalColorContrast: state.uiData.modalColorContrast,
+  modalLimitRooms: state.uiData.modalLimitRooms,
 });
 
 export default connect(
