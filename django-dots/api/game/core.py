@@ -31,11 +31,8 @@ class Field:
 
     @staticmethod
     def add_player(field: GameField, player: int) -> GameField:
-        if field.players:
-            if player not in field.players:
-                field.players.append(player)
-        else:
-            field.players = [player]
+        field.players = list(set([*field.players, player]))
+        field.score[player] = 0
         return field
 
     @staticmethod
@@ -69,8 +66,7 @@ class Field:
 
     @staticmethod
     def get_score_from_raw(field, players):
-        score = {str(x): 0 for x in players}
-        
+        score = {str(x): 0 for x in players}        
         for row in field:
             for col in row:
                 if bool(col['captured_by']):
@@ -102,8 +98,6 @@ class Core:
             and x['stats']['empty']
             or x['stats']['enemy']
         ]
-
-        # print("NORMAL", normal_paths)
 
         loops = [
             p for p in normal_paths

@@ -383,9 +383,6 @@ class ApiCoreBuildLoops(TestCase):
         for point in self.points:
             self.field.field[point.y][point.x].owner = 1
 
-        loops = Core.build_loops(self.field.field, self.points[-1], 1)
-        # print(loops)
-
 
 class ApiCoreLoopInLoop(TestCase):
     def setUp(self):

@@ -20,6 +20,6 @@ class GameField:
     field: [[GamePoint]]
     players: list = field(default_factory=list)
     loops: dict = None
-    score: dict = None
+    score: dict = field(default_factory=dict)
     new_loops: list = field(default_factory=list)
     new_houses: list = field(default_factory=list)

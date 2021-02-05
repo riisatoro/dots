@@ -1,19 +1,19 @@
+from rest_framework import status
+from asgiref.sync import async_to_sync
+from django.db import transaction
 from django.contrib.auth import login, logout, authenticate
 from django.core.exceptions import ValidationError
-
-from django.db import transaction
-from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from .game.core import Field
-from .game.serializers import GameFieldSerializer
-from gamews.consumers import send_updated_rooms
 from .models import GameRoom, UserGame
 from .serializers import UserGameSerializer
+from gamews.consumers import send_updated_rooms, send_rooms
+from .game.core import Field
+from .game.serializers import GameFieldSerializer
 
 
 def create_new_room(user, size, color):
@@ -199,12 +199,13 @@ class GameRoomView(APIView):
                 {"error": True, "message": "Unexpected field size."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-        except Exception:
+        except Exception as e:
             return Response(
                 {"error": True, "message": "Server error. Try later"},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
+
+        send_rooms(get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)
@@ -260,8 +261,7 @@ class GameRoomJoin(APIView):
             }
             score[player.user.id] = 0
 
-        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
-
+        send_rooms(get_games_data(-1))
         data = get_games_data(request.user)
         return Response(data)
 
@@ -277,6 +277,6 @@ class GameRoomLeave(APIView):
         else:
             GameRoom.objects.filter(id=room).update(is_started=True, is_ended=True)
 
-        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
+        send_rooms(get_games_data(-1))
         data = get_games_data(request.user)
         return Response(data)
