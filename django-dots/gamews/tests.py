@@ -2,15 +2,11 @@ import json
 
 from unittest import IsolatedAsyncioTestCase
 from asyncio.exceptions import TimeoutError
-from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
-from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.test import Client
 from django.core.management import call_command
-from rest_framework.authtoken.models import Token
 
-from api.models import GameRoom, UserGame
-from dots.routing import application as WsApp
+from dots.routing import application as ws_app
 from .types import (
     INVALID_DATA,
     PLAYER_SET_DOT,
@@ -32,7 +28,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.headers = [(b'origin', b'...'), (b'cookie', self.client.cookies.output(header='', sep='; ').encode())]
 
     async def test_invalid_data(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
         await communicator.send_json_to(
             self.send_data['invalid_request_data']
@@ -42,7 +38,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         await communicator.disconnect()
 
     async def test_invalid_json(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
         await communicator.send_json_to(
             self.send_data['invalid_json_data']
@@ -51,7 +47,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(response['type'], INVALID_DATA)
 
     async def test_player_join(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
         await communicator.send_json_to(
             self.send_data['valid_player_join']
@@ -60,7 +56,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(response['type'], PLAYER_JOIN_GAME)
         response_data = json.loads(response['data'])['data']
         self.assertEqual(response_data['room'], 1312)
-        
+
         field_data = json.loads(response['data'])['data']['field']
         for player in self.players:
             self.assertIn(player, field_data['players'].keys())
@@ -69,7 +65,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         await communicator.disconnect()
 
     async def test_player_invalid_join(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(
@@ -79,7 +75,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(response['type'], INVALID_DATA)
 
     async def test_player_leave(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(
@@ -93,17 +89,17 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         )
 
     async def test_player_invalid_leave(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(
             self.send_data['invalid_player_leave']
         )
         with self.assertRaises(TimeoutError):
-            response = await communicator.receive_json_from(3)
+            await communicator.receive_json_from(3)
 
     async def test_player_set_dot(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(
@@ -115,7 +111,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(response_data['field']['field'][5][5]['owner'], 6)
 
     async def test_player_set_invalid_dot(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(
@@ -125,7 +121,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(response['type'], INVALID_DATA)
 
     async def player_set_dot_invalid_room(self):
-        communicator = WebsocketCommunicator(WsApp, '/ws/global/', self.headers)
+        communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to(

@@ -12,7 +12,6 @@ from api.game.serializers import GameFieldSerializer
 from api.game.structure import Point
 from gamews.types import (
     INVALID_DATA,
-    INVALID_JSON,
     PLAYER_SET_DOT,
     PLAYER_JOIN_GAME,
     PLAYER_LEAVE,
@@ -40,7 +39,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             game_updates = json.loads(text_data)
             player, room_id = await self.get_player_and_room(self.scope, game_updates)
 
-            if game_updates['type'] == PLAYER_SET_DOT:    
+            if game_updates['type'] == PLAYER_SET_DOT:
                 point = await self.get_game_point(game_updates)
                 response, recipients = await self.get_response_player_set_dot(player, room_id, point)
 
@@ -54,7 +53,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             for rec in recipients:
                 await send_updated_rooms(rec, game_updates['type'], response)
 
-        except Exception as e:
+        except Exception:
             await send_updated_rooms(
                 self.scope['user'].id, INVALID_DATA, {'type': INVALID_DATA}
             )
@@ -129,7 +128,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                 'color': player.color
             } for player in data
         }
-   
+
     @database_sync_to_async
     def close_current_game(self, room):
         GameRoom.objects.filter(id=room).update(is_ended=True)
@@ -175,6 +174,7 @@ async def send_updated_rooms(group: str, type_reply: str, reply: dict):
             }
         }
     )
+
 
 def send_rooms(reply: dict):
     layer = get_channel_layer()

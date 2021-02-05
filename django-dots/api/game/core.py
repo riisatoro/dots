@@ -66,13 +66,14 @@ class Field:
 
     @staticmethod
     def get_score_from_raw(field, players):
-        score = {str(x): 0 for x in players}        
+        score = {str(x): 0 for x in players}
         for row in field:
             for col in row:
                 if bool(col['captured_by']):
-                    if col["owner"] != None and not col['border'] and col['owner'] != [-1]:
+                    if col["owner"] is not None and not col['border'] and col['owner'] != [-1]:
                         score[str(col['owner'])] += 1
         return score
+
 
 class Core:
     @staticmethod
@@ -108,7 +109,6 @@ class Core:
         for loop in loops:
             field = Core.add_new_loop(field, loop['path'], owner)
 
-
         old_houses = field.new_houses
 
         for possible_loop in old_houses:
@@ -135,9 +135,6 @@ class Core:
             result[key] = value
 
         field.score = result
-        
-        # from .draw import draw_field; draw_field(field)
-
         return field
 
     @staticmethod
@@ -372,7 +369,7 @@ class Core:
 
             point_1 = field[this_point.y][this_point.x]
             point_2 = field[neigbor_point.y][neigbor_point.x]
-            
+
             if not point_1.owner == owner or (len(point_1.captured_by) > 0 and point_1.captured_by[-1] != owner):
                 points_set.add(this_point)
 

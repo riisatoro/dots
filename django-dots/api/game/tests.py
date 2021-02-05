@@ -367,7 +367,6 @@ class ApiCoreSetOfSides(TestCase):
         self.assertEqual(len(seg), 2)
 
 
-
 class ApiCoreBuildLoops(TestCase):
     def setUp(self):
         self.field = Field.create_field(10, 10)

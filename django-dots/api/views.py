@@ -1,5 +1,4 @@
 from rest_framework import status
-from asgiref.sync import async_to_sync
 from django.db import transaction
 from django.contrib.auth import login, logout, authenticate
 from django.core.exceptions import ValidationError
@@ -11,7 +10,7 @@ from rest_framework.response import Response
 
 from .models import GameRoom, UserGame
 from .serializers import UserGameSerializer
-from gamews.consumers import send_updated_rooms, send_rooms
+from gamews.consumers import send_rooms
 from .game.core import Field
 from .game.serializers import GameFieldSerializer
 
@@ -54,7 +53,7 @@ def group_player_rooms(player_rooms):
         key = str(room.get('game_room').get('id'))
         turn = 0
         if room.get('turn'):
-            turn = room.get('user').get('id')    
+            turn = room.get('user').get('id')
 
         field["is_full"] = Field.is_full_raw(field["field"])
         field["score"] = Field.get_score_from_raw(field['field'], field['players'])
@@ -199,7 +198,7 @@ class GameRoomView(APIView):
                 {"error": True, "message": "Unexpected field size."},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-        except Exception as e:
+        except Exception:
             return Response(
                 {"error": True, "message": "Server error. Try later"},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
