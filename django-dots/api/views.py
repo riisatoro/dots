@@ -54,7 +54,7 @@ def group_player_rooms(player_rooms):
         key = str(room.get('game_room').get('id'))
         turn = 0
         if room.get('turn'):
-            turn = room.get('user').get('id')      
+            turn = room.get('user').get('id')    
 
         field["is_full"] = Field.is_full_raw(field["field"])
         field["score"] = Field.get_score_from_raw(field['field'], field['players'])
@@ -204,7 +204,7 @@ class GameRoomView(APIView):
                 {"error": True, "message": "Server error. Try later"},
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
-        send_updated_rooms(get_games_data(-1))
+        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)
@@ -260,7 +260,7 @@ class GameRoomJoin(APIView):
             }
             score[player.user.id] = 0
 
-        send_updated_rooms(get_games_data(-1))
+        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
 
         data = get_games_data(request.user)
         return Response(data)
@@ -277,6 +277,6 @@ class GameRoomLeave(APIView):
         else:
             GameRoom.objects.filter(id=room).update(is_started=True, is_ended=True)
 
-        send_updated_rooms(get_games_data(-1))
+        send_updated_rooms('global', 'UPDATE_AVAILABLE_ROOMS', get_games_data(-1))
         data = get_games_data(request.user)
         return Response(data)

@@ -38,7 +38,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         try:
             data = json.loads(text_data)
         except ValueError:
-            await self.send(json.dumps({'type': INVALID_JSON}))
+            to_user = str(self.scope['user'].id)
+            send_updated_rooms(to_user, INVALID_JSON, {'type': INVALID_JSON})
 
         if data['type'] == PLAYER_SET_DOT:
             user = self.scope['user'].id
@@ -70,16 +71,9 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
                     await self.close_current_game(room)
 
                 for player in field['players']:
-                    await self.channel_layer.group_send(
-                        str(player),
-                        {
-                            'type': 'global_update',
-                            'message': {
-                                'type': PLAYER_SET_DOT,
-                                'data': json.dumps(response),
-                            }
-                        }
-                    )
+                    reply = json.dumps(response)
+                    send_updated_rooms(str(player), PLAYER_SET_DOT, reply)
+
 
         elif data['type'] == PLAYER_JOIN_GAME:
             user = self.scope['user'].id
@@ -186,28 +180,16 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         for key in score:
             UserGame.objects.filter(game_room=room, user=key).update(score=score[key])
 
-"""
-def send_updated_rooms(group: str, type: str, reply: dict):
+
+def send_updated_rooms(group: str, type_reply: str, reply: dict):
     layer = get_channel_layer()
     async_to_sync(layer.group_send)(
         str(group),
         {
             'type': 'global_update',
             'message': {
-                'type': type,
+                'type': type_reply,
                 'data': reply
             }
-        })
-"""
-
-def send_updated_rooms(rooms):
-    layer = get_channel_layer()
-    async_to_sync(layer.group_send)(
-        'global',
-        {
-            'type': 'global_update',
-            'message': {
-                'type': UPDATE_AVAILABLE_ROOMS,
-                'data': rooms
-            }
-        })
+        }
+    )

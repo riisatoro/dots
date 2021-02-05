@@ -6,21 +6,19 @@ from channels.testing import WebsocketCommunicator
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.core.management import call_command
+from unittest import IsolatedAsyncioTestCase
 
 from dots.routing import application as WsApp
 from .types import PLAYER_SET_DOT, PLAYER_JOIN_GAME, PLAYER_LEAVE
 
-class WebsocketTestCase(TestCase):
-    fixtures = ['dump.json']
-
+class WebsocketTestCase(IsolatedAsyncioTestCase):
     def setUp(self):
-        self.user = User.objects.all().filter(username__in=['admin', 'helen'])
-        print(self.user)
+        self.client = Client()
         call_command('loaddata', 'dump.json', verbosity=0)
 
+        self.user = User.objects.all().filter(username__in=['admin', 'helen'])
         self.client.login(username='admin', password='admin')
         self.client.login(username='helen', password='helen')
-
         self.headers = [(b'origin', b'...'), (b'cookie', self.client.cookies.output(header='', sep='; ').encode())]
 
     async def dest_simple(self):
@@ -38,8 +36,7 @@ class WebsocketTestCase(TestCase):
         connected, subprotocol = await communicator.connect()
 
         await communicator.send_json_to({'type': PLAYER_JOIN_GAME, 'currentGame': 1312})
-        response = await communicator.receive_from()
+        response = await communicator.receive_json_from()
+        print(response)
 
         await communicator.disconnect()
-
-
