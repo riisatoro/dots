@@ -44,6 +44,7 @@ def group_player_score(games):
 
 def group_player_rooms(player_rooms):
     room_data = {}
+    turn = -1
     for room in player_rooms:
         field = room.get('game_room').get('field')
         size = room.get('game_room').get('size')
@@ -51,18 +52,16 @@ def group_player_rooms(player_rooms):
             GameFieldSerializer().from_database(field, size, size)
         )
         key = str(room.get('game_room').get('id'))
-        turn = 0
-        if room.get('turn'):
-            turn = room.get('user').get('id')
-
         field["is_full"] = Field.is_full_raw(field["field"])
         field["score"] = Field.get_score_from_raw(field['field'], field['players'])
+        
+        turn = room.get('user').get('id') if room.get('turn') and turn == -1 else turn
 
         room_data[key] = {
             "size": size,
             "players": {},
             "field": field,
-            "turn": turn,
+            'turn': turn,
         }
 
     for room in player_rooms:
@@ -84,10 +83,14 @@ def get_games_data(user):
 
     waiting = UserGame.objects.filter(
         game_room__is_started=False,
-        game_room__in=UserGame.objects.filter(user=user).values_list('game_room', flat=True)
+        game_room__in=UserGame.objects.filter(user=user).values_list('game_room', flat=True),
+        game_room__is_ended=False,
     ).all()
 
-    available = UserGame.objects.filter(game_room__is_started=False).exclude(user=user)
+    available = UserGame.objects.filter(
+        game_room__is_started=False,
+        game_room__is_ended=False,
+    ).exclude(user=user)
 
     return {
         "waiting": group_player_rooms(UserGameSerializer(waiting, many=True).data),
@@ -170,7 +173,8 @@ class MatchViewSet(APIView):
     def get(self, request):
         score = group_player_score(
             UserGame.objects.filter(
-                game_room__in=UserGame.objects.filter(user=1).values("game_room")
+                game_room__in=UserGame.objects.filter(user=1).values("game_room"),
+                game_room__is_ended=True,
             ).all()
         )
         return Response({"error": False, "data": score})

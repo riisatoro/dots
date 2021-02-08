@@ -28,6 +28,8 @@ export default function authReducer(auth, action) {
         ...auth,
         error: false,
         isAuthorized: true,
+        token: data.token,
+        id: data.id,
       };
     }
 
@@ -56,6 +58,10 @@ export default function authReducer(auth, action) {
         ...auth,
         error: true,
         errorMessage: 'Server is not available',
+        id: null,
+        token: '',
+        username: '',
+        isAuthorized: false,
       };
     }
 

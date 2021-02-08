@@ -36,7 +36,7 @@ class Leaderboard extends Component {
         <Pagination.Item
           key={i / splitBy}
           id={i / splitBy}
-          active={i / splitBy === activeLeadersPage - 1}
+          active={(i / splitBy) === (activeLeadersPage - 1)}
           onClick={setActivePagination}
         >
           {(i / splitBy) + 1}
@@ -50,8 +50,9 @@ class Leaderboard extends Component {
       <section className="leaderboard">
         <Container>
           <Row className="justify-content-md-center">
+            { paginationMatches === undefined && <h2>You don&apos;t have any game results.</h2> }
             <Table striped bordered hover size="sm" className="text-center">
-              {tableHead}
+              { paginationMatches !== undefined && tableHead}
               <tbody>
                 {
                 (paginationMatches !== undefined && paginationMatches.length > 0)
@@ -82,9 +83,12 @@ class Leaderboard extends Component {
               </tbody>
             </Table>
           </Row>
+          { paginationItems !== []
+          && (
           <Row className="mb-5">
             <Pagination className="m-auto">{paginationItems}</Pagination>
           </Row>
+          )}
         </Container>
       </section>
     );

@@ -19,25 +19,25 @@ class GameCanvas extends Component {
   }
 
   gridClicked(e) {
-    const { cellSize, currentGame } = this.props;
+    const {
+      cellSize,
+      currentGame,
+      games,
+    } = this.props;
     const xPoint = e.target.attrs.x / cellSize + 1;
     const yPoint = e.target.attrs.y / cellSize + 1;
 
-    const hasOwner = e.target.attrs.fillRadialGradientColorStops;
-
-    if (
-      !Number.isNaN(xPoint)
-      && !Number.isNaN(yPoint)
-      && hasOwner === undefined
-      && currentGame != null
-    ) {
-      socket.send(
-        JSON.stringify({
-          type: TYPES.PLAYER_SET_DOT,
-          point: [xPoint, yPoint],
-          currentGame,
-        }),
-      );
+    if (!Number.isNaN(xPoint) && !Number.isNaN(yPoint)) {
+      const point = games[currentGame].field.field[yPoint][xPoint];
+      if (point.captured_by.length === 0 && !point.border && point.owner === null) {
+        socket.send(
+          JSON.stringify({
+            type: TYPES.PLAYER_SET_DOT,
+            point: [xPoint, yPoint],
+            currentGame,
+          }),
+        );
+      }
     }
   }
 
@@ -45,7 +45,7 @@ class GameCanvas extends Component {
     const {
       games,
       cellSize,
-      activeGameId,
+      currentGame,
     } = this.props;
 
     let field = [[]];
@@ -57,8 +57,8 @@ class GameCanvas extends Component {
     let emptyCircle = [];
     let loop = [];
 
-    const game = games[activeGameId];
-    if (activeGameId !== null && game !== undefined) {
+    const game = games[currentGame];
+    if (currentGame !== null && game !== undefined) {
       field = game.field.field;
       fieldSize = game.size;
       colors = game.players;
@@ -114,18 +114,15 @@ class GameCanvas extends Component {
 GameCanvas.propTypes = {
   currentGame: PropTypes.number,
   cellSize: PropTypes.number.isRequired,
-  activeGameId: PropTypes.number,
   games: PropTypes.objectOf(PropTypes.object),
 };
 
 GameCanvas.defaultProps = {
   games: {},
-  activeGameId: null,
   currentGame: null,
 };
 
 const mapStateToProps = (state) => ({
-  activeGameId: state.uiData.activeGameTab,
   games: {
     ...state.gameData.currentGames,
     ...state.gameData.waitingGames,

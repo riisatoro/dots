@@ -36,6 +36,7 @@ function Login(props) {
         {toastWindow}
       </Container>
       <Container className="h-100">
+        <h2>Login</h2>
         <Form onSubmit={onSubmitForm}>
           <Form.Row>
             <Form.Group className="col-sm-12 col-md-6" controlId="username">

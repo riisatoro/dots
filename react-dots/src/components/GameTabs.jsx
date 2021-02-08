@@ -62,7 +62,7 @@ function GameTabs(props) {
       <Row>
         {Object.keys(score).map((key) => (
           <Col key={key.toString()} xs={12} md={6} className="text-center">
-            { key.toString() === user.toString() ? <p>Your color</p> : <p>Opponent color</p> }
+            { key === user.toString() ? <p>Your color</p> : <p>Opponent color</p> }
             <div className="game-color-block" style={{ backgroundColor: players[key].color }} />
             <p>{`${players[key].username} captured ${score[key]} points`}</p>
           </Col>

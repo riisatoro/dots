@@ -38,14 +38,14 @@ class Field:
     @staticmethod
     def change_owner(field: GameField, point: Point, owner: int):
         x, y = point
-
         if owner not in field.players:
             field = Field.add_player(field, owner)
 
-        if field.field[y][x].owner is None and not field.field[y][x].border and not field.field[y][x].is_captured:
-            field.field[y][x].owner = owner
-            # raise ValueError("This point is not allowed for changing the owner")
+        print(point, field.field[y][x])
+        if field.field[y][x].border or field.field[y][x].owner is None and field.field[y][x].is_captured:
+            raise ValueError("This point is not allowed for changing the owner")
 
+        field.field[y][x].owner = owner
         return field
 
     @staticmethod
@@ -249,49 +249,6 @@ class Core:
         for segment in segments:
             dfs(starting_point, path, segment)
 
-        return loops
-
-    @staticmethod
-    def build_loops_cached(field: [[Point]], starting_point: Point, owner: int) -> list:
-        """
-        Build all loops in the game field from the stratring point; cache all pathes
-        """
-        cached_paths = {}
-        loops = []
-
-        def dfs(point: Point, parents):
-            """ Recursively cached all paths and find loops from starting point """
-            if point in cached_paths:
-                return cached_paths[point]
-
-            parent_point = parents[0] if len(parents) > 0 else None
-
-            neighbors = Core.generate_neighbors(field, point, owner)
-            related_neighbors = [
-                p for p in neighbors
-                if p != parent_point
-                and len(Core.generate_neighbors(field, p, owner)) < 8
-            ]
-            new_parents = [point] + parents
-
-            cached_paths[point] = []
-            for neighbor in related_neighbors:
-                if neighbor in parents:
-                    cached_paths[point].append((neighbor, point))
-                else:
-                    for path in dfs(neighbor, new_parents):
-                        if path[0] == point:
-                            if len(path) > 3:
-                                loops.append(path)
-                        else:
-                            cached_paths[point].append(path + (point,))
-
-            return cached_paths[point]
-
-        if len(Core.generate_neighbors(field, starting_point, owner)) < 2:
-            return loops
-
-        dfs(starting_point, [])
         return loops
 
     @staticmethod
