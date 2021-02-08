@@ -20,6 +20,11 @@ class Game extends Component {
     getPlayerGameRooms(token);
   }
 
+  componentDidMount() {
+    const { getPlayerGameRooms, token } = this.props;
+    getPlayerGameRooms(token);
+  }
+
   closeModal() {
     const { setModal } = this.props;
     setModal(true);

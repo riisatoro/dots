@@ -30,7 +30,7 @@ const setInitial = () => (
     },
 
     uiData: {
-      matchPagination: 0,
+      matchPagination: 1,
       activeGameTab: 0,
       modalColorContrast: false,
       modalLimitRooms: false,

@@ -30,13 +30,13 @@ class Leaderboard extends Component {
     const splitBy = 8;
     const matchesList = [];
     const paginationItems = [];
-
+    const activeTab = activeLeadersPage === 0 ? 0 : activeLeadersPage - 1;
     for (let i = 0; i < matches.length; i += splitBy) {
       paginationItems.push(
         <Pagination.Item
           key={i / splitBy}
           id={i / splitBy}
-          active={(i / splitBy) === (activeLeadersPage - 1)}
+          active={(i / splitBy) === activeTab}
           onClick={setActivePagination}
         >
           {(i / splitBy) + 1}
@@ -44,7 +44,7 @@ class Leaderboard extends Component {
       );
       matchesList.push(matches.slice(i, i + splitBy));
     }
-    const paginationMatches = matchesList[activeLeadersPage - 1];
+    const paginationMatches = matchesList[activeTab];
 
     return (
       <section className="leaderboard">
