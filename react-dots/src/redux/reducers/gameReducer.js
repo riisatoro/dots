@@ -2,7 +2,6 @@ import TYPES from '../types';
 
 export default function gameReducer(state, action) {
   const data = action.payload;
-  console.log(data);
   switch (action.type) {
     case TYPES.UPDATE_TMP_COLOR: {
       return {

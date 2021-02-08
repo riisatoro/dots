@@ -1,8 +1,9 @@
 import TYPES from '../redux/types';
-// ${env.PROXY}
+
 const socket = new WebSocket('ws://127.0.0.1:8000/ws/global/');
 
 function connectSocket(dispatch, user) {
+  console.log(process);
   socket.onopen = (msg) => {
     dispatch({ type: TYPES.SOCKET_OPEN, payload: msg });
   };
