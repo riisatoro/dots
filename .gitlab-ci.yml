@@ -40,9 +40,5 @@ test-backend:
     - python -m venv venv
     - source venv/bin/activate
     - pip install -r django-dots/requirements.txt
-    - python3 django-dots/manage.py makemigrations
-    - python3 django-dots/manage.py migrate
   script:
     - python django-dots/manage.py test api
-    - python3 django-dots/manage.py test gamews.tests.WebsocketTestCase
-
