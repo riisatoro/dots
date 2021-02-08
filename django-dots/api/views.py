@@ -54,7 +54,7 @@ def group_player_rooms(player_rooms):
         key = str(room.get('game_room').get('id'))
         field["is_full"] = Field.is_full_raw(field["field"])
         field["score"] = Field.get_score_from_raw(field['field'], field['players'])
-        
+
         turn = room.get('user').get('id') if room.get('turn') and turn == -1 else turn
 
         room_data[key] = {
