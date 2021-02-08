@@ -95,7 +95,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         old_field = await self.load_old_field(room_id)
         new_field = await self.make_move(old_field, room_id, point, player_id)
         await self.update_players_stats(room_id, new_field)
-        if is_field_full:= Field.is_full_field(new_field):
+        if is_field_full := Field.is_full_field(new_field):
             await self.close_current_game(room_id)
         serialized_field = await self.serialize_game_data(new_field, room_id, is_field_full)
         return (
@@ -131,7 +131,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         )
 
     async def load_old_field(self, room_id: int):
-        if raw_field:=await self.get_field(room_id):
+        if raw_field := await self.get_field(room_id):
             return GameFieldSerializer().from_database(
                 raw_field.field,
                 height=raw_field.size,

@@ -8,8 +8,9 @@ from django.core.management import call_command
 
 from dots.routing import application as ws_app
 from gamews.types import (INVALID_DATA, PLAYER_JOIN_GAME, PLAYER_LEAVE,
-                          PLAYER_SET_DOT, UPDATE_AVAILABLE_ROOMS, INVALID_JSON,
+                          PLAYER_SET_DOT, INVALID_JSON,
                           INVALID_POINT)
+
 
 class WebsocketTestCase(IsolatedAsyncioTestCase):
     def setUp(self):
