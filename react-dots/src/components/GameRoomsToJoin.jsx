@@ -104,7 +104,7 @@ GameRoomsToJoin.propTypes = {
 };
 
 GameRoomsToJoin.defaultProps = {
-  availableGames: [],
+  availableGames: {},
   games: {},
 };
 
