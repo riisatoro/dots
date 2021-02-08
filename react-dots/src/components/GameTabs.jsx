@@ -49,6 +49,8 @@ function GameTabs(props) {
     score = currentGames[activeGameTab].field.score;
   }
 
+  console.log(players, score);
+
   const resultWindow = (
     <Container className="my-3">
       { gameOver
@@ -62,7 +64,7 @@ function GameTabs(props) {
       <Row>
         {Object.keys(score).map((key) => (
           <Col key={key.toString()} xs={12} md={6} className="text-center">
-            { key === user.toString() ? <p>Your color</p> : <p>Opponent color</p> }
+            { key.toString() === user.toString() ? <p>Your color</p> : <p>Opponent color</p> }
             <div className="game-color-block" style={{ backgroundColor: players[key].color }} />
             <p>{`${players[key].username} captured ${score[key]} points`}</p>
           </Col>
@@ -73,7 +75,7 @@ function GameTabs(props) {
   const nav = (
     [Object.keys(games).map((key) => (
       <Nav.Item onClick={setActive} key={key.toString()}>
-        <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>  
+        <Nav.Link active={parseInt(key, 10) === activeGameTab} id={key}>
           {
             games[key].turn === user
             && !games[key].field.is_full

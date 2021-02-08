@@ -70,8 +70,9 @@ class Field:
         for row in field:
             for col in row:
                 if bool(col['captured_by']):
-                    if col["owner"] is not None and not col['border'] and col['owner'] != [-1]:
-                        score[str(col['owner'])] += 1
+                    if col["owner"] is not None and not col['border']:
+                        if col['owner'] != col['captured_by'][-1]:
+                            score[str(col['captured_by'][-1])] += 1
         return score
 
 
