@@ -42,3 +42,5 @@ test-backend:
     - pip install -r django-dots/requirements.txt
   script:
     - python django-dots/manage.py test api
+    - python3 django-dots/manage.py test gamews.tests.WebsocketTestCase
+
