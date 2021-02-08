@@ -66,10 +66,10 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
             if game_updates['type'] == PLAYER_SET_DOT:
                 point = Point(game_updates['point'][0], game_updates['point'][1])
-                response, recipients = await self.get_player_set_dot_response(player_id, room_id, point)
+                response, recipients = await self.get_player_response(player_id, room_id, point)
 
             elif game_updates['type'] == PLAYER_JOIN_GAME:
-                response, recipients = await self.get_player_join_response(player_id, room_id)
+                response, recipients = await self.get_player_response(player_id, room_id)
 
             elif game_updates['type'] == PLAYER_LEAVE:
                 response = {'data': {'room': room_id}}
@@ -91,31 +91,20 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             for rec in recipients:
                 await send_updated_rooms(rec, game_updates['type'], response)
 
-    async def get_player_set_dot_response(self, player_id: int, room_id: int, point: Point):
+    async def get_player_response(self, player_id: int, room_id: int, point=None):
+        is_field_full = False
         old_field = await self.load_old_field(room_id)
-        new_field = await self.make_move(old_field, room_id, point, player_id)
-        await self.update_players_stats(room_id, new_field)
-        if is_field_full := Field.is_full_field(new_field):
-            await self.close_current_game(room_id)
+        if point is None:
+            response_type = PLAYER_JOIN_GAME
+            new_field = Field.add_player(old_field, player_id)
+        else:
+            response_type = PLAYER_SET_DOT
+            new_field, is_field_full = await self.make_move(old_field, room_id, point, player_id)
+
         serialized_field = await self.serialize_game_data(new_field, room_id, is_field_full)
         return (
             {
-                'type': PLAYER_SET_DOT,
-                'data': {
-                    'room': room_id,
-                    'field': serialized_field
-                }
-            },
-            serialized_field['players']
-        )
-
-    async def get_player_join_response(self, player_id: int, room_id: int):
-        old_field = await self.load_old_field(room_id)
-        new_field = Field.add_player(old_field, player_id)
-        serialized_field = await self.serialize_game_data(new_field, room_id, False)
-        return (
-            {
-                'type': PLAYER_JOIN_GAME,
+                'type': response_type,
                 'data': {
                     'room': room_id,
                     'field': serialized_field
@@ -141,7 +130,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     async def make_move(self, old_field: GameField, room_id: int, point: Point, player_id: int):
         if await self.is_allowed_to_set_point(player_id, room_id):
-            return Core.process_point(old_field, point, player_id)
+
+            new_field = Core.process_point(old_field, point, player_id)
+            await self.update_players_stats(room_id, new_field)
+            if is_field_full := Field.is_full_field(new_field):
+                await self.close_current_game(room_id)
+            return new_field, is_field_full
         raise ValueError('This player is not allowed to set point')
 
     @database_sync_to_async
