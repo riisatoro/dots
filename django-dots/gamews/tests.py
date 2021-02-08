@@ -7,13 +7,9 @@ from django.test import Client
 from django.core.management import call_command
 
 from dots.routing import application as ws_app
-from .types import (
-    INVALID_DATA,
-    PLAYER_SET_DOT,
-    PLAYER_JOIN_GAME,
-    PLAYER_LEAVE,
-)
-
+from gamews.types import (INVALID_DATA, PLAYER_JOIN_GAME, PLAYER_LEAVE,
+                          PLAYER_SET_DOT, UPDATE_AVAILABLE_ROOMS, INVALID_JSON,
+                          INVALID_POINT)
 
 class WebsocketTestCase(IsolatedAsyncioTestCase):
     def setUp(self):
@@ -34,7 +30,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
             self.send_data['invalid_request_data']
         )
         response = await communicator.receive_json_from()
-        self.assertEqual(response['type'], INVALID_DATA)
+        self.assertEqual(response['type'], INVALID_JSON)
         await communicator.disconnect()
 
     async def test_invalid_json(self):
@@ -44,7 +40,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
             self.send_data['invalid_json_data']
         )
         response = await communicator.receive_json_from()
-        self.assertEqual(response['type'], INVALID_DATA)
+        self.assertEqual(response['type'], INVALID_JSON)
 
     async def test_player_join(self):
         communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
@@ -96,7 +92,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
             self.send_data['invalid_player_leave']
         )
         with self.assertRaises(TimeoutError):
-            await communicator.receive_json_from(3)
+            await communicator.receive_json_from(0.01)
 
     async def test_player_set_dot(self):
         communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)
@@ -118,7 +114,7 @@ class WebsocketTestCase(IsolatedAsyncioTestCase):
             self.send_data['player_set_invalid_dot']
         )
         response = await communicator.receive_json_from()
-        self.assertEqual(response['type'], INVALID_DATA)
+        self.assertEqual(response['type'], INVALID_POINT)
 
     async def player_set_dot_invalid_room(self):
         communicator = WebsocketCommunicator(ws_app, '/ws/global/', self.headers)

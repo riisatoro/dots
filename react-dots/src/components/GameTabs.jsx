@@ -49,8 +49,6 @@ function GameTabs(props) {
     score = currentGames[activeGameTab].field.score;
   }
 
-  console.log(players, score);
-
   const resultWindow = (
     <Container className="my-3">
       { gameOver

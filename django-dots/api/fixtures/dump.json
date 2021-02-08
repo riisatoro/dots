@@ -54,42 +54,6 @@
         }
     },
     {
-        "model": "auth.user",
-        "pk": 36,
-        "fields": {
-            "password": "pbkdf2_sha256$216000$9JCiWcRgqcrH$PNi73wlV3DAFUbQltLAHGI8Nsms9/SZZd1gfKUGYE3c=",
-            "last_login": null,
-            "is_superuser": false,
-            "username": "testusert",
-            "first_name": "",
-            "last_name": "",
-            "email": "",
-            "is_staff": false,
-            "is_active": true,
-            "date_joined": "2021-01-25T08:05:42.565Z",
-            "groups": [],
-            "user_permissions": []
-        }
-    },
-    {
-        "model": "auth.user",
-        "pk": 37,
-        "fields": {
-            "password": "pbkdf2_sha256$216000$7ylTyfU5og6y$FmA0jSyvq9M8Xs2fbCrCeA9l+NUFTLh/hETTo9lK85U=",
-            "last_login": "2021-01-26T11:28:54.103Z",
-            "is_superuser": false,
-            "username": "admin1",
-            "first_name": "",
-            "last_name": "",
-            "email": "admin1@admin.com",
-            "is_staff": false,
-            "is_active": true,
-            "date_joined": "2021-01-26T07:24:58.596Z",
-            "groups": [],
-            "user_permissions": []
-        }
-    },
-    {
         "model": "authtoken.token",
         "pk": "2cfb9b0469e30a84cf6ea5da036aa920c9f7ed13",
         "fields": {
