@@ -42,7 +42,7 @@ function Register(props) {
       </Container>
       <Container>
         <Form onSubmit={onSubmitForm}>
-        <h2>Registration</h2>
+          <h2>Registration</h2>
           <Form.Row>
             <Form.Group className="col-sm-12 col-md-6 " controlId="username">
               <Form.Label>Username</Form.Label>
@@ -129,18 +129,14 @@ function Register(props) {
 
 Register.propTypes = {
   openToast: PropTypes.bool.isRequired,
-  toastMessage: PropTypes.string.isRequired,
+  toastMessage: PropTypes.string,
 
   sendRegisterForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
 };
 
-Register.propTypes = {
-  openToast: PropTypes.bool.isRequired,
-  toastMessage: PropTypes.string.isRequired,
-
-  sendRegisterForm: PropTypes.func.isRequired,
-  closeToast: PropTypes.func.isRequired,
+Register.defaultProps = {
+  toastMessage: 'Server is unavailable',
 };
 
 const mapStateToProps = (state) => ({

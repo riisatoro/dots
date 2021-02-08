@@ -2,7 +2,7 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
-module.exports = (env) => ({
+module.exports = ({
   context: __dirname,
   entry: './src/index.jsx',
   output: {
@@ -10,7 +10,9 @@ module.exports = (env) => ({
     filename: 'main.js',
     publicPath: '/',
   },
-
+  infrastructureLogging: {
+    level: 'none',
+  },
   devServer: {
     historyApiFallback: true,
     proxy: {

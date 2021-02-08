@@ -83,7 +83,7 @@ function Login(props) {
 
 Login.propTypes = {
   openToast: PropTypes.bool.isRequired,
-  toastMessage: PropTypes.string.isRequired,
+  toastMessage: PropTypes.string,
 
   sendLoginForm: PropTypes.func.isRequired,
   closeToast: PropTypes.func.isRequired,
@@ -93,6 +93,10 @@ const mapStateToProps = (state) => ({
   openToast: state.auth.error,
   toastMessage: state.auth.errorMessage,
 });
+
+Login.defaultProps = {
+  toastMessage: 'Server is unavailable',
+};
 
 export default connect(
   mapStateToProps,

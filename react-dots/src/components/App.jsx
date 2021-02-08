@@ -15,6 +15,7 @@ import Register from './Register';
 import Footer from './Footer';
 import { connectSocket } from '../socket/socket';
 
+
 function App(props) {
   const { authorized, dispatch, user } = props;
   if (authorized) {
@@ -73,7 +74,7 @@ App.propTypes = {
 
 App.defaultProps = {
   user: null,
-};
+}
 
 const mapStateToProps = (state) => ({
   authorized: state.auth.isAuthorized,
