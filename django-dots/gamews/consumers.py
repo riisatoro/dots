@@ -15,6 +15,13 @@ from gamews.types import (INVALID_DATA, PLAYER_JOIN_GAME, PLAYER_LEAVE,
                           INVALID_POINT)
 
 
+exception_reply = {
+    KeyError: INVALID_JSON,
+    ValueError: INVALID_DATA,
+    IndexError: INVALID_POINT,
+}
+
+
 async def send_updated_rooms(group: str, type_reply: str, reply: dict):
     layer = get_channel_layer()
     await layer.group_send(
@@ -64,54 +71,47 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             player_id = self.scope['user'].id
             room_id = int(game_updates['currentGame'])
 
-            if game_updates['type'] == PLAYER_SET_DOT:
-                point = Point(game_updates['point'][0], game_updates['point'][1])
-                response, recipients = await self.get_player_response(player_id, room_id, point)
+            recipients = await self.get_players(room_id)
+            field = await self.update_room_field(player_id, room_id, game_updates)
+            response = await self.get_player_response(field, room_id, game_updates['type'])
 
-            elif game_updates['type'] == PLAYER_JOIN_GAME:
-                response, recipients = await self.get_player_response(player_id, room_id)
-
-            elif game_updates['type'] == PLAYER_LEAVE:
-                response = {'data': {'room': room_id}}
-                recipients = await self.get_players(room_id)
-
-        except KeyError:
-            await send_updated_rooms(
-                self.scope['user'].id, INVALID_JSON, {'type': INVALID_JSON}
-            )
-        except ValueError:
-            await send_updated_rooms(
-                self.scope['user'].id, INVALID_DATA, {'type': INVALID_DATA}
-            )
-        except IndexError:
-            await send_updated_rooms(
-                self.scope['user'].id, INVALID_POINT, {'type': INVALID_POINT}
-            )
-        else:
             for rec in recipients:
                 await send_updated_rooms(rec, game_updates['type'], response)
 
-    async def get_player_response(self, player_id: int, room_id: int, point=None):
+        except (KeyError, ValueError, IndexError) as e:
+            await send_updated_rooms(
+                self.scope['user'].id,
+                exception_reply[type(e)],
+                {'type': exception_reply[type(e)]}
+            )
+
+    async def update_room_field(self, player_id, room_id, game_updates):
+        if game_updates['type'] == PLAYER_LEAVE:
+            return {'room': room_id}
+
         is_field_full = False
         old_field = await self.load_old_field(room_id)
-        if point is None:
-            response_type = PLAYER_JOIN_GAME
-            new_field = Field.add_player(old_field, player_id)
-        else:
-            response_type = PLAYER_SET_DOT
-            new_field, is_field_full = await self.make_move(old_field, room_id, point, player_id)
 
-        serialized_field = await self.serialize_game_data(new_field, room_id, is_field_full)
-        return (
-            {
+        if game_updates['type'] == PLAYER_SET_DOT:
+            point = Point(game_updates['point'][0], game_updates['point'][1])
+            new_field = await self.make_move(old_field, room_id, point, player_id)
+        elif game_updates['type'] == PLAYER_JOIN_GAME:
+            new_field = Field.add_player(old_field, player_id)
+
+        return new_field
+
+    async def get_player_response(self, new_field, room_id, response_type):
+        if response_type == PLAYER_LEAVE:
+            return { 'type': response_type, 'data': new_field }
+
+        serialized_field = await self.serialize_game_data(new_field, room_id)
+        return {
                 'type': response_type,
                 'data': {
                     'room': room_id,
                     'field': serialized_field
                 }
-            },
-            serialized_field['players']
-        )
+            }
 
     @database_sync_to_async
     def get_players(self, room_id: int):
@@ -130,12 +130,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
     async def make_move(self, old_field: GameField, room_id: int, point: Point, player_id: int):
         if await self.is_allowed_to_set_point(player_id, room_id):
-
             new_field = Core.process_point(old_field, point, player_id)
             await self.update_players_stats(room_id, new_field)
-            if is_field_full := Field.is_full_field(new_field):
+            new_field.is_full = Field.is_full_field(new_field)
+            if new_field.is_full:
                 await self.close_current_game(room_id)
-            return new_field, is_field_full
+            return new_field
         raise ValueError('This player is not allowed to set point')
 
     @database_sync_to_async
@@ -156,12 +156,12 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
     def close_current_game(self, room_id: int):
         GameRoom.objects.filter(id=room_id).update(is_ended=True)
 
-    async def serialize_game_data(self, new_field: GameField, room_id: int, is_field_full: bool):
+    async def serialize_game_data(self, new_field: GameField, room_id: int):
         field = GameFieldSerializer().to_client(new_field)
         field['score'] = Field.get_score_from_raw(field['field'], field['players'])
         field['turn'] = await self.get_who_has_turn(room_id)
         field['players'] = await self.get_players_data(room_id)
-        field['is_full'] = is_field_full
+        field['is_full'] = new_field.is_full
         return field
 
     @database_sync_to_async

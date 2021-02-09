@@ -23,3 +23,4 @@ class GameField:
     score: dict = field(default_factory=dict)
     new_loops: list = field(default_factory=list)
     new_houses: list = field(default_factory=list)
+    is_full: bool = False
