@@ -124,6 +124,7 @@ class Register(APIView):
             )
 
         user = User.objects.create_user(username, email, password)
+        login(request, user)
         token = Token.objects.get_or_create(user=user)[0]
         return Response(
             {"error": False, "username": username, "token": str(token), "id": user.id}
