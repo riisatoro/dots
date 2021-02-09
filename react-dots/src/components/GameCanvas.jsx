@@ -29,9 +29,7 @@ class GameCanvas extends Component {
 
     if (!Number.isNaN(xPoint) && !Number.isNaN(yPoint)) {
       const point = games[currentGame].field.field[yPoint][xPoint];
-      // console.log(point);
       if (point.captured_by.length === 0 && !point.border && point.owner === null) {
-        // console.log(point, point.captured_by.length === 0, !point.border, point.owner === null);
         socket.send(
           JSON.stringify({
             type: TYPES.PLAYER_SET_DOT,
