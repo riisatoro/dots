@@ -40,7 +40,6 @@ export default function gameReducer(state, action) {
 
     case TYPES.PLAYER_SET_DOT: {
       const updates = JSON.parse(data.data);
-      console.log(updates);
       const updatedGames = { ...state.currentGames };
       updatedGames[updates.data.room] = {
         size: updates.data.field.field.length - 2,
@@ -56,7 +55,6 @@ export default function gameReducer(state, action) {
 
     case TYPES.PLAYER_JOIN_GAME: {
       const updates = JSON.parse(data.data);
-      console.log(updates);
       const updatedGames = { ...state.currentGames };
       const updatedWaiting = { ...state.waitingGames };
       delete updatedWaiting[updates.data.room];
@@ -77,7 +75,6 @@ export default function gameReducer(state, action) {
 
     case TYPES.PLAYER_LEAVE: {
       const updates = JSON.parse(data.data);
-      console.log(updates);
       const current = { ...state.currentGames };
       current[updates.data.room].field.is_full = true;
 

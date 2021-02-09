@@ -89,29 +89,26 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         if game_updates['type'] == PLAYER_LEAVE:
             return {'room': room_id}
 
-        is_field_full = False
         old_field = await self.load_old_field(room_id)
-
         if game_updates['type'] == PLAYER_SET_DOT:
             point = Point(game_updates['point'][0], game_updates['point'][1])
             new_field = await self.make_move(old_field, room_id, point, player_id)
         elif game_updates['type'] == PLAYER_JOIN_GAME:
             new_field = Field.add_player(old_field, player_id)
-
         return new_field
 
     async def get_player_response(self, new_field, room_id, response_type):
         if response_type == PLAYER_LEAVE:
-            return { 'type': response_type, 'data': new_field }
+            return {'type': response_type, 'data': new_field}
 
         serialized_field = await self.serialize_game_data(new_field, room_id)
         return {
-                'type': response_type,
-                'data': {
-                    'room': room_id,
-                    'field': serialized_field
-                }
+            'type': response_type,
+            'data': {
+                'room': room_id,
+                'field': serialized_field
             }
+        }
 
     @database_sync_to_async
     def get_players(self, room_id: int):
