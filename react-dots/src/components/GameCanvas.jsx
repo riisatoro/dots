@@ -24,12 +24,14 @@ class GameCanvas extends Component {
       currentGame,
       games,
     } = this.props;
-    const xPoint = e.target.attrs.x / cellSize + 1;
-    const yPoint = e.target.attrs.y / cellSize + 1;
+    const xPoint = (e.target.attrs.x / cellSize) + 1;
+    const yPoint = (e.target.attrs.y / cellSize) + 1;
 
     if (!Number.isNaN(xPoint) && !Number.isNaN(yPoint)) {
       const point = games[currentGame].field.field[yPoint][xPoint];
+      // console.log(point);
       if (point.captured_by.length === 0 && !point.border && point.owner === null) {
+        // console.log(point, point.captured_by.length === 0, !point.border, point.owner === null);
         socket.send(
           JSON.stringify({
             type: TYPES.PLAYER_SET_DOT,
