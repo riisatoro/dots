@@ -29,7 +29,7 @@ function GameCreateForm(props) {
 
     let contrast = true;
     disabledColors.forEach((color) => {
-      contrast = contrast && isContrast(playerColor, color, 255);
+      contrast = contrast && isContrast(playerColor, color, 200);
     });
 
     if (!contrast) setModal();

@@ -168,7 +168,6 @@ class Login(APIView):
 
 class MatchViewSet(APIView):
     """Allow logged users get match results and save their own"""
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

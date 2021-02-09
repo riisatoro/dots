@@ -74,6 +74,7 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             recipients = await self.get_players(room_id)
             field = await self.update_room_field(player_id, room_id, game_updates)
             response = await self.get_player_response(field, room_id, game_updates['type'])
+            # recipients = field.players if hasattr(field, 'players') else [self.scope['user'].id]
 
             for rec in recipients:
                 await send_updated_rooms(rec, game_updates['type'], response)

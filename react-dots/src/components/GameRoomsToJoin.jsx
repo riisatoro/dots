@@ -26,7 +26,7 @@ function GameRoomsToJoin(props) {
     const limitReached = Object.keys(props.games).length >= props.roomLimit;
 
     Object.keys(colors).forEach((key) => {
-      colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 255);
+      colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 200);
     });
 
     if (!colorIsContrast) {
