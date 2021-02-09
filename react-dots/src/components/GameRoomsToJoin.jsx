@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
   Form, Button, Row, Col,
@@ -23,7 +23,7 @@ function GameRoomsToJoin(props) {
   const joinGame = (e) => {
     let colorIsContrast = true;
     const colors = availableGames[e.target.id].players;
-    const limitReached = Object.keys(props.games).length >= props.roomLimit
+    const limitReached = Object.keys(props.games).length >= props.roomLimit;
 
     Object.keys(colors).forEach((key) => {
       colorIsContrast = colorIsContrast && isContrast(playerColor, colors[key].color, 255);
@@ -43,18 +43,20 @@ function GameRoomsToJoin(props) {
       ));
     }
   };
-
   Object.keys(availableGames).forEach((key) => {
     cards.push(
       <Col xs={12} md={6} lg={4} key={key.toString()}>
         <div className="card m-2 p-2">
           {
             Object.keys(availableGames[key].players).map((player) => (
-              <h5 className="card-title" key={player.toString()}>
-                Player:&nbsp;
-                {availableGames[key].players[player].username}
-                <div className="games-color-block col-6" style={{ backgroundColor: availableGames[key].players[player].color }} />
-              </h5>
+              <React.Fragment key={player.toString()}>
+                <h5 className="card-title">
+                  Player:&nbsp;
+                  {availableGames[key].players[player].username}
+                  <div className="games-color-block col-6" style={{ backgroundColor: availableGames[key].players[player].color }} />
+                </h5>
+                <p>{`Field size ${availableGames[key].size} x ${availableGames[key].size}`}</p>
+              </React.Fragment>
             ))
           }
 

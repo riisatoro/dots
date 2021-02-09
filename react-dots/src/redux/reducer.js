@@ -1,4 +1,4 @@
-import { loadState } from './local_state';
+import loadState from './local_state';
 import authReducer from './reducers/authReducer';
 import domainReducer from './reducers/domainReducer';
 import uiReducer from './reducers/uiReducer';

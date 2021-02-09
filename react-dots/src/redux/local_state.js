@@ -39,13 +39,11 @@ const setInitial = () => (
 );
 
 const loadState = () => {
-  let state = localStorage[TYPES.LOCAL_STORAGE];
-  try {
-    state = JSON.parse(state);
-  } catch (error) {
+  const state = localStorage[TYPES.LOCAL_STORAGE];
+  if (state === undefined) {
     return setInitial();
   }
-  return state;
+  return JSON.parse(state);
 };
 
-export { loadState, setInitial };
+export default loadState;

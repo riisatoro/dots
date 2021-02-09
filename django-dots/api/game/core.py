@@ -41,7 +41,6 @@ class Field:
         if owner not in field.players:
             field = Field.add_player(field, owner)
 
-        print(point, field.field[y][x])
         if field.field[y][x].border or field.field[y][x].owner is None and field.field[y][x].is_captured:
             raise ValueError("This point is not allowed for changing the owner")
 

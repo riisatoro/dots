@@ -1,3 +1,4 @@
+
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -9,9 +10,6 @@ module.exports = ({
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js',
     publicPath: '/',
-  },
-  infrastructureLogging: {
-    level: 'none',
   },
   devServer: {
     historyApiFallback: true,
@@ -41,7 +39,7 @@ module.exports = ({
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.env'],
   },
   plugins: [
     new HtmlWebPackPlugin({

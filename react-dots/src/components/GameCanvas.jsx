@@ -71,7 +71,14 @@ class GameCanvas extends Component {
     return (
       <>
         <Container>
-          <div className="m-auto" style={{ width: fieldSize * cellSize + cellSize }}>
+          <div 
+            className="m-auto"
+            style={
+              {
+                width: fieldSize * cellSize + cellSize,
+              }
+            }
+          >
             <Stage
               width={fieldSize * cellSize + cellSize}
               height={fieldSize * cellSize + cellSize}

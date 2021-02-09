@@ -16,8 +16,6 @@ class Game extends Component {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
-    const { getPlayerGameRooms, token } = props;
-    getPlayerGameRooms(token);
   }
 
   componentDidMount() {
@@ -41,7 +39,7 @@ class Game extends Component {
     const warnText = [
       <p>
         Your color is not contrast with colors of other players.&nbsp;
-        Or, maybe, is&apos;t too dark or too white.&nbsp;
+        Or, maybe, isn&apos;t too dark or too white.&nbsp;
         Please, choose another color!
       </p>,
       <p>You already playing in 6 games!&nbsp;Finish them and try again!</p>,
@@ -95,6 +93,7 @@ Game.propTypes = {
   token: PropTypes.string.isRequired,
   modalColorContrast: PropTypes.bool,
   modalLimitRooms: PropTypes.bool,
+  currentGame: PropTypes.number,
 
   setModal: PropTypes.func.isRequired,
   getPlayerGameRooms: PropTypes.func.isRequired,
@@ -103,6 +102,7 @@ Game.propTypes = {
 Game.defaultProps = {
   modalLimitRooms: false,
   modalColorContrast: false,
+  currentGame: null,
 };
 
 const mapStateToProps = (state) => ({
@@ -110,6 +110,7 @@ const mapStateToProps = (state) => ({
   games: state.gameData.currentGames,
   modalColorContrast: state.uiData.modalColorContrast,
   modalLimitRooms: state.uiData.modalLimitRooms,
+  currentGame: state.uiData.activeGameTab,
 });
 
 export default connect(
