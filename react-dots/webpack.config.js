@@ -2,7 +2,11 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
-module.exports = {
+const Dotenv = require('dotenv-webpack');
+
+const dotenv = new Dotenv();
+
+module.exports = ({
   context: __dirname,
   entry: './src/index.jsx',
   output: {
@@ -10,11 +14,10 @@ module.exports = {
     filename: 'main.js',
     publicPath: '/',
   },
-
   devServer: {
     historyApiFallback: true,
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': 'http://127.0.0.1:8000/',
     },
   },
 
@@ -39,7 +42,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.env'],
   },
   plugins: [
     new HtmlWebPackPlugin({
@@ -47,8 +50,9 @@ module.exports = {
       filename: 'index.html',
     }),
     new ESLintPlugin(),
+    dotenv,
   ],
   watchOptions: {
     ignored: '/node_modules/',
   },
-};
+});

@@ -1,0 +1,57 @@
+{
+    "invalid_json_data": {
+        "JSON": "Invalid"
+    },
+    "invalid_request_data": {
+        "type": "Hello",
+        "data": "hi"
+    },
+    "valid_player_join": {
+        "type": "PLAYER_JOIN_GAME",
+        "currentGame": 1312
+    },
+    "invalid_player_join": {
+        "type": "PLAYER_JOIN_GAME",
+        "currentGame": -20
+    },
+    "player_leave": {
+        "type": "PLAYER_LEAVE",
+        "currentGame": 1312
+    },
+    "invalid_player_leave": {
+        "type": "PLAYER_LEAVE",
+        "currentGame": -20
+    },
+    "player_set_dot": {
+        "type": "PLAYER_SET_DOT",
+        "currentGame": 1312,
+        "point": [
+            5,
+            5
+        ]
+    },
+    "player_set_dot_2": {
+        "type": "PLAYER_SET_DOT",
+        "currentGame": 1312,
+        "point": [
+            5,
+            5
+        ]
+    },
+    "player_set_invalid_dot": {
+        "type": "PLAYER_SET_DOT",
+        "currentGame": 1312,
+        "point": [
+            -5,
+            250
+        ]
+    },
+    "player_set_dot_invalid_room": {
+        "type": "PLAYER_SET_DOT",
+        "currentGame": -20,
+        "point": [
+            -5,
+            250
+        ]
+    }
+}

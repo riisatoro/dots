@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import {
+  Navbar, Nav, Button,
+} from 'react-bootstrap';
 import TYPES from '../redux/types';
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.logoutUser = this.logoutUser.bind(this);
+  }
+
   onOpenLeaders() {
     const { getLeaderboard, token } = this.props;
     getLeaderboard(token);
@@ -18,61 +25,60 @@ class Header extends Component {
 
   render() {
     const { isAuth } = this.props;
+    const path = window.location.pathname;
+    const homeClass = path === '/main' ? 'active' : '';
+    const newGameClass = path === '/game' ? 'active' : '';
+    const leaderboardsClass = path === '/leaderboards' ? 'active' : '';
 
     let navigation = [];
     if (isAuth) {
-      navigation = [
-        <div className="col-sm-8 col-md-3 new-ga me" key="new-game">
-          <a href="/new_game">New game</a>
-        </div>,
-        <div className="col-sm-8 col-md-3" key="leaders">
-          <a href="/leaderboards">Leaderboards</a>
-        </div>,
-        <div className="col-sm-8 col-md-3" key="logout">
-          <button type="button" className="btn btn-primary" onClick={this.logoutUser.bind(this)}>Logout</button>
-        </div>,
-      ];
+      navigation = (
+        <>
+          <Nav className="ml-auto">
+            <Nav.Link href="/main" to="/main" className={homeClass}>Home</Nav.Link>
+            <Nav.Link href="/game" className={newGameClass}>New game</Nav.Link>
+            <Nav.Link href="/leaderboards" className={leaderboardsClass}>Leaderboards</Nav.Link>
+            <Button variant="outline-info" onClick={this.logoutUser}>Logout</Button>
+          </Nav>
+        </>
+      );
     } else {
-      navigation = [
-        <div className="col-6 align-center" key="login">
-          <a href="/auth">Login or Register</a>
-        </div>,
-      ];
+      navigation = (
+        <>
+          <Nav className="ml-auto">
+            <Button variant="primary" href="/login" className="m-2">Log in</Button>
+            <Button variant="outline-info" href="/register" className="m-2">Register</Button>
+          </Nav>
+        </>
+      );
     }
 
     return (
-      <section className="header">
-        <div className="container-fluid">
-
-          <div className="row">
-            <h1 className="container align-center">Dots game</h1>
-          </div>
-
-          <div className="row justify-content-center">
-            { !isAuth && <Redirect to="/logout" /> }
+      <>
+        <Navbar bg="light" expand="lg" className="mb-5">
+          <Navbar.Brand href="/main">Dots game</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
             {navigation}
-          </div>
-
-        </div>
-      </section>
+          </Navbar.Collapse>
+        </Navbar>
+      </>
     );
   }
 }
 
 Header.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  getLeaderboard: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
   isAuth: PropTypes.bool.isRequired,
+
+  logoutUser: PropTypes.func.isRequired,
+  getLeaderboard: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  const data = {
-    token: state.user.token,
-    isAuth: state.user.auth,
-  };
-  return data;
-};
+const mapStateToProps = (state) => ({
+  token: state.auth.token,
+  isAuth: state.auth.isAuthorized,
+});
 
 export default connect(
   mapStateToProps,
@@ -87,6 +93,7 @@ export default connect(
       };
       getLeaderboardRequest();
     },
+
     logoutUser: (token) => {
       const asyncLogout = () => {
         axios({
@@ -94,7 +101,9 @@ export default connect(
           url: '/api/auth/logout/',
           headers: { Authorization: `Token ${token}` },
         }).then(() => {
-          dispatch({ type: TYPES.SEND_LOGOUT_REQUEST, payload: {} });
+          dispatch({ type: TYPES.LOGOUT_REPLY, payload: null });
+        }).catch(() => {
+          dispatch({ type: TYPES.LOGOUT_ERROR, payload: null });
         });
       };
       asyncLogout();

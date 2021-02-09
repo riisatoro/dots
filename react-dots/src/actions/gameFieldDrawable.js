@@ -19,11 +19,8 @@ function getCanvasGrid(amount, size) {
   return grid;
 }
 
-function getCircleCoords(field, size, playerColors) {
+function getCircleCoords(field, size, colors) {
   const circle = [];
-  const colorTable = {
-    O: 'orange', R: 'red', B: 'blue', Y: 'khaki', G: 'green',
-  };
   for (let i = 1; i < field.length - 1; i += 1) {
     for (let j = 1; j < field[0].length - 1; j += 1) {
       if (field[i][j].owner != null) {
@@ -41,7 +38,7 @@ function getCircleCoords(field, size, playerColors) {
             y: 0,
           }}
           fillRadialGradientEndRadius={5}
-          fillRadialGradientColorStops={[0, 'white', 1, colorTable[playerColors[field[i][j].owner]]]}
+          fillRadialGradientColorStops={[0, 'white', 1, colors[field[i][j].owner].color]}
         />);
       }
     }
@@ -52,14 +49,9 @@ function getCircleCoords(field, size, playerColors) {
 function createLoopFigure(field, loops, cellSize, playerColors) {
   if (loops == null) return [];
 
-  const colorTable = {
-    O: 'orange', R: 'red', B: 'blue', Y: 'yellow', G: 'green',
-  };
-
   const jsxLoop = [];
   loops.forEach((loop) => {
     const { owner } = field[loop[0][1]][loop[0][0]];
-    const color = colorTable[playerColors[owner]];
     const chainPoints = [];
     loop.forEach((point) => {
       chainPoints.push((point[0] - 1) * cellSize);
@@ -69,7 +61,7 @@ function createLoopFigure(field, loops, cellSize, playerColors) {
       x={0}
       y={0}
       points={chainPoints}
-      stroke={color}
+      stroke={playerColors[owner].color}
       strokeWidth={2}
       closed
     />);
@@ -77,7 +69,7 @@ function createLoopFigure(field, loops, cellSize, playerColors) {
       x={0}
       y={0}
       opacity={0.2}
-      fill={color}
+      fill={playerColors[owner].color}
       points={chainPoints}
       closed
     />);
@@ -95,7 +87,7 @@ function createEmptyCircle(field, cellSize) {
         circle.push(<Circle
           x={(j - 1) * cellSize}
           y={(i - 1) * cellSize}
-          radius={4}
+          radius={5}
           strokeWidth={0.5}
           stroke="gray"
           fill="white"

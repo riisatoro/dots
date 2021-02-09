@@ -73,8 +73,8 @@ WSGI_APPLICATION = 'dots.wsgi.application'
 
 ASGI_APPLICATION = "dots.routing.application"
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
 
@@ -123,3 +123,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CSRF_USE_SESSIONS = True
+
+FIXTURE_DIRS = [
+    'gamews/fixtures', 'api/fixtures'
+]

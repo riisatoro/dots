@@ -2,45 +2,48 @@ import TYPES from './types';
 
 const setInitial = () => (
   {
-    reply: { error: false, message: '' },
-    user: {
-      auth: false, userName: '', token: '', userID: null,
-    },
-    socket: {
-      connect: false, roomId: '-1', field: [], isGameStarted: false, turn: false,
-    },
-
-    turn: 0,
-    cellSize: 30,
-    field_size: 10,
-    game_end: false,
-    gameResults: false,
-
-    playerColor: '',
-    playerScore: 0,
-
-    loops: [],
-    colors: ['orange_color', 'red_color', 'blue_color', 'yellow_color', 'green_color'],
-    colorTable: {
-      O: 'orange_color', R: 'red_color', B: 'blue_color', Y: 'yellow_color', G: 'green_color',
+    auth: {
+      id: null,
+      token: '',
+      username: '',
+      isAuthorized: false,
+      error: false,
+      errorMessage: '',
     },
 
-    leaders: [],
-    gameInterrupted: false,
-    gameStarted: false,
+    domainData: {
+      leaderboards: [],
+    },
 
-    components: { },
+    gameData: {
+      temporary: {
+        playerColor: '#AAAAAA',
+      },
+      waitingGames: {},
+      currentGames: {},
+      awailableGames: {},
+    },
+
+    appData: {
+      roomLimit: 6,
+      cellSize: 30,
+    },
+
+    uiData: {
+      matchPagination: 1,
+      activeGameTab: 0,
+      modalColorContrast: false,
+      modalLimitRooms: false,
+    },
   }
 );
 
 const loadState = () => {
-  let state = localStorage[TYPES.LOCAL_STORAGE];
-  try {
-    state = JSON.parse(state);
-  } catch (error) {
+  const state = localStorage[TYPES.LOCAL_STORAGE];
+  if (state === undefined) {
     return setInitial();
   }
-  return state;
+  return JSON.parse(state);
 };
 
-export { loadState, setInitial };
+export default loadState;

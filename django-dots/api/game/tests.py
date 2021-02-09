@@ -17,8 +17,8 @@ def prepare_field(data):
     x, y = data["field"]
     field = Field.create_field(x, y)
 
-    for player in data["players"]:
-        field = Field.add_player(field, player)
+    # for player in data["players"]:
+    #     field = Field.add_player(field, player)
     return field
 
 
@@ -192,11 +192,6 @@ class ApiFieldChangeOwnerTest(TestCase):
             point = Point(20, -5)
             self.field = Field.change_owner(self.field, point, 2)
 
-    def test_anonymous_owner(self):
-        with self.assertRaises(ValueError):
-            point = Point(1, 2)
-            self.field = Field.change_owner(self.field, point, 50)
-
 
 class ApiFieldFullFieldTest(TestCase):
     def setUp(self):
@@ -337,4 +332,77 @@ class ApiCoreBuildAllLoops(TestCase):
         )
         self.assertTrue(
             loops_are_equal(expected_2, self.field.new_houses[1]["path"])
+        )
+
+
+class ApiCoreSetOfSides(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(5, 5)
+        self.field = Field.add_player(self.field, 1)
+        self.points = [Point(2, 1), Point(3, 2), Point(3, 3)]
+        self.loop = tuple_to_point([[3, 2], [2, 3], [4, 3], [3, 4]])
+
+    def test_simple(self):
+        for point in self.points:
+            self.field.field[point.y][point.x].owner = 1
+
+        sides = Core.get_all_segments(self.field.field, Point(3, 2), 1)
+        self.assertEqual(len(sides), 2)
+
+    def test_three(self):
+        self.points.append(Point(4, 1))
+        for point in self.points:
+            self.field.field[point.y][point.x].owner = 1
+
+        sides = Core.get_all_segments(self.field.field, Point(3, 2), 1)
+        self.assertEqual(len(sides), 3)
+
+    def test_with_captured(self):
+        self.field.field[3][3].owner = 2
+        self.field.field[3][3].captured_by = []
+        for p in self.loop:
+            self.field = Core.process_point(self.field, p, 1)
+
+        seg = Core.get_all_segments(self.field.field, self.loop[-1], 1)
+        self.assertEqual(len(seg), 2)
+
+
+class ApiCoreBuildLoops(TestCase):
+    def setUp(self):
+        self.field = Field.create_field(10, 10)
+        self.field = Field.add_player(self.field, 1)
+        self.points = tuple_to_point([
+            [1, 1], [2, 1], [1, 2], [3, 2], [2, 3],
+            [4, 3], [2, 4], [2, 5], [3, 6], [4, 5], [4, 4], [4, 3],
+            [5, 4], [6, 4], [7, 5], [7, 6], [6, 7], [5, 7], [4, 7],
+            [1, 6], [1, 7], [1, 8], [2, 9], [3, 10], [4, 10], [5, 9], [4, 8]
+        ])
+
+    def test_rhombus(self):
+        for point in self.points:
+            self.field.field[point.y][point.x].owner = 1
+
+
+class ApiCoreLoopInLoop(TestCase):
+    def setUp(self):
+        self.data = open_data('ApiCoreLoopInLoop')
+        self.field = prepare_field(self.data)
+        self.field.players = []
+
+        self.points_1 = tuple_to_point(self.data["points_1"])
+        self.points_2 = tuple_to_point(self.data["points_2"])
+        self.points_3 = tuple_to_point(self.data["points_3"])
+
+    def test_loops(self):
+        for p in self.points_1:
+            self.field = Core.process_point(self.field, p, 1)
+
+        for p in self.points_2:
+            self.field = Core.process_point(self.field, p, 2)
+
+        for p in self.points_3:
+            self.field = Core.process_point(self.field, p, 1)
+
+        self.assertEqual(
+            len(self.field.new_loops), 2
         )

@@ -1,94 +1,156 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import {
+  Form, Button, Container, Row, Toast,
+} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TYPES from '../redux/types';
 
 function Register(props) {
-  const { register, handleSubmit, errors } = useForm();
+  const {
+    register, handleSubmit, errors, watch,
+  } = useForm();
 
-  const onSubmitRegister = (data) => {
-    if (data.password === data.password2) {
-      props.sendRegisterForm(data);
-    }
-  };
+  const passwordWatch = useRef({});
+  passwordWatch.current = watch('password', '');
+
+  const containsSpaces = (value) => value.indexOf(' ') >= 0;
+
+  const onSubmitForm = handleSubmit(({ username, email, password }) => {
+    props.sendRegisterForm({ username, email, password });
+  });
+
+  const { openToast, toastMessage, closeToast } = props;
+  const toastWindow = (
+    <Row className="mb-2">
+      <Toast onClose={closeToast} show={openToast} delay={5000} autohide className="ml-auto">
+        <Toast.Header>
+          <strong className="mr-auto text-danger">Error!</strong>
+          <small>Error</small>
+        </Toast.Header>
+        <Toast.Body>{toastMessage}</Toast.Body>
+      </Toast>
+    </Row>
+  );
 
   return (
     <section>
-      <div>
+      <Container>
+        {toastWindow}
+      </Container>
+      <Container>
+        <Form onSubmit={onSubmitForm}>
+          <h2>Registration</h2>
+          <Form.Row>
+            <Form.Group className="col-sm-12 col-md-6 " controlId="username">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                autoComplete="off"
+                type="text"
+                placeholder="Username"
+                name="username"
+                isInvalid={errors.username}
+                ref={register({
+                  required: true,
+                  minLength: 3,
+                  pattern: /^(?!\s)[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                  validate: (value) => !containsSpaces(value) || 'Spaces are not allowed',
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Username should be 5 or more characters, numbers, or sybmpols _ @ ! # $ % ^
+              </Form.Control.Feedback>
+            </Form.Group>
 
-        <form onSubmit={handleSubmit(onSubmitRegister)}>
+            <Form.Group className="col-sm-12 col-md-6" controlId="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                autoComplete="off"
+                type="email"
+                placeholder="Email"
+                name="email"
+                isInvalid={errors.email}
+                ref={register({
+                  required: true,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Invalid email
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
 
-          <div className="col-1" />
-          <div className="form-group col-10" key="username">
-            <input
-              className="form-control input-space"
-              type="text"
-              name="username"
-              placeholder="Username"
-              autoComplete="off"
-              ref={register({
-                required: true, minLength: 5, maxLength: 20, pattern: /^[A-za-z0–9_]/,
-              })}
-            />
-            {errors.username && <div className="alert alert-danger input-space">Max 20 characters only A-z and numbers</div>}
-          </div>
+          <Form.Row>
+            <Form.Group className="col-sm-12 col-md-6" controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                name="password"
+                isInvalid={errors.password}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                  pattern: /^[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                Password required 5 or more characters, numbers or symbols
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <div className="col-1" />
-          <div className="form-group col-10" key="email">
-            <input
-              className="form-control input-space"
-              type="email"
-              name="email"
-              placeholder="Email"
-              autoComplete="off"
-              ref={register({ required: true, pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.(com)/ })}
-            />
-            {errors.email && <div className="alert alert-danger input-space">Invalid email</div>}
-          </div>
-
-          <div className="col-1" />
-          <div className="form-group col-10" key="password">
-            <input
-              className="form-control input-space"
-              type="password"
-              name="password"
-              placeholder="Password"
-              ref={register({ required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ })}
-            />
-            {errors.password && <div className="alert alert-danger input-space">Password should be more than 5 characters and numbers</div>}
-          </div>
-
-          <div className="col-1" />
-          <div className="form-group col-10" key="password2">
-            <input
-              className="form-control input-space"
-              type="password"
-              name="password2"
-              placeholder="Confirm password"
-              ref={register({ required: true, minLength: 5, pattern: /^[a-zA-Z0-9]/ })}
-            />
-            {errors.password2 && <div className="alert alert-danger input-space">Password should be more than 5 characters and numbers</div>}
-          </div>
-
-          <div className="align-center">
-            <button type="submit" className="btn btn-primary">Register</button>
-          </div>
-        </form>
-
-      </div>
+            <Form.Group className="col-sm-12 col-md-6" controlId="passwordRepeat">
+              <Form.Label>Confirm password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm password"
+                name="passwordRepeat"
+                isInvalid={errors.passwordRepeat}
+                ref={register({
+                  required: true,
+                  minLength: 5,
+                  pattern: /^[a-zA-Zа-яА-Я0-9_@!#$%^]/,
+                  validate: (value) => value === passwordWatch.current || 'The passwords do not match',
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                The passwords do not match
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Form.Row>
+          <Button type="submit" className="mb-5">Register</Button>
+        </Form>
+      </Container>
     </section>
   );
 }
 
 Register.propTypes = {
+  openToast: PropTypes.bool.isRequired,
+  toastMessage: PropTypes.string,
+
   sendRegisterForm: PropTypes.func.isRequired,
+  closeToast: PropTypes.func.isRequired,
 };
 
+Register.defaultProps = {
+  toastMessage: 'Server is unavailable',
+};
+
+const mapStateToProps = (state) => ({
+  openToast: state.auth.error,
+  toastMessage: state.auth.errorMessage,
+});
+
 export default connect(
-  null,
+  mapStateToProps,
   (dispatch) => ({
+    closeToast: () => {
+      dispatch({ type: TYPES.CLOSE_TOAST, payload: false });
+    },
+
     sendRegisterForm: (data) => {
       const registerFormRequest = () => {
         axios.post(
@@ -96,7 +158,11 @@ export default connect(
           data,
         ).then(
           (response) => {
-            dispatch({ type: TYPES.RECEIVE_AUTH_REPLY, payload: response });
+            dispatch({ type: TYPES.REGISTRATION_REPLY, payload: response.data });
+          },
+        ).catch(
+          (error) => {
+            dispatch({ type: TYPES.REGISTRATION_ERROR, payload: error.response.data });
           },
         );
       };

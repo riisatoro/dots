@@ -1,66 +1,84 @@
 import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  BrowserRouter as Router, Switch, Route, Redirect,
+} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import Header from './Header';
 import Leaderboard from './Leaderboard';
-import Settings from './Settings';
-import Auth from './Auth';
-import Results from './Results';
-import GameField from './GameField';
-import '../../public/css/default.css';
+import Game from './Game';
+import MainPage from './MainPage';
+import Login from './Login';
+import Register from './Register';
+import Footer from './Footer';
+import { connectSocket } from '../socket/socket';
+
 
 function App(props) {
-  const { authorized, gameStarted } = props;
+  const { authorized, dispatch, user } = props;
+  if (authorized) {
+    connectSocket(dispatch, user);
+  }
 
   return (
-    <section className="App">
-      <Router>
+    <>
+      <section style={{ minHeight: '100%' }}>
         <Header />
-        { !authorized ? <Redirect to="/auth" /> : ''}
-        <Switch>
+        <Router>
+          <Switch>
+            <Route exact path="/">
+              <Redirect to="/main" />
+            </Route>
 
-          <Route path="/auth">
-            { authorized ? <Redirect to="/" /> : <Auth /> }
-          </Route>
+            <Route path="/register">
+              { authorized ? <Redirect to="/main" /> : '' }
+              <Register />
+            </Route>
 
-          <Route path="/new_game">
-            { authorized ? <Settings /> : <Redirect to="/" /> }
-            { authorized && gameStarted ? <Redirect to="/game" /> : ''}
-          </Route>
+            <Route path="/login">
+              { authorized ? <Redirect to="/main" /> : '' }
+              <Login />
+            </Route>
 
-          <Route path="/leaderboards">
-            { authorized ? <Leaderboard /> : <Redirect to="/" /> }
-          </Route>
+            <Route path="/main">
+              <MainPage />
+            </Route>
 
-          <Route path="/game">
-            <GameField />
-          </Route>
+            <Route path="/game">
+              { authorized ? <Game /> : <Redirect to="/login" /> }
+            </Route>
 
-          <Route path="/game_result">
-            { authorized ? <Results /> : <Redirect to="/" /> }
-          </Route>
+            <Route path="/leaderboards">
+              { authorized ? <Leaderboard /> : <Redirect to="/login" /> }
+            </Route>
 
-          <Route path="/logout">
-            <Redirect to="/auth" />
-          </Route>
+            <Route path="/logout">
+              <Redirect to="/login" />
+            </Route>
 
-        </Switch>
-      </Router>
-    </section>
+          </Switch>
+        </Router>
+      </section>
+      <Footer />
+    </>
   );
 }
 
 App.propTypes = {
   authorized: PropTypes.bool.isRequired,
-  gameStarted: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  user: PropTypes.number,
 };
 
+App.defaultProps = {
+  user: null,
+}
+
 const mapStateToProps = (state) => ({
-  authorized: state.user.auth,
-  gameStarted: state.gameStarted,
+  authorized: state.auth.isAuthorized,
+  user: state.auth.id,
 });
 
 export default hot(
