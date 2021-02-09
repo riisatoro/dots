@@ -1,15 +1,16 @@
-import HtmlWebPackPlugin from 'html-webpack-plugin';
-import { resolve as _resolve } from 'path';
-import ESLintPlugin from 'eslint-webpack-plugin';
-import Dotenv from 'dotenv-webpack';
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
+
+const Dotenv = require('dotenv-webpack');
 
 const dotenv = new Dotenv();
 
-export default ({
+module.exports = ({
   context: __dirname,
   entry: './src/index.jsx',
   output: {
-    path: _resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'main.js',
     publicPath: '/',
   },
@@ -45,7 +46,7 @@ export default ({
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: _resolve(__dirname, 'public/index.html'),
+      template: path.resolve(__dirname, 'public/index.html'),
       filename: 'index.html',
     }),
     new ESLintPlugin(),

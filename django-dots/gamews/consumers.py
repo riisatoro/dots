@@ -95,6 +95,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             new_field = await self.make_move(old_field, room_id, point, player_id)
         elif game_updates['type'] == PLAYER_JOIN_GAME:
             new_field = Field.add_player(old_field, player_id)
+        else:
+            raise ValueError('This action type is not defined!')
         return new_field
 
     async def get_player_response(self, new_field, room_id, response_type):
