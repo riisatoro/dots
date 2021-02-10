@@ -16,9 +16,6 @@ def open_data(key):
 def prepare_field(data):
     x, y = data["field"]
     field = Field.create_field(x, y)
-
-    # for player in data["players"]:
-    #     field = Field.add_player(field, player)
     return field
 
 
