@@ -13,10 +13,17 @@ cache:
   paths:
     - venv
 
+before_script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r django-dots/requirements.txt
+
+
 test-linter-react:
   stage: test
   image: node:latest
   cache: {}
+  before_script: []
   script:
     - cd react-dots/
     - npm install
@@ -24,23 +31,15 @@ test-linter-react:
 
 
 test-linter-django:
-  stage: test
-  before_script:
-    - python -m venv venv
-    - source venv/bin/activate
-    - pip install -r django-dots/requirements.txt
+  stage: test  
   script:
     - pip install prospector[with_everything]
     - prospector --profile django-dots/profile.yaml
 
-    
+
 test-backend:
   services:  
     - postgres:latest
   stage: test
-  before_script:
-    - python -m venv venv
-    - source venv/bin/activate
-    - pip install -r django-dots/requirements.txt
   script:
     - python django-dots/manage.py test api
